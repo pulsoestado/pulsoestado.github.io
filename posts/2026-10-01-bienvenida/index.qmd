@@ -1,0 +1,22 @@
+---
+title: "Bienvenidos a Pulso del Estado"
+description: "Por qué medir el capital humano del sector público y qué vamos a publicar en este espacio."
+date: 2026-10-01
+categories: [Institucional]
+image: ../../assets/img/social-default.png
+toc: false
+---
+
+El Estado paraguayo es el mayor empleador del país. Cientos de miles de personas trabajan en ministerios, hospitales, escuelas, municipalidades, universidades, entes autónomos y empresas públicas. Su remuneración es, además, uno de los rubros más grandes del Presupuesto General de la Nación.
+
+Sin embargo, preguntas básicas siguen siendo difíciles de responder con datos a mano: **¿cuántas personas cobran del Estado? ¿cuántas ingresan y cuántas salen cada año? ¿la masa salarial crece porque hay más funcionarios o porque se paga más? ¿cómo se compara un sector con otro?**
+
+**Pulso del Estado** nace para responderlas, con datos oficiales, métodos transparentes y gráficos claros.
+
+## Qué vamos a publicar
+
+- **SITUCAP** (*Situación del Capital Humano Público*): un reporte periódico de dotación y masa salarial.
+- **Notas de análisis** sobre salud, educación, fuerzas públicas y servicio civil; permanentes y contratados; brechas de género; inclusión de personas con discapacidad; salarios públicos frente a privados.
+- **Datos abiertos** para descargar y reutilizar.
+
+Empezamos con una [radiografía del empleo público](../2026-10-02-radiografia-empleo-publico/): seis hallazgos con los datos más recientes, a agosto de 2026.

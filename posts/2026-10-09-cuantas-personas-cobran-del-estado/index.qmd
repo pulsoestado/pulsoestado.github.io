@@ -1,0 +1,198 @@
+---
+title: "¿Cuántas personas cobran del Estado?"
+description: "Entre 2017 y 2024 la cantidad de personas que cobraron del sector público paraguayo creció 12%. Más de la mitad del aumento de vínculos se explica por contratados."
+date: 2026-10-09
+categories: [Dotación, Contratados, SITUCAP]
+image: social.png
+image-alt: "Gráfico de la evolución de personas que cobran del Estado paraguayo, 2017-2024"
+---
+
+```{python}
+#| label: setup
+import pandas as pd
+import plotly.graph_objects as go
+from IPython.display import HTML
+
+DATOS = "../../data/processed/"
+anual = pd.read_csv(DATOS + "dotacion_anual.csv")
+mensual = pd.read_csv(DATOS + "dotacion_mensual.csv")
+nivel = pd.read_csv(DATOS + "dotacion_anual_nivel.csv")
+
+def miles(x):
+    """Número con punto de miles (formato paraguayo)."""
+    return f"{x:,.0f}".replace(",", ".")
+
+def pct(x, dec=1):
+    return f"{x:.{dec}f}".replace(".", ",") + "%"
+
+A0, A1 = 2017, 2024
+a0 = anual.set_index("anho").loc[A0]
+a1 = anual.set_index("anho").loc[A1]
+
+personas0, personas1 = a0.personas_distintas_anio, a1.personas_distintas_anio
+var_personas = (personas1 / personas0 - 1) * 100
+dif_personas = personas1 - personas0
+
+d_perm = a1.prom_permanente - a0.prom_permanente
+d_contr = a1.prom_contratado - a0.prom_contratado
+crec_perm = (a1.prom_permanente / a0.prom_permanente - 1) * 100
+crec_contr = (a1.prom_contratado / a0.prom_contratado - 1) * 100
+parte_contr = d_contr / (d_perm + d_contr) * 100
+
+# 2025 parcial: comparar mismo periodo (enero a mayo)
+mes25 = int(anual.set_index("anho").loc[2025].ultimo_mes)
+acum = mensual.set_index(["anho", "mes"])["cantidad_acumulada"]
+p25, p24 = acum.loc[(2025, mes25)], acum.loc[(2024, mes25)]
+var_25 = (p25 / p24 - 1) * 100
+MESES = ["enero","febrero","marzo","abril","mayo","junio","julio","agosto",
+         "septiembre","octubre","noviembre","diciembre"]
+
+# Estilo común de los gráficos
+AZUL, NARANJA, ROJO, GRIS = "#2a78d6", "#eb6834", "#e34948", "#8a8984"
+def estilo(fig, alto=380, titulo_y=None):
+    fig.update_layout(
+        height=alto, margin=dict(l=10, r=20, t=10, b=10),
+        font=dict(family="Inter, system-ui, sans-serif", size=13, color="#77766f"),
+        paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
+        separators=",.", hovermode="x unified",
+        hoverlabel=dict(font=dict(family="Inter, sans-serif")),
+        legend=dict(orientation="h", y=1.08, x=0, title=None),
+    )
+    fig.update_xaxes(showgrid=False, linecolor="rgba(128,128,128,.4)", ticks="", fixedrange=True)
+    fig.update_yaxes(gridcolor="rgba(128,128,128,.18)", zeroline=False, title=titulo_y,
+                     ticks="", fixedrange=True)
+    return fig
+CONFIG = {"displayModeBar": False, "locale": "es"}
+```
+
+::: {.en-breve}
+**En breve**
+
+- En **`{python} A1`** cobraron del Estado **`{python} miles(personas1)` personas distintas**, `{python} miles(dif_personas)` más que en `{python} A0` (**+`{python} pct(var_personas)`**).
+- Los **contratados** crecieron `{python} pct(crec_contr, 0)` y los **permanentes**, `{python} pct(crec_perm, 0)`. Los contratados explican el **`{python} pct(parte_contr, 0)`** del aumento de vínculos.
+- En `{python} MESES[mes25-1]` de 2025 ya se contaban `{python} miles(p25)` personas en el año, un `{python} pct(var_25)` más que en el mismo período de 2024.
+:::
+
+```{python}
+#| label: kpis
+#| output: asis
+tiles = [
+    (miles(personas1), f"personas distintas cobraron del Estado en {A1}"),
+    ("+" + pct(var_personas), f"variación {A0}–{A1}"),
+    (pct(a1.pct_contratado), f"de los vínculos eran contratos en {A1} ({pct(a0.pct_contratado)} en {A0})"),
+    ("+" + pct(crec_contr, 0), f"crecimiento de los contratados {A0}–{A1}"),
+]
+print('<div class="kpis">' + "".join(
+    f'<div class="kpi"><div class="valor">{v}</div><div class="etiqueta">{e}</div></div>'
+    for v, e in tiles) + "</div>")
+```
+
+## Una pregunta más difícil de lo que parece
+
+"¿Cuántos funcionarios públicos hay?" tiene varias respuestas según qué se cuente. En esta nota usamos la medida más directa: **cuántas personas distintas recibieron al menos un pago del Estado durante el año**, según los registros de SICCA y SINARH. Así, quien cobró los doce meses cuenta una sola vez, y también cuentan quienes estuvieron solo una parte del año.
+
+```{python}
+#| label: fig-personas
+#| fig-cap: "Personas distintas que cobraron del Estado en cada año"
+serie = anual[(anual.anho >= A0) & (anual.anio_completo)]
+fig = go.Figure(go.Bar(
+    x=serie.anho, y=serie.personas_distintas_anio, marker_color=AZUL,
+    marker_line_width=0, width=0.62,
+    text=[miles(v) if a in (A0, A1) else "" for a, v in zip(serie.anho, serie.personas_distintas_anio)],
+    textposition="outside", textfont=dict(color="#77766f"), cliponaxis=False,
+    hovertemplate="%{x}: <b>%{y:,.0f}</b> personas<extra></extra>",
+))
+estilo(fig, titulo_y=None).update_layout(hovermode="closest", bargap=0.3)
+fig.update_yaxes(range=[0, serie.personas_distintas_anio.max() * 1.12], tickformat=",.0f")
+fig.update_xaxes(dtick=1)
+fig.show(config=CONFIG)
+```
+
+La serie muestra un crecimiento sostenido, con una única interrupción en **2020**, el año de la pandemia, y un nuevo salto en 2021 y 2022. Desde 2022 la cantidad de personas se mantiene prácticamente estable, alrededor de 371.000 a 375.000.
+
+## Los contratados ganan terreno
+
+La planta del Estado tiene dos grandes tipos de vínculo: los **permanentes** (funcionarios nombrados, con estabilidad) y los **contratados**. Para compararlos usamos el promedio mensual de vínculos de cada año y lo expresamos como índice, con `{python} A0` = 100.
+
+```{python}
+#| label: fig-indice
+#| fig-cap: "Vínculos permanentes y contratados, índice 2017 = 100 (promedio mensual de cada año)"
+s = anual[(anual.anho >= A0) & (anual.anio_completo)].copy()
+s["idx_perm"] = s.prom_permanente / a0.prom_permanente * 100
+s["idx_contr"] = s.prom_contratado / a0.prom_contratado * 100
+fig = go.Figure()
+for col, nombre, color, abs_col in [("idx_contr", "Contratados", NARANJA, "prom_contratado"),
+                                    ("idx_perm", "Permanentes", AZUL, "prom_permanente")]:
+    fig.add_trace(go.Scatter(
+        x=s.anho, y=s[col], name=nombre, mode="lines+markers",
+        line=dict(color=color, width=2.5), marker=dict(size=8, line=dict(width=2, color="#fcfcfb")),
+        customdata=s[abs_col],
+        hovertemplate=f"{nombre}: <b>%{{y:.1f}}</b> (%{{customdata:,.0f}} vínculos)<extra></extra>",
+    ))
+    fig.add_annotation(x=s.anho.iloc[-1], y=s[col].iloc[-1], text=f"<b>{nombre}</b> {s[col].iloc[-1]:.0f}".replace(".", ","),
+                       xanchor="left", xshift=10, showarrow=False, font=dict(color=color, size=13))
+estilo(fig).update_layout(showlegend=True, margin=dict(r=140))
+fig.add_hline(y=100, line=dict(color=GRIS, width=1, dash="dot"))
+fig.update_xaxes(dtick=1, range=[A0 - 0.3, A1 + 0.3])
+fig.show(config=CONFIG)
+```
+
+Mientras los vínculos permanentes crecieron `{python} pct(crec_perm)` entre `{python} A0` y `{python} A1`, los contratados aumentaron `{python} pct(crec_contr)`. Medido en vínculos promedio, de cada 100 nuevos vínculos, unos `{python} f"{parte_contr:.0f}"` fueron contratos. Como resultado, la proporción de contratados pasó de `{python} pct(a0.pct_contratado)` a `{python} pct(a1.pct_contratado)` del total.
+
+```{python}
+#| label: fig-proporcion
+#| fig-cap: "Proporción de contratados en el total de vínculos (promedio mensual de cada año)"
+fig = go.Figure(go.Scatter(
+    x=s.anho, y=s.pct_contratado, mode="lines+markers",
+    line=dict(color=NARANJA, width=2.5), marker=dict(size=8, line=dict(width=2, color="#fcfcfb")),
+    hovertemplate="%{x}: <b>%{y:.1f}%</b> contratados<extra></extra>",
+))
+estilo(fig, alto=320).update_layout(hovermode="closest")
+fig.update_yaxes(ticksuffix="%", range=[0, 30])
+fig.update_xaxes(dtick=1)
+fig.show(config=CONFIG)
+```
+
+El salto más fuerte se dio entre 2020 y 2022, cuando la proporción de contratados subió casi cuatro puntos. Desde entonces se mantiene cerca de una cuarta parte del total.
+
+## ¿Dónde creció la dotación?
+
+```{python}
+#| label: fig-nivel
+#| fig-cap: "Variación de personas distintas por nivel institucional, 2017–2024"
+p = nivel[nivel.anho.isin([A0, A1])].pivot(index="nivel_nombre", columns="anho",
+                                           values="personas_distintas_anio").fillna(0)
+p["dif"] = p[A1] - p[A0]
+p["var"] = (p[A1] / p[A0] - 1) * 100
+p = p[p[A0] >= 500].sort_values("dif")
+fig = go.Figure(go.Bar(
+    y=p.index, x=p.dif, orientation="h",
+    marker_color=[AZUL if v >= 0 else ROJO for v in p.dif], marker_line_width=0,
+    customdata=list(zip(p[A0], p[A1], p["var"])),
+    text=[("+" if v >= 0 else "−") + miles(abs(v)) for v in p.dif],
+    textposition="outside", textfont=dict(color="#77766f"), cliponaxis=False,
+    hovertemplate="<b>%{y}</b><br>" + f"{A0}: " + "%{customdata[0]:,.0f}<br>" + f"{A1}: " +
+                  "%{customdata[1]:,.0f}<br>Variación: %{customdata[2]:.1f}%<extra></extra>",
+))
+estilo(fig, alto=470).update_layout(hovermode="closest", margin=dict(l=10, r=60))
+fig.update_xaxes(range=[p.dif.min() - 4000, p.dif.max() * 1.15],
+                 showgrid=True, gridcolor="rgba(128,128,128,.18)", tickformat=",.0f", zeroline=True,
+                 zerolinecolor="rgba(128,128,128,.5)")
+fig.update_yaxes(showgrid=False)
+fig.show(config=CONFIG)
+```
+
+```{python}
+pe = p.loc["Poder Ejecutivo"]; pl = p.loc["Poder Legislativo"]; ss = p.loc["Seguridad social"]
+parte_pe = pe.dif / p.dif.sum() * 100
+```
+
+El **Poder Ejecutivo**, que concentra a la mayoría del personal (ministerios, hospitales, escuelas y demás organismos de la administración central), sumó `{python} miles(pe.dif)` personas y explica el `{python} pct(parte_pe, 0)` del crecimiento total. En términos relativos, sobresalen la **seguridad social** (+`{python} pct(ss['var'], 0)`) y el **Poder Legislativo** (+`{python} pct(pl['var'], 0)`). En cambio, las empresas públicas, las sociedades anónimas con participación estatal, los gobiernos departamentales y el Banco Central tienen hoy menos personas que en 2017.
+
+## Qué sigue
+
+Esta nota complementa la [Radiografía del empleo público](../2026-10-02-radiografia-empleo-publico/), que mide **vínculos** mes a mes hasta agosto de 2026. Aquí contamos **personas distintas**, una medida que hoy solo está disponible hasta mayo de 2025. En las próximas notas vamos a pasar de las personas al dinero: cuánto creció la **masa salarial** en términos reales y qué parte se explica por más personas y qué parte por mayores salarios.
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SICCA y SINARH (resumen de personas y vínculos por año y OEE, 2015–2025). 2015 se excluye de las comparaciones por un cambio de cobertura en mayo de ese año; 2025 incluye datos hasta `{python} MESES[mes25-1]`. Ver [metodología](/metodologia.qmd) y [descargar los datos](/datos/).
+:::

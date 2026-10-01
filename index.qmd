@@ -1,0 +1,16 @@
+---
+title: "Pulso del Estado"
+subtitle: "Datos y análisis sobre el capital humano del sector público paraguayo: cuántas personas trabajan en el Estado, cuánto cuesta y cómo cambia."
+listing:
+  contents: posts
+  sort: "date desc"
+  type: default
+  categories: true
+  sort-ui: false
+  filter-ui: false
+  feed: true
+  date-format: "D [de] MMMM, YYYY"
+page-layout: full
+title-block-banner: true
+toc: false
+---

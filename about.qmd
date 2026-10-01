@@ -1,0 +1,22 @@
+---
+title: "Acerca de"
+toc: false
+---
+
+**Pulso del Estado** es un espacio independiente de análisis de datos sobre el **capital humano del sector público paraguayo**: cuántas personas trabajan en el Estado, en qué instituciones, bajo qué vínculos, cuánto cuesta la masa salarial y cómo evoluciona en el tiempo.
+
+## Qué vas a encontrar
+
+- **SITUCAP**, la *Situación del Capital Humano Público*: un reporte periódico sobre dotación y masa salarial.
+- **Notas de análisis** sobre temas específicos: salud, educación, fuerzas públicas, servicio civil, contratados y permanentes, género, personas con discapacidad, salarios públicos y privados.
+- **Datos abiertos y reproducibles**: cada cifra publicada se puede descargar y cada análisis tiene su código disponible en [GitHub](https://github.com/pulsoestado).
+
+## Principios
+
+1. **Fuentes oficiales y citadas.** Trabajamos con registros administrativos públicos (SICCA, SINARH, presupuesto) y con estadísticas del INE, el BCP y otros organismos.
+2. **Reproducibilidad.** Los datos procesados y el código están publicados para que cualquiera pueda verificar los resultados.
+3. **Claridad antes que espectacularidad.** Explicamos qué miden los datos y qué no.
+
+## Contacto
+
+Escribinos a [pulsoestado@gmail.com](mailto:pulsoestado@gmail.com) o seguinos en [X](https://x.com/pulsoestadopy) e [Instagram](https://instagram.com/pulsoestado).

@@ -1,0 +1,22 @@
+---
+title: "SITUCAP"
+subtitle: "Situación del Capital Humano Público"
+toc: false
+---
+
+**SITUCAP** es el reporte periódico de Pulso del Estado sobre la dotación de personal y la masa salarial del sector público paraguayo.
+
+::: {.en-breve}
+**Próximamente: la primera edición.** Mientras tanto, podés leer la [Radiografía del empleo público](/posts/2026-10-02-radiografia-empleo-publico/), con datos a agosto de 2026.
+:::
+
+## Qué responde cada edición
+
+- **Dotación.** ¿Cuántas personas distintas cobran del Estado? ¿Cuántas ingresan y cuántas salen? ¿Cómo se reparten entre permanentes y contratados, por institución y por sector?
+- **Masa salarial.** ¿Cuánto crece, en términos nominales y reales (descontando la inflación)? ¿Qué parte del crecimiento se explica por **más personas** y qué parte por **mayores salarios**?
+- **Componentes.** Remuneraciones básicas, bonificaciones, gastos de representación, antigüedad, ascensos y otros conceptos.
+- **Comparaciones.** Salud, educación, fuerzas públicas y servicio civil; brechas de género; inclusión de personas con discapacidad.
+
+## Fuentes
+
+Registros administrativos del Sistema Integrado Centralizado de la Carrera Administrativa (SICCA) y del Sistema Nacional de Recursos Humanos (SINARH), complementados con datos de presupuesto, del Banco Central del Paraguay (IPC) y del Instituto Nacional de Estadística. Ver la [metodología](/metodologia.qmd).

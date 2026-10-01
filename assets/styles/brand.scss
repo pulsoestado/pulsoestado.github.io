@@ -1,0 +1,53 @@
+/*-- scss:defaults --*/
+// Identidad visual de Pulso del Estado
+$pulso-navy:   #0f2a44;
+$pulso-orange: #eb6834;
+$pulso-blue:   #2a78d6;
+$pulso-ink:    #1b1b1a;
+$pulso-muted:  #5f5e5a;
+$pulso-paper:  #fcfcfb;
+
+$primary:   $pulso-blue !default;
+$body-bg:   $pulso-paper !default;
+$body-color: $pulso-ink !default;
+$link-color: $pulso-blue !default;
+
+$navbar-bg: $pulso-navy !default;
+$navbar-fg: #ffffff;
+$navbar-hl: #ffd2bf;
+$footer-bg: $pulso-paper !default;
+
+$font-family-sans-serif: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+$headings-font-family: "Source Serif 4", Georgia, serif;
+$headings-font-weight: 700;
+$font-size-root: 17px;
+$line-height-base: 1.65;
+
+/*-- scss:rules --*/
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&display=swap');
+
+.navbar-brand .navbar-title { font-family: $headings-font-family; font-weight: 700; letter-spacing: .2px; }
+.navbar-logo { max-height: 30px; }
+
+h1.title, .quarto-title h1 { letter-spacing: -.3px; }
+.quarto-title-meta-heading { text-transform: uppercase; font-size: .72rem; letter-spacing: .08em; }
+
+// Tarjetas de cifras destacadas
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 14px; margin: 1.5rem 0 2rem; }
+.kpi { border: 1px solid rgba(15,42,68,.12); border-radius: 10px; padding: 14px 16px; background: rgba(255,255,255,.6); }
+.kpi .valor { font-family: $headings-font-family; font-size: 2rem; font-weight: 700; line-height: 1.1; color: $pulso-navy; }
+.kpi .etiqueta { font-size: .82rem; color: $pulso-muted; margin-top: 4px; }
+
+// Bloque de “en breve”
+.en-breve { border-left: 4px solid $pulso-orange; padding: .6rem 1rem; background: rgba(235,104,52,.06); border-radius: 0 8px 8px 0; margin: 1.2rem 0 1.8rem; }
+.en-breve p:last-child, .en-breve ul:last-child { margin-bottom: 0; }
+
+// Página de enlaces (link in bio)
+.enlaces { max-width: 520px; margin: 1rem auto; }
+.enlaces a.btn-enlace { display: block; text-align: center; padding: 14px 18px; margin: 10px 0; border-radius: 12px;
+  border: 1.5px solid $pulso-navy; color: $pulso-navy; font-weight: 600; text-decoration: none; transition: all .15s; }
+.enlaces a.btn-enlace:hover { background: $pulso-navy; color: #fff; }
+.enlaces a.btn-enlace.destacado { background: $pulso-orange; border-color: $pulso-orange; color: #fff; }
+
+.fuente { font-size: .82rem; color: $pulso-muted; }
+.listing-categories .listing-category { border-radius: 999px; }

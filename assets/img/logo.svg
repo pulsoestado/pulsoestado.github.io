@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" role="img" aria-label="Pulso del Estado">
+  <rect x="2" y="2" width="60" height="60" rx="14" fill="#ffffff"/>
+  <rect x="6" y="6" width="52" height="52" rx="11" fill="#0f2a44"/>
+  <polyline points="10,36 22,36 27,24 33,46 39,18 44,36 54,36" fill="none" stroke="#eb6834" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

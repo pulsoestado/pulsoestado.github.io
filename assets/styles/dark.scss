@@ -1,0 +1,15 @@
+/*-- scss:defaults --*/
+$body-bg: #141a21;
+$body-color: #e9e8e3;
+$link-color: #6da7ec;
+$primary: #6da7ec;
+$navbar-bg: #0b1520;
+$footer-bg: #141a21;
+
+/*-- scss:rules --*/
+.kpi { border-color: rgba(255,255,255,.12); background: rgba(255,255,255,.03); }
+.kpi .valor { color: #ffffff; }
+.kpi .etiqueta, .fuente { color: #b9b8b1; }
+.en-breve { background: rgba(235,104,52,.10); }
+.enlaces a.btn-enlace { border-color: #e9e8e3; color: #e9e8e3; }
+.enlaces a.btn-enlace:hover { background: #e9e8e3; color: #141a21; }

@@ -1,0 +1,17 @@
+---
+title: "Pulso del Estado"
+subtitle: "Datos y análisis sobre el empleo público y la masa salarial en Paraguay"
+toc: false
+page-layout: article
+title-block-banner: false
+search: false
+---
+
+::: {.enlaces}
+<a class="btn-enlace destacado" href="/posts/2026-10-02-radiografia-empleo-publico/?utm_source=instagram&utm_medium=bio&utm_campaign=enlaces">📊 Último análisis: Radiografía del empleo público</a>
+<a class="btn-enlace" href="/?utm_source=instagram&utm_medium=bio&utm_campaign=enlaces">Todos los análisis</a>
+<a class="btn-enlace" href="/situcap/?utm_source=instagram&utm_medium=bio&utm_campaign=enlaces">SITUCAP · Situación del Capital Humano Público</a>
+<a class="btn-enlace" href="/datos/?utm_source=instagram&utm_medium=bio&utm_campaign=enlaces">Descargar datos</a>
+<a class="btn-enlace" href="https://x.com/pulsoestadopy">Seguinos en X</a>
+<a class="btn-enlace" href="mailto:pulsoestado@gmail.com">Contacto</a>
+:::

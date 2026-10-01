@@ -1,0 +1,698 @@
+anho,codigo_nivel,codigo_entidad,codigo_oee,descripcion_oee,agrupacion,sector,contratado,permanente
+2025,11,1,1,001-CONGRESO NACIONAL,I - Administración Central,Resto del sector público,157,767
+2025,11,2,1,002-CAMARA DE SENADORES,I - Administración Central,Resto del sector público,279,932
+2025,11,3,1,003-CAMARA DE DIPUTADOS,I - Administración Central,Resto del sector público,579,1627
+2025,12,1,1,1-GABINETE CIVIL,I - Administración Central,Resto del sector público,89,167
+2025,12,1,2,2-GABINETE MILITAR,I - Administración Central,Resto del sector público,2,17
+2025,12,1,11,11-SECRETARIA NACIONAL ANTIDROGAS,I - Administración Central,Resto del sector público,10,439
+2025,12,1,12,12-CONSEJO DE LA DEFENSA NACIONAL,I - Administración Central,Resto del sector público,0,12
+2025,12,1,14,14-SRIA.DE DESARROLLO P/ REPATRIADOS Y REFUGIADOS CONNACIONALES,I - Administración Central,Resto del sector público,40,87
+2025,12,1,15,15-PROCURADURIA GENERAL DE LA REPUBLICA,I - Administración Central,Resto del sector público,3,106
+2025,12,1,17,17-SECRETARIA DE EMERGENCIA NACIONAL,I - Administración Central,Resto del sector público,88,95
+2025,12,1,18,18-SECRETARIA NACIONAL DE TURISMO,I - Administración Central,Resto del sector público,88,155
+2025,12,1,20,20-AUDITORIA GENERAL DEL PODER EJECUTIVO,I - Administración Central,Resto del sector público,4,62
+2025,12,1,21,21-SECRETARIA NACIONAL DE CULTURA,I - Administración Central,Resto del sector público,30,179
+2025,12,1,23,23-SECRETARIA NACIONAL DE DEPORTES,I - Administración Central,Resto del sector público,18,92
+2025,12,1,29,29-SECRETARIA DE POLITICAS LINGUISTICAS,I - Administración Central,Resto del sector público,2,38
+2025,12,1,30,30-SEC. NAC.POR LOS DDHH DE LAS PERS.CON DISCAPACIDAD (SENADIS),I - Administración Central,Resto del sector público,83,384
+2025,12,1,36,36-SECRETARIA DE PREVENCION DE LAVADO DE DINERO O BIENES,I - Administración Central,Resto del sector público,4,67
+2025,12,1,38,38-CONSEJO NACIONAL DE CIENCIA Y TECNOLOGIA,I - Administración Central,Resto del sector público,26,41
+2025,12,1,40,40-ESCRIBANIA MAYOR DE GOBIERNO,I - Administración Central,Resto del sector público,1,25
+2025,12,1,50,50-AGENCIA ESPACIAL DEL PARAGUAY,I - Administración Central,Resto del sector público,0,21
+2025,12,1,51,51-SECRETARIA NACIONAL DE LA JUVENTUD,I - Administración Central,Resto del sector público,9,19
+2025,12,1,54,54-SECRETARIA NAC. DE ADM. DE BIENES INCAUTADOS Y COMISADOS,I - Administración Central,Resto del sector público,3,17
+2025,12,1,56,56-ORQUESTA SINFONICA NACIONAL,I - Administración Central,Resto del sector público,39,49
+2025,12,1,57,57-ORQUESTA NACIONAL DE MUSICA POPULAR,I - Administración Central,Resto del sector público,37,18
+2025,12,2,1,002-VICEPRESIDENCIA DE LA REPUBLICA,I - Administración Central,Resto del sector público,7,67
+2025,12,3,1,003-MINISTERIO DEL INTERIOR,I - Administración Central,Resto del sector público,17,271
+2025,12,3,2,025-POLICIA NACIONAL,I - Administración Central,Policía Nacional,373,38568
+2025,12,4,1,004-MINISTERIO DE RELACIONES EXTERIORES,I - Administración Central,Resto del sector público,260,850
+2025,12,5,1,005-MINISTERIO DE DEFENSA NACIONAL,I - Administración Central,Defensa Nacional,183,21493
+2025,12,6,1,006-MINISTERIO DE ECONOMIA Y FINANZAS,I - Administración Central,Resto del sector público,277,1161
+2025,12,7,1,007-MINISTERIO DE EDUCACION Y CIENCIAS,I - Administración Central,Educación (MEC),124,83456
+2025,12,8,1,008-MINISTERIO DE SALUD PUBLICA Y BIENESTAR SOCIAL,I - Administración Central,Salud (MSPBS),34884,27206
+2025,12,9,1,009-MINISTERIO DE JUSTICIA,I - Administración Central,Resto del sector público,2143,2415
+2025,12,10,1,010-MINISTERIO DE AGRICULTURA Y GANADERIA,I - Administración Central,Resto del sector público,826,1598
+2025,12,11,1,011-MINISTERIO DE INDUSTRIA Y COMERCIO,I - Administración Central,Resto del sector público,43,315
+2025,12,13,1,013-MINISTERIO DE OBRAS PUBLICAS Y COMUNICACIONES,I - Administración Central,Resto del sector público,389,3016
+2025,12,14,1,014-MINISTERIO DE LA MUJER,I - Administración Central,Resto del sector público,69,94
+2025,12,16,1,"016-MINISTERIO DEL TRABAJO, EMPLEO Y SEGURIDAD SOCIAL",I - Administración Central,Resto del sector público,1483,904
+2025,12,17,1,017-MINISTERIO DEL AMBIENTE Y DESARROLLO SOSTENIBLE,I - Administración Central,Resto del sector público,81,316
+2025,12,18,1,018-MINISTERIO DE DESARROLLO SOCIAL,I - Administración Central,Resto del sector público,1014,274
+2025,12,19,1,019-MINISTERIO DE URBANISMO VIVIENDA Y HABITAT,I - Administración Central,Resto del sector público,158,475
+2025,12,20,1,020-MINISTERIO DE LA NIÑEZ Y LA ADOLESCENCIA,I - Administración Central,Resto del sector público,243,504
+2025,12,21,1,021-MINISTERIO DE TECNOLOGIAS DE LA INFORMACION Y COMUNICACION,I - Administración Central,Resto del sector público,170,222
+2025,13,1,1,001-CORTE SUPREMA DE JUSTICIA,I - Administración Central,Resto del sector público,9,11968
+2025,13,2,1,002-JUSTICIA ELECTORAL,I - Administración Central,Resto del sector público,1395,5410
+2025,13,3,1,003-MINISTERIO PUBLICO,I - Administración Central,Resto del sector público,553,5644
+2025,13,4,1,004-CONSEJO DE LA MAGISTRATURA,I - Administración Central,Resto del sector público,73,158
+2025,13,5,1,005-JURADO DE ENJUICIAMIENTO DE MAGISTRADOS,I - Administración Central,Resto del sector público,47,246
+2025,13,6,1,006-MINISTERIO DE LA DEFENSA PUBLICA,I - Administración Central,Resto del sector público,569,2266
+2025,13,7,1,007-SINDICATURA GENERAL DE QUIEBRAS,I - Administración Central,Resto del sector público,23,75
+2025,14,1,1,001-CONTRALORIA GENERAL DE LA REPUBLICA,I - Administración Central,Resto del sector público,73,927
+2025,15,1,1,001-DEFENSORIA DEL PUEBLO,I - Administración Central,Resto del sector público,71,112
+2025,15,2,1,002-MECANISMO NACIONAL DE PREVENCION CONTRA LA TORTURA,I - Administración Central,Resto del sector público,2,28
+2025,21,1,1,BANCO CENTRAL DEL PARAGUAY,II - Administración Descentralizada,Resto del sector público,26,762
+2025,22,1,1,I DEPARTAMENTO: GOBERNACION DE CONCEPCION,II - Administración Descentralizada,Resto del sector público,57,73
+2025,22,2,1,II DEPARTAMENTO: GOBERNACION DE SAN PEDRO,II - Administración Descentralizada,Resto del sector público,90,41
+2025,22,4,1,IV DEPARTAMENTO: GOBERNACION DE GUAIRA,II - Administración Descentralizada,Resto del sector público,118,88
+2025,22,5,1,V DEPARTAMENTO: GOBERNACION DE CAAGUAZU,II - Administración Descentralizada,Resto del sector público,129,99
+2025,22,6,1,VI DEPARTAMENTO: GOBERNACION DE CAAZAPA,II - Administración Descentralizada,Resto del sector público,31,53
+2025,22,7,1,VII DEPARTAMENTO: GOBERNACION DE ITAPUA,II - Administración Descentralizada,Resto del sector público,90,127
+2025,22,8,1,VIII DEPARTAMENTO: GOBERNACION DE MISIONES,II - Administración Descentralizada,Resto del sector público,10,100
+2025,22,9,1,GOBIERNO DEPARTAMENTAL DE PARAGUARI,II - Administración Descentralizada,Resto del sector público,70,91
+2025,22,10,1,X DEPARTAMENTO: GOBERNACION DE ALTO PARANA,II - Administración Descentralizada,Resto del sector público,153,98
+2025,22,11,1,GOBIERNO DEPARTAMENTAL DE CENTRAL,II - Administración Descentralizada,Resto del sector público,44,111
+2025,22,12,1,XII DEPARTAMENTO: GOBERNACION DE ÑEEMBUCU,II - Administración Descentralizada,Resto del sector público,33,81
+2025,22,13,1,XIII DEPARTAMENTO: GOBERNACION DE AMAMBAY,II - Administración Descentralizada,Resto del sector público,84,50
+2025,22,14,1,XIV DEPARTAMENTO: GOBERNACION DE CANINDEYU,II - Administración Descentralizada,Resto del sector público,33,48
+2025,22,15,1,XV DEPARTAMENTO: GOBERNACION DE PRESIDENTE HAYES,II - Administración Descentralizada,Resto del sector público,93,48
+2025,22,16,1,XVI DEPARTAMENTO: GOBERNACION DE BOQUERON,II - Administración Descentralizada,Resto del sector público,80,75
+2025,22,17,1,XVII DEPARTAMENTO: GOBERNACION DE ALTO PARAGUAY,II - Administración Descentralizada,Resto del sector público,0,46
+2025,23,1,1,INSTITUTO NACIONAL DE TECNOLOGIA Y NORMALIZACION,II - Administración Descentralizada,Resto del sector público,82,227
+2025,23,3,1,INSTITUTO NACIONAL DE DESARROLLO RURAL Y DE LA TIERRA,II - Administración Descentralizada,Resto del sector público,80,404
+2025,23,4,1,DIRECCION DE BENEFICENCIA Y AYUDA SOCIAL,II - Administración Descentralizada,Resto del sector público,31,69
+2025,23,6,1,INSTITUTO NACIONAL DEL INDIGENA,II - Administración Descentralizada,Resto del sector público,19,54
+2025,23,8,1,FONDO NACIONAL DE LA CULTURA Y LAS ARTES,II - Administración Descentralizada,Resto del sector público,5,17
+2025,23,10,1,COMISION NACIONAL DE TELECOMUNICACIONES,II - Administración Descentralizada,Resto del sector público,23,265
+2025,23,11,1,DIRECCION NACIONAL DE TRANSPORTE,II - Administración Descentralizada,Resto del sector público,66,278
+2025,23,13,1,ENTE REGULADOR DE SERVICIOS SANITARIOS,II - Administración Descentralizada,Resto del sector público,54,52
+2025,23,14,1,INSTITUTO NACIONAL DE COOPERATIVISMO,II - Administración Descentralizada,Resto del sector público,51,124
+2025,23,16,1,SERVICIO NACIONAL DE CALIDAD Y SALUD ANIMAL,II - Administración Descentralizada,Resto del sector público,86,1247
+2025,23,17,1,INSTITUTO PARAGUAYO DE ARTESANIA,II - Administración Descentralizada,Resto del sector público,8,61
+2025,23,18,1,SERVICIO NACIONAL DE CALIDAD VEGETAL Y DE SEMILLA,II - Administración Descentralizada,Resto del sector público,65,452
+2025,23,19,1,DIRECCION NACIONAL DE CONTRATACIONES PUBLICAS,II - Administración Descentralizada,Resto del sector público,79,158
+2025,23,20,1,INSTITUTO FORESTAL NACIONAL,II - Administración Descentralizada,Resto del sector público,33,328
+2025,23,22,1,INSTITUTO PARAGUAYO DE TECNOLOGIA AGRARIA,II - Administración Descentralizada,Resto del sector público,150,375
+2025,23,24,1,DIRECCION NACIONAL DE CORREOS DEL PARAGUAY,II - Administración Descentralizada,Resto del sector público,57,729
+2025,23,25,1,DIRECCION NACIONAL DE PROPIEDAD INTELECTUAL,II - Administración Descentralizada,Resto del sector público,8,116
+2025,23,26,1,SECRETARIA DE DEFENSA DEL CONSUMIDOR Y EL USUARIO,II - Administración Descentralizada,Resto del sector público,0,27
+2025,23,27,1,COMISION NACIONAL DE LA COMPETENCIA,II - Administración Descentralizada,Resto del sector público,3,25
+2025,23,28,1,AGENCIA NACIONAL DE TRANSITO Y SEGURIDAD VIAL,II - Administración Descentralizada,Resto del sector público,16,20
+2025,23,29,1,CONSEJO NACIONAL DE EDUCACION SUPERIOR,II - Administración Descentralizada,Resto del sector público,1,26
+2025,23,30,1,AGENCIA NACIONAL DE EVALUACION Y ACREDITACION DE LA EDUCACION SUPERIOR,II - Administración Descentralizada,Resto del sector público,5,35
+2025,23,31,1,AUTORIDAD REGULADORA RADIOLOGICA Y NUCLEAR,II - Administración Descentralizada,Resto del sector público,0,30
+2025,23,32,1,SECRETARIA NACIONAL DE INTELIGENCIA,II - Administración Descentralizada,Resto del sector público,3,24
+2025,23,33,1,INSTITUTO SUPERIOR DE BELLAS ARTES,II - Administración Descentralizada,Resto del sector público,13,183
+2025,23,34,1,INSTITUTO NACIONAL DE EDUCACION SUPERIOR,II - Administración Descentralizada,Resto del sector público,101,209
+2025,23,35,1,"DIRECCION NACIONAL DE DEFENSA, SALUD Y BIENESTAR ANIMAL",II - Administración Descentralizada,Resto del sector público,17,9
+2025,23,36,1,INSTITUTO NACIONAL DE ESTADISTICAS,II - Administración Descentralizada,Resto del sector público,411,147
+2025,23,37,1,INSTITUTO NACIONAL DEL AUDIOVISUAL  PARAGUAYO,II - Administración Descentralizada,Resto del sector público,0,5
+2025,23,38,1,DIRECCION NACIONAL DE VIGILANCIA SANITARIA,II - Administración Descentralizada,Resto del sector público,76,145
+2025,23,39,1,DIRECCION NACIONAL DE MIGRACIONES,II - Administración Descentralizada,Resto del sector público,291,221
+2025,23,40,1,DIRECCION NACIONAL DE INGRESOS TRIBUTARIOS,II - Administración Descentralizada,Resto del sector público,141,1726
+2025,24,1,1,INSTITUTO DE PREVISION SOCIAL,II - Administración Descentralizada,Resto del sector público,12856,12583
+2025,24,2,1,CAJA DE SEGURIDAD SOCIAL DE EMPLEADOS Y OBREROS FERROVIARIOS,II - Administración Descentralizada,Resto del sector público,0,12
+2025,24,4,1,CAJA DE JUBILACIONES Y PENSIONES DE EMPLEADOS BANCARIOS,II - Administración Descentralizada,Resto del sector público,19,114
+2025,24,5,1,CAJA DE JUBILACIONES Y PENSIONES DEL PERSONAL MUNICIPAL,II - Administración Descentralizada,Resto del sector público,33,137
+2025,25,2,1,ADMINISTRACION NACIONAL DE ELECTRICIDAD,II - Administración Descentralizada,Resto del sector público,679,4182
+2025,25,4,1,ADMINISTRACION NACIONAL DE NAVEGACION Y PUERTOS,II - Administración Descentralizada,Resto del sector público,101,1034
+2025,25,5,1,DIRECCION NACIONAL DE AERONAUTICA CIVIL,II - Administración Descentralizada,Resto del sector público,557,1437
+2025,25,6,1,PETROLEOS PARAGUAYOS,II - Administración Descentralizada,Resto del sector público,242,514
+2025,25,7,1,INDUSTRIA NACIONAL DEL CEMENTO,II - Administración Descentralizada,Resto del sector público,243,636
+2025,27,1,1,BANCO NACIONAL DE FOMENTO (BNF),II - Administración Descentralizada,Resto del sector público,161,1494
+2025,27,3,1,CREDITO AGRICOLA DE HABILITACION,II - Administración Descentralizada,Resto del sector público,42,381
+2025,27,5,1,CAJA DE PRESTAMOS DEL MINISTERIO DE DEFENSA NACIONAL,II - Administración Descentralizada,Defensa Nacional,1,2
+2025,27,7,1,AGENCIA FINANCIERA DE DESARROLLO,II - Administración Descentralizada,Resto del sector público,3,104
+2025,28,1,1,UNIVERSIDAD NACIONAL DE ASUNCION,II - Administración Descentralizada,Resto del sector público,2074,14198
+2025,28,2,1,UNIVERSIDAD NACIONAL DEL ESTE,II - Administración Descentralizada,Resto del sector público,154,1584
+2025,28,3,1,UNIVERSIDAD NACIONAL DE PILAR,II - Administración Descentralizada,Resto del sector público,45,793
+2025,28,4,1,UNIVERSIDAD NACIONAL DE ITAPUA,II - Administración Descentralizada,Resto del sector público,107,1102
+2025,28,5,1,UNIVERSIDAD NACIONAL DE CONCEPCION,II - Administración Descentralizada,Resto del sector público,19,641
+2025,28,6,1,UNIVERSIDAD NACIONAL DE VILLARRICA DEL ESPIRITU SANTO,II - Administración Descentralizada,Resto del sector público,26,1531
+2025,28,7,1,UNIVERSIDAD NACIONAL DE CAAGUAZU,II - Administración Descentralizada,Resto del sector público,16,1133
+2025,28,8,1,UNIVERSIDAD NACIONAL DE CANINDEYU,II - Administración Descentralizada,Resto del sector público,0,123
+2025,28,9,1,UNIVERSIDAD POLITECNICA TAIWAN-PARAGUAY,II - Administración Descentralizada,Resto del sector público,1,30
+2025,28,10,1,UNIVERSIDAD NACIONAL DE MISIONES,II - Administración Descentralizada,Resto del sector público,6,267
+2025,30,1,2,MUNICIPALIDAD DE CONCEPCION,III - Municipalidades,Resto del sector público,304,57
+2025,30,1,3,MUNICIPALIDAD DE  BELEN,III - Municipalidades,Resto del sector público,38,10
+2025,30,1,4,MUNICIPALIDAD DE HORQUETA,III - Municipalidades,Resto del sector público,53,21
+2025,30,1,5,MUNICIPALIDAD DE LORETO,III - Municipalidades,Resto del sector público,25,16
+2025,30,1,6,MUNICIPALIDAD DE SAN LAZARO,III - Municipalidades,Resto del sector público,27,28
+2025,30,1,7,MUNICIPALIDAD DE YBYYAU,III - Municipalidades,Resto del sector público,0,17
+2025,30,1,237,MUNICIPALIDAD DE SAN CARLOS DEL APA,III - Municipalidades,Resto del sector público,20,11
+2025,30,1,238,MUNICIPALIDAD DE AZOTEY,III - Municipalidades,Resto del sector público,27,14
+2025,30,1,241,MUNICIPALIDAD DE SARGENTO JOSE FELIX LOPEZ,III - Municipalidades,Resto del sector público,11,12
+2025,30,1,249,MUNICIPALIDAD DE SAN ALFREDO,III - Municipalidades,Resto del sector público,9,11
+2025,30,1,257,MUNICIPALIDAD DE PASO HORQUETA,III - Municipalidades,Resto del sector público,18,19
+2025,30,1,263,MUNICIPALIDAD DE ITACUA,III - Municipalidades,Resto del sector público,0,13
+2025,30,1,524,MUNICIPALIDAD DE ARROYITO,III - Municipalidades,Resto del sector público,8,12
+2025,30,2,8,MUNICIPALIDAD DE SAN PEDRO DEL YCUAMANDIYU,III - Municipalidades,Resto del sector público,71,17
+2025,30,2,10,MUNICIPALIDAD DE CHORE,III - Municipalidades,Resto del sector público,32,23
+2025,30,2,11,MUNICIPALIDAD DE GRAL.ELIZARDO AQUINO,III - Municipalidades,Resto del sector público,15,22
+2025,30,2,12,MUNICIPALIDAD DE ITACURUBI  DEL ROSARIO,III - Municipalidades,Resto del sector público,19,10
+2025,30,2,13,MUNICIPALIDAD DE LIMA,III - Municipalidades,Resto del sector público,34,14
+2025,30,2,14,MUNICIPALIDAD DE NUEVA GERMANIA,III - Municipalidades,Resto del sector público,12,12
+2025,30,2,15,MUNICIPALIDAD DE SAN ESTANISLAO,III - Municipalidades,Resto del sector público,63,31
+2025,30,2,16,MUNICIPALIDAD DE YRYBUCUA,III - Municipalidades,Resto del sector público,33,13
+2025,30,2,17,MUNICIPALIDAD DE SAN PABLO,III - Municipalidades,Resto del sector público,15,12
+2025,30,2,18,MUNICIPALIDAD DE TACUATI,III - Municipalidades,Resto del sector público,17,13
+2025,30,2,19,MUNICIPALIDAD DE UNION,III - Municipalidades,Resto del sector público,23,14
+2025,30,2,20,MUNICIPALIDAD DE 25 DE DICIEMBRE,III - Municipalidades,Resto del sector público,35,13
+2025,30,2,22,MUNICIPALIDAD DE GRAL. F. RESQUIN,III - Municipalidades,Resto del sector público,32,12
+2025,30,2,23,MUNICIPALIDAD DE YATAITY DEL NORTE,III - Municipalidades,Resto del sector público,21,13
+2025,30,2,24,MUNICIPALIDAD DE GUAJAYVI,III - Municipalidades,Resto del sector público,48,10
+2025,30,2,25,MUNICIPALIDAD DE CAPIIBARY,III - Municipalidades,Resto del sector público,44,16
+2025,30,2,26,MUNICIPALIDAD DE SANTA ROSA DEL AGUARAY,III - Municipalidades,Resto del sector público,47,20
+2025,30,2,239,MUNICIPALIDAD DE LIBERACION,III - Municipalidades,Resto del sector público,53,14
+2025,30,2,260,MUNICIPALIDAD DE SAN JOSE DEL ROSARIO,III - Municipalidades,Resto del sector público,20,15
+2025,30,3,27,MUNICIPALIDAD DE CAACUPE,III - Municipalidades,Resto del sector público,205,55
+2025,30,3,28,MUNICIPALIDAD DE ALTOS,III - Municipalidades,Resto del sector público,60,20
+2025,30,3,29,MUNICIPALIDAD DE ARROYOS Y ESTEROS,III - Municipalidades,Resto del sector público,45,20
+2025,30,3,30,MUNICIPALIDAD DE ATYRA,III - Municipalidades,Resto del sector público,45,13
+2025,30,3,31,MUNICIPALIDAD DE CARAGUATAY,III - Municipalidades,Resto del sector público,27,28
+2025,30,3,32,MUNICIPALIDAD DE EMBOSCADA,III - Municipalidades,Resto del sector público,43,29
+2025,30,3,33,MUNICIPALIDAD DE EUSEBIO AYALA,III - Municipalidades,Resto del sector público,58,32
+2025,30,3,34,MUNICIPALIDAD DE ISLA PUCU,III - Municipalidades,Resto del sector público,29,13
+2025,30,3,35,MUNICIPALIDAD DE ITACURUBI DE LA CORDILLERA,III - Municipalidades,Resto del sector público,41,15
+2025,30,3,37,MUNICIPALIDAD DE LOMA GRANDE,III - Municipalidades,Resto del sector público,23,10
+2025,30,3,38,MUNICIPALIDAD DE MBOCAYATY DEL YHAGUY,III - Municipalidades,Resto del sector público,18,12
+2025,30,3,39,MUNICIPALIDAD DE NUEVA COLOMBIA,III - Municipalidades,Resto del sector público,24,13
+2025,30,3,40,MUNICIPALIDAD DE PIRIBEBUY,III - Municipalidades,Resto del sector público,32,37
+2025,30,3,42,MUNICIPALIDAD DE SAN BERNARDINO,III - Municipalidades,Resto del sector público,211,52
+2025,30,3,43,MUNICIPALIDAD DE SANTA ELENA,III - Municipalidades,Resto del sector público,26,13
+2025,30,3,44,MUNICIPALIDAD DE TOBATI,III - Municipalidades,Resto del sector público,59,18
+2025,30,3,45,MUNICIPALIDAD DE VALENZUELA,III - Municipalidades,Resto del sector público,4,23
+2025,30,3,46,MUNICIPALIDAD DE SAN JOSE OBRERO,III - Municipalidades,Resto del sector público,12,11
+2025,30,4,47,MUNICIPALIDAD DE VILLARRICA DEL ESPIRITU SANTO,III - Municipalidades,Resto del sector público,223,107
+2025,30,4,48,MUNICIPALIDAD DE BORJA,III - Municipalidades,Resto del sector público,10,11
+2025,30,4,49,MUNICIPALIDAD DE CAPITAN MAURICIO JOSE TROCHE,III - Municipalidades,Resto del sector público,28,7
+2025,30,4,50,MUNICIPALIDAD DE CORONEL MARTINEZ,III - Municipalidades,Resto del sector público,34,11
+2025,30,4,51,MUNICIPALIDAD DE FELIX PEREZ CARDOZO,III - Municipalidades,Resto del sector público,36,11
+2025,30,4,53,MUNICIPALIDAD DE INDEPENDENCIA,III - Municipalidades,Resto del sector público,49,14
+2025,30,4,54,MUNICIPALIDAD DE ITAPE,III - Municipalidades,Resto del sector público,27,12
+2025,30,4,55,MUNICIPALIDAD DE ITURBE,III - Municipalidades,Resto del sector público,23,16
+2025,30,4,56,MUNICIPALIDAD DE JOSE A. FASSARDI,III - Municipalidades,Resto del sector público,22,11
+2025,30,4,57,MUNICIPALIDAD DE MBOCAYATY DEL GUAIRA,III - Municipalidades,Resto del sector público,15,13
+2025,30,4,58,MUNICIPALIDAD DE NATALICIO TALAVERA,III - Municipalidades,Resto del sector público,33,11
+2025,30,4,59,MUNICIPALIDAD DE ÑUMI,III - Municipalidades,Resto del sector público,20,11
+2025,30,4,60,MUNICIPALIDAD DE SAN SALVADOR,III - Municipalidades,Resto del sector público,32,11
+2025,30,4,61,MUNICIPALIDAD DE YATAITY DEL GUAIRA,III - Municipalidades,Resto del sector público,32,14
+2025,30,4,62,MUNICIPALIDAD DE DR. BOTRELL,III - Municipalidades,Resto del sector público,29,12
+2025,30,4,63,MUNICIPALIDAD DE PASO YOBAI,III - Municipalidades,Resto del sector público,31,11
+2025,30,4,234,MUNICIPALIDAD DE TEBICUARY,III - Municipalidades,Resto del sector público,40,19
+2025,30,5,64,MUNICIPALIDAD DE CORONEL OVIEDO,III - Municipalidades,Resto del sector público,254,124
+2025,30,5,66,MUNICIPALIDAD DE CARAYAO,III - Municipalidades,Resto del sector público,24,13
+2025,30,5,67,MUNICIPALIDAD DE DR. CECILIO BAEZ,III - Municipalidades,Resto del sector público,8,12
+2025,30,5,68,MUNICIPALIDAD DE SANTA.ROSA DEL MBUTUY,III - Municipalidades,Resto del sector público,14,12
+2025,30,5,69,MUNICIPALIDAD DE DR. JUAN MANUEL FRUTOS,III - Municipalidades,Resto del sector público,41,19
+2025,30,5,70,MUNICIPALIDAD DE REPATRIACION,III - Municipalidades,Resto del sector público,40,17
+2025,30,5,71,MUNICIPALIDAD DE NUEVA LONDRES,III - Municipalidades,Resto del sector público,23,11
+2025,30,5,72,MUNICIPALIDAD DE SAN JOAQUIN,III - Municipalidades,Resto del sector público,19,13
+2025,30,5,73,MUNICIPALIDAD DE SAN JOSE DE LOS ARROYOS,III - Municipalidades,Resto del sector público,37,22
+2025,30,5,74,MUNICIPALIDAD DE YHU,III - Municipalidades,Resto del sector público,42,19
+2025,30,5,76,MUNICIPALIDAD DE R.I. 3 CORRALES,III - Municipalidades,Resto del sector público,33,12
+2025,30,5,77,MUNICIPALIDAD DE RAUL ARSENIO OVIEDO,III - Municipalidades,Resto del sector público,13,0
+2025,30,5,78,MUNICIPALIDAD DE JOSE DOMINGO OCAMPOS,III - Municipalidades,Resto del sector público,45,21
+2025,30,5,79,MUNICIPALIDAD DE MARISCAL FRANCISCO SOLANO LOPEZ,III - Municipalidades,Resto del sector público,19,22
+2025,30,5,81,MUNICIPALIDAD DE 3 DE FEBRERO,III - Municipalidades,Resto del sector público,22,12
+2025,30,5,82,MUNICIPALIDAD DE SIMON BOLIVAR,III - Municipalidades,Resto del sector público,22,12
+2025,30,5,83,MUNICIPALIDAD DE VAQUERIA,III - Municipalidades,Resto del sector público,8,12
+2025,30,5,233,MUNICIPALIDAD DE TEMBIAPORA,III - Municipalidades,Resto del sector público,23,15
+2025,30,5,243,MUNICIPALIDAD DE NUEVA TOLEDO,III - Municipalidades,Resto del sector público,21,12
+2025,30,6,84,MUNICIPALIDAD DE CAAZAPA,III - Municipalidades,Resto del sector público,51,32
+2025,30,6,85,MUNICIPALIDAD DE ABAI,III - Municipalidades,Resto del sector público,50,16
+2025,30,6,86,MUNICIPALIDAD DE BUENA VISTA,III - Municipalidades,Resto del sector público,19,16
+2025,30,6,87,MUNICIPALIDAD DE DR. MOISES BERTONI,III - Municipalidades,Resto del sector público,23,11
+2025,30,6,88,MUNICIPALIDAD DE GRAL.MORINIGO,III - Municipalidades,Resto del sector público,24,5
+2025,30,6,89,MUNICIPALIDAD DE MACIEL,III - Municipalidades,Resto del sector público,21,14
+2025,30,6,90,MUNICIPALIDAD DE SAN JUAN NEPOMUCENO,III - Municipalidades,Resto del sector público,58,23
+2025,30,6,91,MUNICIPALIDAD DE TAVAI,III - Municipalidades,Resto del sector público,17,11
+2025,30,6,92,MUNICIPALIDAD DE FULGENCIO YEGROS,III - Municipalidades,Resto del sector público,35,12
+2025,30,6,93,MUNICIPALIDAD DE YUTY,III - Municipalidades,Resto del sector público,51,26
+2025,30,7,94,MUNICIPALIDAD DE ENCARNACION,III - Municipalidades,Resto del sector público,1121,214
+2025,30,7,95,MUNICIPALIDAD DE BELLA VISTA,III - Municipalidades,Resto del sector público,53,24
+2025,30,7,96,MUNICIPALIDAD DE CAMBYRETA,III - Municipalidades,Resto del sector público,175,32
+2025,30,7,97,MUNICIPALIDAD DE CAPITAN MEZA,III - Municipalidades,Resto del sector público,53,28
+2025,30,7,98,MUNICIPALIDAD DE CAPITAN MIRANDA,III - Municipalidades,Resto del sector público,42,24
+2025,30,7,99,MUNICIPALIDAD DE NUEVA ALBORADA,III - Municipalidades,Resto del sector público,17,15
+2025,30,7,100,MUNICIPALIDAD DE CARMEN DEL PARANA,III - Municipalidades,Resto del sector público,67,22
+2025,30,7,101,MUNICIPALIDAD DE CORONEL BOGADO,III - Municipalidades,Resto del sector público,64,29
+2025,30,7,102,MUNICIPALIDAD DE CARLOS ANTONIO LOPEZ,III - Municipalidades,Resto del sector público,71,21
+2025,30,7,103,MUNICIPALIDAD DE NATALIO,III - Municipalidades,Resto del sector público,63,23
+2025,30,7,104,MUNICIPALIDAD DE FRAM,III - Municipalidades,Resto del sector público,40,32
+2025,30,7,105,MUNICIPALIDAD DE GENERAL ARTIGAS,III - Municipalidades,Resto del sector público,32,20
+2025,30,7,106,MUNICIPALIDAD DE GENERAL DELGADO,III - Municipalidades,Resto del sector público,14,11
+2025,30,7,107,MUNICIPALIDAD DE HOHENAU,III - Municipalidades,Resto del sector público,75,27
+2025,30,7,108,MUNICIPALIDAD DE JESUS,III - Municipalidades,Resto del sector público,25,19
+2025,30,7,109,MUNICIPALIDAD DE JOSE LEANDRO OVIEDO,III - Municipalidades,Resto del sector público,43,13
+2025,30,7,110,MUNICIPALIDAD DE OBLIGADO,III - Municipalidades,Resto del sector público,94,29
+2025,30,7,111,MUNICIPALIDAD DE MAYOR OTAÑO,III - Municipalidades,Resto del sector público,34,14
+2025,30,7,112,MUNICIPALIDAD DE SAN COSME Y SAN DAMIAN,III - Municipalidades,Resto del sector público,50,16
+2025,30,7,113,MUNICIPALIDAD DE SAN PEDRO DEL PARANA,III - Municipalidades,Resto del sector público,78,20
+2025,30,7,114,MUNICIPALIDAD DE SAN RAFAEL DEL PARANA,III - Municipalidades,Resto del sector público,86,20
+2025,30,7,115,MUNICIPALIDAD DE TRINIDAD,III - Municipalidades,Resto del sector público,16,23
+2025,30,7,116,MUNICIPALIDAD DE EDELIRA,III - Municipalidades,Resto del sector público,55,18
+2025,30,7,117,MUNICIPALIDAD DE TOMAS ROMERO PEREIRA,III - Municipalidades,Resto del sector público,98,19
+2025,30,7,118,MUNICIPALIDAD DE ALTO VERA,III - Municipalidades,Resto del sector público,28,18
+2025,30,7,119,MUNICIPALIDAD DE LA PAZ,III - Municipalidades,Resto del sector público,17,15
+2025,30,7,120,MUNICIPALIDAD DE YATYTAY,III - Municipalidades,Resto del sector público,42,17
+2025,30,7,121,MUNICIPALIDAD DE SAN JUAN DEL PARANA,III - Municipalidades,Resto del sector público,93,16
+2025,30,7,122,MUNICIPALIDAD DE PIRAPO,III - Municipalidades,Resto del sector público,47,22
+2025,30,7,123,MUNICIPALIDAD DE ITAPUA POTY,III - Municipalidades,Resto del sector público,23,24
+2025,30,8,124,MUNICIPALIDAD DE SAN JUAN BAUSTISTA DE LAS MISIONES,III - Municipalidades,Resto del sector público,57,30
+2025,30,8,125,MUNICIPALIDAD DE AYOLAS,III - Municipalidades,Resto del sector público,110,32
+2025,30,8,126,MUNICIPALIDAD DE SAN IGNACIO GUAZU,III - Municipalidades,Resto del sector público,130,42
+2025,30,8,127,MUNICIPALIDAD DE SAN MIGUEL MISIONES,III - Municipalidades,Resto del sector público,33,23
+2025,30,8,129,MUNICIPALIDAD DE SANTA MARIA,III - Municipalidades,Resto del sector público,25,20
+2025,30,8,130,MUNICIPALIDAD DE SANTA ROSA MISIONES,III - Municipalidades,Resto del sector público,82,19
+2025,30,8,131,MUNICIPALIDAD DE SANTIAGO,III - Municipalidades,Resto del sector público,37,18
+2025,30,8,132,MUNICIPALIDAD DE VILLA FLORIDA,III - Municipalidades,Resto del sector público,40,13
+2025,30,8,133,MUNICIPALIDAD DE YABEBYRY,III - Municipalidades,Resto del sector público,23,16
+2025,30,9,134,MUNICIPALIDAD DE PARAGUARI,III - Municipalidades,Resto del sector público,131,42
+2025,30,9,135,MUNICIPALIDAD DE ACAHAY,III - Municipalidades,Resto del sector público,22,12
+2025,30,9,136,MUNICIPALIDAD DE CAAPUCU,III - Municipalidades,Resto del sector público,0,18
+2025,30,9,137,MUNICIPALIDAD DE GENERAL CABALLERO,III - Municipalidades,Resto del sector público,33,12
+2025,30,9,138,MUNICIPALIDAD DE CARAPEGUA,III - Municipalidades,Resto del sector público,87,39
+2025,30,9,139,MUNICIPALIDAD DE ESCOBAR,III - Municipalidades,Resto del sector público,17,15
+2025,30,9,140,MUNICIPALIDAD DE LA COLMENA,III - Municipalidades,Resto del sector público,37,12
+2025,30,9,141,MUNICIPALIDAD DE MBUYAPEY,III - Municipalidades,Resto del sector público,21,15
+2025,30,9,142,MUNICIPALIDAD DE PIRAYU,III - Municipalidades,Resto del sector público,49,14
+2025,30,9,143,MUNICIPALIDAD DE QUIINDY,III - Municipalidades,Resto del sector público,49,27
+2025,30,9,144,MUNICIPALIDAD DE QUYQUYHO,III - Municipalidades,Resto del sector público,40,11
+2025,30,9,145,MUNICIPALIDAD DE SAN ROQUE GONZALEZ DE SANTA CRUZ,III - Municipalidades,Resto del sector público,16,14
+2025,30,9,146,MUNICIPALIDAD DE SAPUCAI,III - Municipalidades,Resto del sector público,13,15
+2025,30,9,147,MUNICIPALIDAD DE TEBICUARYMI,III - Municipalidades,Resto del sector público,18,12
+2025,30,9,148,MUNICIPALIDAD DE YAGUARON,III - Municipalidades,Resto del sector público,75,27
+2025,30,9,149,MUNICIPALIDAD DE YBYCUI,III - Municipalidades,Resto del sector público,44,20
+2025,30,9,150,MUNICIPALIDAD DE YBYTYMI,III - Municipalidades,Resto del sector público,19,10
+2025,30,10,151,MUNICIPALIDAD DE CIUDAD DEL ESTE,III - Municipalidades,Resto del sector público,1860,308
+2025,30,10,152,MUNICIPALIDAD DE PRESIDENTE FRANCO,III - Municipalidades,Resto del sector público,386,90
+2025,30,10,153,MUNICIPALIDAD DE DOMINGO MARTINEZ DE IRALA,III - Municipalidades,Resto del sector público,50,13
+2025,30,10,154,MUNICIPALIDAD DE JUAN LEON MALLORQUIN,III - Municipalidades,Resto del sector público,46,18
+2025,30,10,155,MUNICIPALIDAD DE HERNANDARIAS,III - Municipalidades,Resto del sector público,371,116
+2025,30,10,156,MUNICIPALIDAD DE SANTA FE DEL PARANA,III - Municipalidades,Resto del sector público,46,23
+2025,30,10,157,MUNICIPALIDAD DE ITAKYRY,III - Municipalidades,Resto del sector público,66,27
+2025,30,10,158,MUNICIPALIDAD DE JUAN E. O'LEARY,III - Municipalidades,Resto del sector público,33,17
+2025,30,10,159,MUNICIPALIDAD DE ÑACUNDAY,III - Municipalidades,Resto del sector público,29,26
+2025,30,10,160,MUNICIPALIDAD DE YGUAZU,III - Municipalidades,Resto del sector público,34,23
+2025,30,10,161,MUNICIPALIDAD DE LOS CEDRALES,III - Municipalidades,Resto del sector público,51,25
+2025,30,10,162,MUNICIPALIDAD DE MINGA GUAZU,III - Municipalidades,Resto del sector público,164,100
+2025,30,10,163,MUNICIPALIDAD DE SAN CRISTOBAL,III - Municipalidades,Resto del sector público,40,18
+2025,30,10,164,MUNICIPALIDAD DE SANTA RITA,III - Municipalidades,Resto del sector público,63,142
+2025,30,10,165,MUNICIPALIDAD DE NARANJAL,III - Municipalidades,Resto del sector público,41,20
+2025,30,10,166,MUNICIPALIDAD DE STA. ROSA DEL MONDAY,III - Municipalidades,Resto del sector público,44,22
+2025,30,10,167,MUNICIPALIDAD DE MINGA PORA,III - Municipalidades,Resto del sector público,63,21
+2025,30,10,168,MUNICIPALIDAD DE MBARACAYU,III - Municipalidades,Resto del sector público,59,18
+2025,30,10,169,MUNICIPALIDAD DE SAN ALBERTO,III - Municipalidades,Resto del sector público,85,26
+2025,30,10,170,MUNICIPALIDAD DE IRUÑA,III - Municipalidades,Resto del sector público,32,22
+2025,30,10,240,MUNICIPALIDAD DE TAVAPY,III - Municipalidades,Resto del sector público,43,18
+2025,30,10,246,MUNICIPALIDAD DE DR. RAUL PENA,III - Municipalidades,Resto del sector público,10,18
+2025,30,11,171,MUNICIPALIDAD DE AREGUA,III - Municipalidades,Resto del sector público,152,45
+2025,30,11,172,MUNICIPALIDAD DE CAPIATA,III - Municipalidades,Resto del sector público,916,152
+2025,30,11,173,MUNICIPALIDAD DE FERNANDO DE LA MORA,III - Municipalidades,Resto del sector público,737,385
+2025,30,11,174,MUNICIPALIDAD DE GUARAMBARE,III - Municipalidades,Resto del sector público,124,35
+2025,30,11,175,MUNICIPALIDAD DE ITA,III - Municipalidades,Resto del sector público,154,16
+2025,30,11,176,MUNICIPALIDAD DE ITAUGUA,III - Municipalidades,Resto del sector público,329,51
+2025,30,11,177,MUNICIPALIDAD DE LAMBARE,III - Municipalidades,Resto del sector público,511,287
+2025,30,11,178,MUNICIPALIDAD DE LIMPIO,III - Municipalidades,Resto del sector público,189,139
+2025,30,11,179,MUNICIPALIDAD DE LUQUE,III - Municipalidades,Resto del sector público,742,226
+2025,30,11,180,MUNICIPALIDAD DE MARIANO ROQUE ALONSO,III - Municipalidades,Resto del sector público,319,232
+2025,30,11,181,MUNICIPALIDAD DE NUEVA ITALIA,III - Municipalidades,Resto del sector público,53,15
+2025,30,11,182,MUNICIPALIDAD DE ÑEMBY,III - Municipalidades,Resto del sector público,248,43
+2025,30,11,183,MUNICIPALIDAD DE SAN ANTONIO,III - Municipalidades,Resto del sector público,164,24
+2025,30,11,184,MUNICIPALIDAD DE SAN LORENZO,III - Municipalidades,Resto del sector público,821,447
+2025,30,11,185,MUNICIPALIDAD DE VILLA ELISA,III - Municipalidades,Resto del sector público,242,104
+2025,30,11,186,MUNICIPALIDAD DE VILLETA,III - Municipalidades,Resto del sector público,133,54
+2025,30,11,187,MUNICIPALIDAD DE YPACARAI,III - Municipalidades,Resto del sector público,69,46
+2025,30,11,188,MUNICIPALIDAD DE YPANE,III - Municipalidades,Resto del sector público,115,14
+2025,30,11,189,MUNICIPALIDAD DE J. AUGUSTO SALDIVAR,III - Municipalidades,Resto del sector público,103,13
+2025,30,12,190,MUNICIPALIDAD DE PILAR,III - Municipalidades,Resto del sector público,66,88
+2025,30,12,191,MUNICIPALIDAD DE ALBERDI,III - Municipalidades,Resto del sector público,23,16
+2025,30,12,192,MUNICIPALIDAD DE CERRITO,III - Municipalidades,Resto del sector público,98,17
+2025,30,12,193,MUNICIPALIDAD DE DESMOCHADOS,III - Municipalidades,Resto del sector público,11,11
+2025,30,12,194,MUNICIPALIDAD DE GENERAL JOSE EDUVIGIS DIAZ,III - Municipalidades,Resto del sector público,17,17
+2025,30,12,195,MUNICIPALIDAD DE GUAZU CUA,III - Municipalidades,Resto del sector público,26,13
+2025,30,12,196,MUNICIPALIDAD DE HUMAITA,III - Municipalidades,Resto del sector público,64,15
+2025,30,12,197,MUNICIPALIDAD DE ISLA UMBU,III - Municipalidades,Resto del sector público,33,14
+2025,30,12,198,MUNICIPALIDAD DE LAURELES,III - Municipalidades,Resto del sector público,63,15
+2025,30,12,199,MUNICIPALIDAD DE MAYOR JOSE D. MARTINEZ,III - Municipalidades,Resto del sector público,11,16
+2025,30,12,200,MUNICIPALIDAD DE PASO DE PATRIA,III - Municipalidades,Resto del sector público,41,10
+2025,30,12,201,MUNICIPALIDAD DE SAN JUAN BAUTISTA DE ÑEEMBUCU,III - Municipalidades,Resto del sector público,17,12
+2025,30,12,202,MUNICIPALIDAD DE TACUARAS,III - Municipalidades,Resto del sector público,28,22
+2025,30,12,203,MUNICIPALIDAD DE VILLA FRANCA,III - Municipalidades,Resto del sector público,26,16
+2025,30,12,204,MUNICIPALIDAD DE VILLA OLIVA,III - Municipalidades,Resto del sector público,28,13
+2025,30,12,205,MUNICIPALIDAD DE VILLALBIN,III - Municipalidades,Resto del sector público,28,16
+2025,30,13,206,MUNICIPALIDAD DE PEDRO J. CABALLERO,III - Municipalidades,Resto del sector público,371,113
+2025,30,13,207,MUNICIPALIDAD DE BELLA VISTA - NORTE,III - Municipalidades,Resto del sector público,16,24
+2025,30,13,208,MUNICIPALIDAD DE CAPITAN BADO,III - Municipalidades,Resto del sector público,34,44
+2025,30,13,242,MUNICIPALIDAD DE ZANJA PYTA,III - Municipalidades,Resto del sector público,23,11
+2025,30,13,250,MUNICIPALIDAD DE KARAPAI,III - Municipalidades,Resto del sector público,15,12
+2025,30,13,259,MUNICIPALIDAD DE CERRO CORA,III - Municipalidades,Resto del sector público,20,16
+2025,30,14,209,MUNICIPALIDAD DE SALTO DEL GUAIRA,III - Municipalidades,Resto del sector público,195,26
+2025,30,14,210,MUNICIPALIDAD DE CORPUS CHRISTI,III - Municipalidades,Resto del sector público,42,17
+2025,30,14,211,MUNICIPALIDAD DE VILLA CURUGUATY,III - Municipalidades,Resto del sector público,82,20
+2025,30,14,212,MUNICIPALIDAD DE YASY CAÑY,III - Municipalidades,Resto del sector público,25,15
+2025,30,14,213,MUNICIPALIDAD DE VILLA YGATIMI,III - Municipalidades,Resto del sector público,26,22
+2025,30,14,214,MUNICIPALIDAD DE ITANARA,III - Municipalidades,Resto del sector público,13,15
+2025,30,14,215,MUNICIPALIDAD DE YPE JHU,III - Municipalidades,Resto del sector público,24,12
+2025,30,14,216,MUNICIPALIDAD DE GENERAL FRANCISCO CABALLERO ALVAREZ,III - Municipalidades,Resto del sector público,26,26
+2025,30,14,217,MUNICIPALIDAD DE KATUETE,III - Municipalidades,Resto del sector público,97,21
+2025,30,14,218,MUNICIPALIDAD DE LA PALOMA,III - Municipalidades,Resto del sector público,40,23
+2025,30,14,219,MUNICIPALIDAD DE NUEVA ESPERANZA,III - Municipalidades,Resto del sector público,82,22
+2025,30,14,244,MUNICIPALIDAD DE YVYRAROBANA,III - Municipalidades,Resto del sector público,9,14
+2025,30,14,247,MUNICIPALIDAD DE YBY PYTA,III - Municipalidades,Resto del sector público,23,12
+2025,30,14,251,MUNICIPALIDAD DE MARACANA,III - Municipalidades,Resto del sector público,27,14
+2025,30,14,255,MUNICIPALIDAD DE PUERTO ADELA,III - Municipalidades,Resto del sector público,14,14
+2025,30,14,256,MUNICIPALIDAD DE LAUREL,III - Municipalidades,Resto del sector público,18,12
+2025,30,15,220,MUNICIPALIDAD DE BENJAMIN ACEVAL,III - Municipalidades,Resto del sector público,63,42
+2025,30,15,221,MUNICIPALIDAD DE PUERTO PINASCO,III - Municipalidades,Resto del sector público,114,16
+2025,30,15,222,MUNICIPALIDAD DE VILLA HAYES,III - Municipalidades,Resto del sector público,180,96
+2025,30,15,223,MUNICIPALIDAD DE NANAWA,III - Municipalidades,Resto del sector público,38,14
+2025,30,15,224,MUNICIPALIDAD DE JOSE FALCON,III - Municipalidades,Resto del sector público,69,42
+2025,30,15,229,MUNICIPALIDAD DE TTE. 1RO. MANUEL IRALA FERNANDEZ,III - Municipalidades,Resto del sector público,26,19
+2025,30,15,232,MUNICIPALIDAD DE TENIENTE ESTEBAN MARTINEZ,III - Municipalidades,Resto del sector público,38,16
+2025,30,15,233,MUNICIPALIDAD DE GENERAL JOSE MARIA BRUGUEZ,III - Municipalidades,Resto del sector público,35,25
+2025,30,15,258,MUNICIPALIDAD DE CAMPO ACEVAL,III - Municipalidades,Resto del sector público,19,15
+2025,30,15,262,MUNICIPALIDAD DE NUEVA ASUNCION,III - Municipalidades,Resto del sector público,88,15
+2025,30,16,228,MUNICIPALIDAD DE MARISCAL JOSE FELIX ESTIGARRIBIA,III - Municipalidades,Resto del sector público,111,35
+2025,30,16,230,MUNICIPALIDAD DE FILADELFIA,III - Municipalidades,Resto del sector público,180,17
+2025,30,16,231,MUNICIPALIDAD DE LOMA PLATA,III - Municipalidades,Resto del sector público,125,16
+2025,30,16,261,MUNICIPALIDAD DE BOQUERON,III - Municipalidades,Resto del sector público,60,12
+2025,30,17,226,MUNICIPALIDAD DE LA VICTORIA,III - Municipalidades,Resto del sector público,19,29
+2025,30,17,227,MUNICIPALIDAD DE BAHIA NEGRA,III - Municipalidades,Resto del sector público,6,27
+2025,30,17,235,MUNICIPALIDAD DE CARMELO PERALTA,III - Municipalidades,Resto del sector público,17,14
+2025,40,1,1,COMPAÑIA PARAGUAYA DE COMUNICACIONES S.A.,IV - Sociedades Anónimas del Estado,Resto del sector público,3,2345
+2025,40,2,1,EMPRESA DE SERVICIOS SANITARIOS DEL PARAGUAY S.A.,IV - Sociedades Anónimas del Estado,Resto del sector público,247,1841
+2025,40,3,1,CAÑAS PARAGUAYAS S.A.,IV - Sociedades Anónimas del Estado,Resto del sector público,3,147
+2026,11,1,1,001-CONGRESO NACIONAL,I - Administración Central,Resto del sector público,152,760
+2026,11,2,1,002-CAMARA DE SENADORES,I - Administración Central,Resto del sector público,298,993
+2026,11,3,1,003-CAMARA DE DIPUTADOS,I - Administración Central,Resto del sector público,601,1612
+2026,12,1,1,1-GABINETE CIVIL,I - Administración Central,Resto del sector público,94,162
+2026,12,1,2,2-GABINETE MILITAR,I - Administración Central,Resto del sector público,1,17
+2026,12,1,11,11-SECRETARIA NACIONAL ANTIDROGAS,I - Administración Central,Resto del sector público,10,424
+2026,12,1,12,12-CONSEJO DE LA DEFENSA NACIONAL,I - Administración Central,Resto del sector público,0,12
+2026,12,1,14,14-SRIA.DE DESARROLLO P/ REPATRIADOS Y REFUGIADOS CONNACIONALES,I - Administración Central,Resto del sector público,36,94
+2026,12,1,15,15-PROCURADURIA GENERAL DE LA REPUBLICA,I - Administración Central,Resto del sector público,3,98
+2026,12,1,17,17-SECRETARIA DE EMERGENCIA NACIONAL,I - Administración Central,Resto del sector público,48,135
+2026,12,1,18,18-SECRETARIA NACIONAL DE TURISMO,I - Administración Central,Resto del sector público,86,150
+2026,12,1,20,20-AUDITORIA GENERAL DEL PODER EJECUTIVO,I - Administración Central,Resto del sector público,6,62
+2026,12,1,21,21-SECRETARIA NACIONAL DE CULTURA,I - Administración Central,Resto del sector público,30,159
+2026,12,1,23,23-SECRETARIA NACIONAL DE DEPORTES,I - Administración Central,Resto del sector público,19,94
+2026,12,1,29,29-SECRETARIA DE POLITICAS LINGUISTICAS,I - Administración Central,Resto del sector público,1,36
+2026,12,1,30,30-SEC. NAC.POR LOS DDHH DE LAS PERS.CON DISCAPACIDAD (SENADIS),I - Administración Central,Resto del sector público,81,370
+2026,12,1,36,36-SECRETARIA DE PREVENCION DE LAVADO DE DINERO O BIENES,I - Administración Central,Resto del sector público,4,63
+2026,12,1,38,38-CONSEJO NACIONAL DE CIENCIA Y TECNOLOGIA,I - Administración Central,Resto del sector público,19,43
+2026,12,1,40,40-ESCRIBANIA MAYOR DE GOBIERNO,I - Administración Central,Resto del sector público,1,27
+2026,12,1,50,50-AGENCIA ESPACIAL DEL PARAGUAY,I - Administración Central,Resto del sector público,0,20
+2026,12,1,51,51-SECRETARIA NACIONAL DE LA JUVENTUD,I - Administración Central,Resto del sector público,7,19
+2026,12,1,54,54-SECRETARIA NAC. DE ADM. DE BIENES INCAUTADOS Y COMISADOS,I - Administración Central,Resto del sector público,2,18
+2026,12,1,56,56-ORQUESTA SINFONICA NACIONAL,I - Administración Central,Resto del sector público,42,46
+2026,12,1,57,57-ORQUESTA NACIONAL DE MUSICA POPULAR,I - Administración Central,Resto del sector público,37,18
+2026,12,1,58,58-AGENCIA NACIONAL DE ANTIDOPAJE DEL PARAGUAY,I - Administración Central,Resto del sector público,2,2
+2026,12,2,1,002-VICEPRESIDENCIA DE LA REPUBLICA,I - Administración Central,Resto del sector público,7,67
+2026,12,3,1,003-MINISTERIO DEL INTERIOR,I - Administración Central,Resto del sector público,16,269
+2026,12,3,2,025-POLICIA NACIONAL,I - Administración Central,Policía Nacional,118,43106
+2026,12,4,1,004-MINISTERIO DE RELACIONES EXTERIORES,I - Administración Central,Resto del sector público,282,860
+2026,12,5,1,005-MINISTERIO DE DEFENSA NACIONAL,I - Administración Central,Defensa Nacional,189,21760
+2026,12,6,1,006-MINISTERIO DE ECONOMIA Y FINANZAS,I - Administración Central,Resto del sector público,133,1127
+2026,12,7,1,007-MINISTERIO DE EDUCACION Y CIENCIAS,I - Administración Central,Educación (MEC),120,84204
+2026,12,8,1,008-MINISTERIO DE SALUD PUBLICA Y BIENESTAR SOCIAL,I - Administración Central,Salud (MSPBS),38196,26626
+2026,12,9,1,009-MINISTERIO DE JUSTICIA,I - Administración Central,Resto del sector público,2567,2375
+2026,12,10,1,010-MINISTERIO DE AGRICULTURA Y GANADERIA,I - Administración Central,Resto del sector público,810,1553
+2026,12,11,1,011-MINISTERIO DE INDUSTRIA Y COMERCIO,I - Administración Central,Resto del sector público,41,302
+2026,12,13,1,013-MINISTERIO DE OBRAS PUBLICAS Y COMUNICACIONES,I - Administración Central,Resto del sector público,364,2929
+2026,12,14,1,014-MINISTERIO DE LA MUJER,I - Administración Central,Resto del sector público,97,93
+2026,12,16,1,"016-MINISTERIO DEL TRABAJO, EMPLEO Y SEGURIDAD SOCIAL",I - Administración Central,Resto del sector público,1246,887
+2026,12,17,1,017-MINISTERIO DEL AMBIENTE Y DESARROLLO SOSTENIBLE,I - Administración Central,Resto del sector público,67,336
+2026,12,18,1,018-MINISTERIO DE DESARROLLO SOCIAL,I - Administración Central,Resto del sector público,1002,269
+2026,12,19,1,019-MINISTERIO DE URBANISMO VIVIENDA Y HABITAT,I - Administración Central,Resto del sector público,125,477
+2026,12,20,1,020-MINISTERIO DE LA NIÑEZ Y LA ADOLESCENCIA,I - Administración Central,Resto del sector público,321,480
+2026,12,21,1,021-MINISTERIO DE TECNOLOGIAS DE LA INFORMACION Y COMUNICACION,I - Administración Central,Resto del sector público,179,221
+2026,13,1,1,001-CORTE SUPREMA DE JUSTICIA,I - Administración Central,Resto del sector público,2,12209
+2026,13,2,1,002-JUSTICIA ELECTORAL,I - Administración Central,Resto del sector público,1478,5507
+2026,13,3,1,003-MINISTERIO PUBLICO,I - Administración Central,Resto del sector público,361,5825
+2026,13,4,1,004-CONSEJO DE LA MAGISTRATURA,I - Administración Central,Resto del sector público,98,159
+2026,13,5,1,005-JURADO DE ENJUICIAMIENTO DE MAGISTRADOS,I - Administración Central,Resto del sector público,64,238
+2026,13,6,1,006-MINISTERIO DE LA DEFENSA PUBLICA,I - Administración Central,Resto del sector público,491,2247
+2026,13,7,1,007-SINDICATURA GENERAL DE QUIEBRAS,I - Administración Central,Resto del sector público,21,81
+2026,14,1,1,001-CONTRALORIA GENERAL DE LA REPUBLICA,I - Administración Central,Resto del sector público,69,938
+2026,15,1,1,001-DEFENSORIA DEL PUEBLO,I - Administración Central,Resto del sector público,67,107
+2026,15,2,1,002-MECANISMO NACIONAL DE PREVENCION CONTRA LA TORTURA,I - Administración Central,Resto del sector público,2,28
+2026,21,1,1,BANCO CENTRAL DEL PARAGUAY,II - Administración Descentralizada,Resto del sector público,2,760
+2026,22,1,1,I DEPARTAMENTO: GOBERNACION DE CONCEPCION,II - Administración Descentralizada,Resto del sector público,47,69
+2026,22,2,1,II DEPARTAMENTO: GOBERNACION DE SAN PEDRO,II - Administración Descentralizada,Resto del sector público,77,39
+2026,22,4,1,IV DEPARTAMENTO: GOBERNACION DE GUAIRA,II - Administración Descentralizada,Resto del sector público,109,86
+2026,22,5,1,V DEPARTAMENTO: GOBERNACION DE CAAGUAZU,II - Administración Descentralizada,Resto del sector público,156,100
+2026,22,6,1,VI DEPARTAMENTO: GOBERNACION DE CAAZAPA,II - Administración Descentralizada,Resto del sector público,30,53
+2026,22,7,1,VII DEPARTAMENTO: GOBERNACION DE ITAPUA,II - Administración Descentralizada,Resto del sector público,84,122
+2026,22,9,1,GOBIERNO DEPARTAMENTAL DE PARAGUARI,II - Administración Descentralizada,Resto del sector público,65,86
+2026,22,10,1,X DEPARTAMENTO: GOBERNACION DE ALTO PARANA,II - Administración Descentralizada,Resto del sector público,158,98
+2026,22,11,1,GOBIERNO DEPARTAMENTAL DE CENTRAL,II - Administración Descentralizada,Resto del sector público,39,110
+2026,22,12,1,XII DEPARTAMENTO: GOBERNACION DE ÑEEMBUCU,II - Administración Descentralizada,Resto del sector público,33,77
+2026,22,13,1,XIII DEPARTAMENTO: GOBERNACION DE AMAMBAY,II - Administración Descentralizada,Resto del sector público,81,49
+2026,22,14,1,XIV DEPARTAMENTO: GOBERNACION DE CANINDEYU,II - Administración Descentralizada,Resto del sector público,31,48
+2026,22,15,1,XV DEPARTAMENTO: GOBERNACION DE PRESIDENTE HAYES,II - Administración Descentralizada,Resto del sector público,87,46
+2026,22,16,1,XVI DEPARTAMENTO: GOBERNACION DE BOQUERON,II - Administración Descentralizada,Resto del sector público,96,82
+2026,22,17,1,XVII DEPARTAMENTO: GOBERNACION DE ALTO PARAGUAY,II - Administración Descentralizada,Resto del sector público,0,45
+2026,23,1,1,INSTITUTO NACIONAL DE TECNOLOGIA Y NORMALIZACION,II - Administración Descentralizada,Resto del sector público,81,175
+2026,23,3,1,INSTITUTO NACIONAL DE DESARROLLO RURAL Y DE LA TIERRA,II - Administración Descentralizada,Resto del sector público,79,387
+2026,23,4,1,DIRECCION DE BENEFICENCIA Y AYUDA SOCIAL,II - Administración Descentralizada,Resto del sector público,30,69
+2026,23,6,1,INSTITUTO NACIONAL DEL INDIGENA,II - Administración Descentralizada,Resto del sector público,17,54
+2026,23,8,1,FONDO NACIONAL DE LA CULTURA Y LAS ARTES,II - Administración Descentralizada,Resto del sector público,6,16
+2026,23,14,1,INSTITUTO NACIONAL DE COOPERATIVISMO,II - Administración Descentralizada,Resto del sector público,51,131
+2026,23,16,1,SERVICIO NACIONAL DE CALIDAD Y SALUD ANIMAL,II - Administración Descentralizada,Resto del sector público,82,1175
+2026,23,17,1,INSTITUTO PARAGUAYO DE ARTESANIA,II - Administración Descentralizada,Resto del sector público,4,67
+2026,23,19,1,DIRECCION NACIONAL DE CONTRATACIONES PUBLICAS,II - Administración Descentralizada,Resto del sector público,86,161
+2026,23,20,1,INSTITUTO FORESTAL NACIONAL,II - Administración Descentralizada,Resto del sector público,37,302
+2026,23,22,1,INSTITUTO PARAGUAYO DE TECNOLOGIA AGRARIA,II - Administración Descentralizada,Resto del sector público,139,366
+2026,23,24,1,DIRECCION NACIONAL DE CORREOS DEL PARAGUAY,II - Administración Descentralizada,Resto del sector público,56,700
+2026,23,25,1,DIRECCION NACIONAL DE PROPIEDAD INTELECTUAL,II - Administración Descentralizada,Resto del sector público,8,108
+2026,23,26,1,SECRETARIA DE DEFENSA DEL CONSUMIDOR Y EL USUARIO,II - Administración Descentralizada,Resto del sector público,0,27
+2026,23,27,1,COMISION NACIONAL DE LA COMPETENCIA,II - Administración Descentralizada,Resto del sector público,1,28
+2026,23,28,1,AGENCIA NACIONAL DE TRANSITO Y SEGURIDAD VIAL,II - Administración Descentralizada,Resto del sector público,17,23
+2026,23,29,1,CONSEJO NACIONAL DE EDUCACION SUPERIOR,II - Administración Descentralizada,Resto del sector público,1,29
+2026,23,30,1,AGENCIA NACIONAL DE EVALUACION Y ACREDITACION DE LA EDUCACION SUPERIOR,II - Administración Descentralizada,Resto del sector público,2,45
+2026,23,31,1,AUTORIDAD REGULADORA RADIOLOGICA Y NUCLEAR,II - Administración Descentralizada,Resto del sector público,0,31
+2026,23,32,1,SECRETARIA NACIONAL DE INTELIGENCIA,II - Administración Descentralizada,Resto del sector público,2,27
+2026,23,33,1,INSTITUTO SUPERIOR DE BELLAS ARTES,II - Administración Descentralizada,Resto del sector público,10,190
+2026,23,34,1,INSTITUTO NACIONAL DE EDUCACION SUPERIOR,II - Administración Descentralizada,Resto del sector público,46,216
+2026,23,35,1,"DIRECCION NACIONAL DE DEFENSA, SALUD Y BIENESTAR ANIMAL",II - Administración Descentralizada,Resto del sector público,19,8
+2026,23,36,1,INSTITUTO NACIONAL DE ESTADISTICAS,II - Administración Descentralizada,Resto del sector público,471,141
+2026,23,38,1,DIRECCION NACIONAL DE VIGILANCIA SANITARIA,II - Administración Descentralizada,Resto del sector público,104,146
+2026,23,39,1,DIRECCION NACIONAL DE MIGRACIONES,II - Administración Descentralizada,Resto del sector público,335,254
+2026,23,40,1,DIRECCION NACIONAL DE INGRESOS TRIBUTARIOS,II - Administración Descentralizada,Resto del sector público,134,1636
+2026,24,1,1,INSTITUTO DE PREVISION SOCIAL,II - Administración Descentralizada,Resto del sector público,13387,12181
+2026,24,2,1,CAJA DE SEGURIDAD SOCIAL DE EMPLEADOS Y OBREROS FERROVIARIOS,II - Administración Descentralizada,Resto del sector público,0,12
+2026,24,4,1,CAJA DE JUBILACIONES Y PENSIONES DE EMPLEADOS BANCARIOS,II - Administración Descentralizada,Resto del sector público,18,110
+2026,24,5,1,CAJA DE JUBILACIONES Y PENSIONES DEL PERSONAL MUNICIPAL,II - Administración Descentralizada,Resto del sector público,31,134
+2026,25,2,1,ADMINISTRACION NACIONAL DE ELECTRICIDAD,II - Administración Descentralizada,Resto del sector público,481,4255
+2026,25,4,1,ADMINISTRACION NACIONAL DE NAVEGACION Y PUERTOS,II - Administración Descentralizada,Resto del sector público,96,1013
+2026,25,5,1,DIRECCION NACIONAL DE AERONAUTICA CIVIL,II - Administración Descentralizada,Resto del sector público,475,1440
+2026,25,6,1,PETROLEOS PARAGUAYOS,II - Administración Descentralizada,Resto del sector público,303,486
+2026,25,7,1,INDUSTRIA NACIONAL DEL CEMENTO,II - Administración Descentralizada,Resto del sector público,400,589
+2026,27,1,1,BANCO NACIONAL DE FOMENTO (BNF),II - Administración Descentralizada,Resto del sector público,107,1543
+2026,27,3,1,CREDITO AGRICOLA DE HABILITACION,II - Administración Descentralizada,Resto del sector público,41,357
+2026,27,7,1,AGENCIA FINANCIERA DE DESARROLLO,II - Administración Descentralizada,Resto del sector público,2,98
+2026,28,1,1,UNIVERSIDAD NACIONAL DE ASUNCION,II - Administración Descentralizada,Resto del sector público,1861,13644
+2026,28,2,1,UNIVERSIDAD NACIONAL DEL ESTE,II - Administración Descentralizada,Resto del sector público,161,1605
+2026,28,3,1,UNIVERSIDAD NACIONAL DE PILAR,II - Administración Descentralizada,Resto del sector público,48,802
+2026,28,4,1,UNIVERSIDAD NACIONAL DE ITAPUA,II - Administración Descentralizada,Resto del sector público,111,1107
+2026,28,6,1,UNIVERSIDAD NACIONAL DE VILLARRICA DEL ESPIRITU SANTO,II - Administración Descentralizada,Resto del sector público,27,1568
+2026,28,7,1,UNIVERSIDAD NACIONAL DE CAAGUAZU,II - Administración Descentralizada,Resto del sector público,14,1128
+2026,28,8,1,UNIVERSIDAD NACIONAL DE CANINDEYU,II - Administración Descentralizada,Resto del sector público,4,122
+2026,28,9,1,UNIVERSIDAD POLITECNICA TAIWAN-PARAGUAY,II - Administración Descentralizada,Resto del sector público,0,36
+2026,28,10,1,UNIVERSIDAD NACIONAL DE MISIONES,II - Administración Descentralizada,Resto del sector público,15,344
+2026,30,1,2,MUNICIPALIDAD DE CONCEPCION,III - Municipalidades,Resto del sector público,348,55
+2026,30,1,3,MUNICIPALIDAD DE  BELEN,III - Municipalidades,Resto del sector público,37,10
+2026,30,1,4,MUNICIPALIDAD DE HORQUETA,III - Municipalidades,Resto del sector público,54,21
+2026,30,1,5,MUNICIPALIDAD DE LORETO,III - Municipalidades,Resto del sector público,24,17
+2026,30,1,6,MUNICIPALIDAD DE SAN LAZARO,III - Municipalidades,Resto del sector público,27,28
+2026,30,1,237,MUNICIPALIDAD DE SAN CARLOS DEL APA,III - Municipalidades,Resto del sector público,20,11
+2026,30,1,238,MUNICIPALIDAD DE AZOTEY,III - Municipalidades,Resto del sector público,14,14
+2026,30,1,241,MUNICIPALIDAD DE SARGENTO JOSE FELIX LOPEZ,III - Municipalidades,Resto del sector público,11,12
+2026,30,1,248,MUNICIPALIDAD DE PASO BARRETO,III - Municipalidades,Resto del sector público,23,6
+2026,30,1,249,MUNICIPALIDAD DE SAN ALFREDO,III - Municipalidades,Resto del sector público,19,10
+2026,30,1,257,MUNICIPALIDAD DE PASO HORQUETA,III - Municipalidades,Resto del sector público,21,19
+2026,30,1,263,MUNICIPALIDAD DE ITACUA,III - Municipalidades,Resto del sector público,0,13
+2026,30,1,524,MUNICIPALIDAD DE ARROYITO,III - Municipalidades,Resto del sector público,6,12
+2026,30,2,10,MUNICIPALIDAD DE CHORE,III - Municipalidades,Resto del sector público,31,23
+2026,30,2,13,MUNICIPALIDAD DE LIMA,III - Municipalidades,Resto del sector público,30,14
+2026,30,2,14,MUNICIPALIDAD DE NUEVA GERMANIA,III - Municipalidades,Resto del sector público,11,12
+2026,30,2,15,MUNICIPALIDAD DE SAN ESTANISLAO,III - Municipalidades,Resto del sector público,63,31
+2026,30,2,16,MUNICIPALIDAD DE YRYBUCUA,III - Municipalidades,Resto del sector público,33,13
+2026,30,2,17,MUNICIPALIDAD DE SAN PABLO,III - Municipalidades,Resto del sector público,15,12
+2026,30,2,18,MUNICIPALIDAD DE TACUATI,III - Municipalidades,Resto del sector público,47,13
+2026,30,2,19,MUNICIPALIDAD DE UNION,III - Municipalidades,Resto del sector público,25,15
+2026,30,2,22,MUNICIPALIDAD DE GRAL. F. RESQUIN,III - Municipalidades,Resto del sector público,31,12
+2026,30,2,23,MUNICIPALIDAD DE YATAITY DEL NORTE,III - Municipalidades,Resto del sector público,21,12
+2026,30,2,24,MUNICIPALIDAD DE GUAJAYVI,III - Municipalidades,Resto del sector público,45,10
+2026,30,2,25,MUNICIPALIDAD DE CAPIIBARY,III - Municipalidades,Resto del sector público,44,16
+2026,30,2,26,MUNICIPALIDAD DE SANTA ROSA DEL AGUARAY,III - Municipalidades,Resto del sector público,61,23
+2026,30,2,239,MUNICIPALIDAD DE LIBERACION,III - Municipalidades,Resto del sector público,33,14
+2026,30,2,260,MUNICIPALIDAD DE SAN JOSE DEL ROSARIO,III - Municipalidades,Resto del sector público,18,15
+2026,30,3,27,MUNICIPALIDAD DE CAACUPE,III - Municipalidades,Resto del sector público,195,54
+2026,30,3,28,MUNICIPALIDAD DE ALTOS,III - Municipalidades,Resto del sector público,66,17
+2026,30,3,31,MUNICIPALIDAD DE CARAGUATAY,III - Municipalidades,Resto del sector público,30,27
+2026,30,3,32,MUNICIPALIDAD DE EMBOSCADA,III - Municipalidades,Resto del sector público,52,29
+2026,30,3,33,MUNICIPALIDAD DE EUSEBIO AYALA,III - Municipalidades,Resto del sector público,53,33
+2026,30,3,34,MUNICIPALIDAD DE ISLA PUCU,III - Municipalidades,Resto del sector público,32,12
+2026,30,3,35,MUNICIPALIDAD DE ITACURUBI DE LA CORDILLERA,III - Municipalidades,Resto del sector público,48,15
+2026,30,3,37,MUNICIPALIDAD DE LOMA GRANDE,III - Municipalidades,Resto del sector público,24,10
+2026,30,3,38,MUNICIPALIDAD DE MBOCAYATY DEL YHAGUY,III - Municipalidades,Resto del sector público,26,11
+2026,30,3,39,MUNICIPALIDAD DE NUEVA COLOMBIA,III - Municipalidades,Resto del sector público,24,13
+2026,30,3,40,MUNICIPALIDAD DE PIRIBEBUY,III - Municipalidades,Resto del sector público,33,37
+2026,30,3,42,MUNICIPALIDAD DE SAN BERNARDINO,III - Municipalidades,Resto del sector público,223,52
+2026,30,3,43,MUNICIPALIDAD DE SANTA ELENA,III - Municipalidades,Resto del sector público,25,13
+2026,30,3,45,MUNICIPALIDAD DE VALENZUELA,III - Municipalidades,Resto del sector público,3,21
+2026,30,4,47,MUNICIPALIDAD DE VILLARRICA DEL ESPIRITU SANTO,III - Municipalidades,Resto del sector público,303,119
+2026,30,4,48,MUNICIPALIDAD DE BORJA,III - Municipalidades,Resto del sector público,10,11
+2026,30,4,49,MUNICIPALIDAD DE CAPITAN MAURICIO JOSE TROCHE,III - Municipalidades,Resto del sector público,13,6
+2026,30,4,50,MUNICIPALIDAD DE CORONEL MARTINEZ,III - Municipalidades,Resto del sector público,26,11
+2026,30,4,51,MUNICIPALIDAD DE FELIX PEREZ CARDOZO,III - Municipalidades,Resto del sector público,40,11
+2026,30,4,53,MUNICIPALIDAD DE INDEPENDENCIA,III - Municipalidades,Resto del sector público,56,13
+2026,30,4,54,MUNICIPALIDAD DE ITAPE,III - Municipalidades,Resto del sector público,25,12
+2026,30,4,55,MUNICIPALIDAD DE ITURBE,III - Municipalidades,Resto del sector público,23,16
+2026,30,4,56,MUNICIPALIDAD DE JOSE A. FASSARDI,III - Municipalidades,Resto del sector público,25,11
+2026,30,4,57,MUNICIPALIDAD DE MBOCAYATY DEL GUAIRA,III - Municipalidades,Resto del sector público,15,13
+2026,30,4,58,MUNICIPALIDAD DE NATALICIO TALAVERA,III - Municipalidades,Resto del sector público,31,11
+2026,30,4,59,MUNICIPALIDAD DE ÑUMI,III - Municipalidades,Resto del sector público,17,11
+2026,30,4,60,MUNICIPALIDAD DE SAN SALVADOR,III - Municipalidades,Resto del sector público,34,11
+2026,30,4,61,MUNICIPALIDAD DE YATAITY DEL GUAIRA,III - Municipalidades,Resto del sector público,15,12
+2026,30,4,62,MUNICIPALIDAD DE DR. BOTRELL,III - Municipalidades,Resto del sector público,24,10
+2026,30,4,63,MUNICIPALIDAD DE PASO YOBAI,III - Municipalidades,Resto del sector público,30,11
+2026,30,4,234,MUNICIPALIDAD DE TEBICUARY,III - Municipalidades,Resto del sector público,34,19
+2026,30,5,64,MUNICIPALIDAD DE CORONEL OVIEDO,III - Municipalidades,Resto del sector público,278,117
+2026,30,5,67,MUNICIPALIDAD DE DR. CECILIO BAEZ,III - Municipalidades,Resto del sector público,17,12
+2026,30,5,68,MUNICIPALIDAD DE SANTA.ROSA DEL MBUTUY,III - Municipalidades,Resto del sector público,14,12
+2026,30,5,69,MUNICIPALIDAD DE DR. JUAN MANUEL FRUTOS,III - Municipalidades,Resto del sector público,44,17
+2026,30,5,70,MUNICIPALIDAD DE REPATRIACION,III - Municipalidades,Resto del sector público,42,16
+2026,30,5,71,MUNICIPALIDAD DE NUEVA LONDRES,III - Municipalidades,Resto del sector público,23,11
+2026,30,5,72,MUNICIPALIDAD DE SAN JOAQUIN,III - Municipalidades,Resto del sector público,22,12
+2026,30,5,73,MUNICIPALIDAD DE SAN JOSE DE LOS ARROYOS,III - Municipalidades,Resto del sector público,30,23
+2026,30,5,74,MUNICIPALIDAD DE YHU,III - Municipalidades,Resto del sector público,41,20
+2026,30,5,76,MUNICIPALIDAD DE R.I. 3 CORRALES,III - Municipalidades,Resto del sector público,21,12
+2026,30,5,77,MUNICIPALIDAD DE RAUL ARSENIO OVIEDO,III - Municipalidades,Resto del sector público,21,15
+2026,30,5,79,MUNICIPALIDAD DE MARISCAL FRANCISCO SOLANO LOPEZ,III - Municipalidades,Resto del sector público,20,20
+2026,30,5,81,MUNICIPALIDAD DE 3 DE FEBRERO,III - Municipalidades,Resto del sector público,15,11
+2026,30,5,82,MUNICIPALIDAD DE SIMON BOLIVAR,III - Municipalidades,Resto del sector público,22,12
+2026,30,5,83,MUNICIPALIDAD DE VAQUERIA,III - Municipalidades,Resto del sector público,8,12
+2026,30,6,84,MUNICIPALIDAD DE CAAZAPA,III - Municipalidades,Resto del sector público,50,33
+2026,30,6,85,MUNICIPALIDAD DE ABAI,III - Municipalidades,Resto del sector público,43,23
+2026,30,6,86,MUNICIPALIDAD DE BUENA VISTA,III - Municipalidades,Resto del sector público,18,16
+2026,30,6,87,MUNICIPALIDAD DE DR. MOISES BERTONI,III - Municipalidades,Resto del sector público,10,11
+2026,30,6,89,MUNICIPALIDAD DE MACIEL,III - Municipalidades,Resto del sector público,19,14
+2026,30,6,90,MUNICIPALIDAD DE SAN JUAN NEPOMUCENO,III - Municipalidades,Resto del sector público,58,23
+2026,30,6,92,MUNICIPALIDAD DE FULGENCIO YEGROS,III - Municipalidades,Resto del sector público,36,12
+2026,30,6,93,MUNICIPALIDAD DE YUTY,III - Municipalidades,Resto del sector público,50,25
+2026,30,7,94,MUNICIPALIDAD DE ENCARNACION,III - Municipalidades,Resto del sector público,1077,210
+2026,30,7,95,MUNICIPALIDAD DE BELLA VISTA,III - Municipalidades,Resto del sector público,55,23
+2026,30,7,96,MUNICIPALIDAD DE CAMBYRETA,III - Municipalidades,Resto del sector público,213,30
+2026,30,7,97,MUNICIPALIDAD DE CAPITAN MEZA,III - Municipalidades,Resto del sector público,47,28
+2026,30,7,98,MUNICIPALIDAD DE CAPITAN MIRANDA,III - Municipalidades,Resto del sector público,43,23
+2026,30,7,100,MUNICIPALIDAD DE CARMEN DEL PARANA,III - Municipalidades,Resto del sector público,63,22
+2026,30,7,101,MUNICIPALIDAD DE CORONEL BOGADO,III - Municipalidades,Resto del sector público,66,28
+2026,30,7,102,MUNICIPALIDAD DE CARLOS ANTONIO LOPEZ,III - Municipalidades,Resto del sector público,69,20
+2026,30,7,103,MUNICIPALIDAD DE NATALIO,III - Municipalidades,Resto del sector público,58,23
+2026,30,7,104,MUNICIPALIDAD DE FRAM,III - Municipalidades,Resto del sector público,36,34
+2026,30,7,106,MUNICIPALIDAD DE GENERAL DELGADO,III - Municipalidades,Resto del sector público,14,11
+2026,30,7,107,MUNICIPALIDAD DE HOHENAU,III - Municipalidades,Resto del sector público,90,27
+2026,30,7,108,MUNICIPALIDAD DE JESUS,III - Municipalidades,Resto del sector público,16,2
+2026,30,7,109,MUNICIPALIDAD DE JOSE LEANDRO OVIEDO,III - Municipalidades,Resto del sector público,38,14
+2026,30,7,110,MUNICIPALIDAD DE OBLIGADO,III - Municipalidades,Resto del sector público,96,30
+2026,30,7,112,MUNICIPALIDAD DE SAN COSME Y SAN DAMIAN,III - Municipalidades,Resto del sector público,57,18
+2026,30,7,113,MUNICIPALIDAD DE SAN PEDRO DEL PARANA,III - Municipalidades,Resto del sector público,76,20
+2026,30,7,114,MUNICIPALIDAD DE SAN RAFAEL DEL PARANA,III - Municipalidades,Resto del sector público,76,21
+2026,30,7,115,MUNICIPALIDAD DE TRINIDAD,III - Municipalidades,Resto del sector público,23,21
+2026,30,7,116,MUNICIPALIDAD DE EDELIRA,III - Municipalidades,Resto del sector público,40,18
+2026,30,7,118,MUNICIPALIDAD DE ALTO VERA,III - Municipalidades,Resto del sector público,27,18
+2026,30,7,120,MUNICIPALIDAD DE YATYTAY,III - Municipalidades,Resto del sector público,37,18
+2026,30,7,121,MUNICIPALIDAD DE SAN JUAN DEL PARANA,III - Municipalidades,Resto del sector público,114,15
+2026,30,7,122,MUNICIPALIDAD DE PIRAPO,III - Municipalidades,Resto del sector público,45,22
+2026,30,8,126,MUNICIPALIDAD DE SAN IGNACIO GUAZU,III - Municipalidades,Resto del sector público,120,53
+2026,30,8,127,MUNICIPALIDAD DE SAN MIGUEL MISIONES,III - Municipalidades,Resto del sector público,34,24
+2026,30,8,129,MUNICIPALIDAD DE SANTA MARIA,III - Municipalidades,Resto del sector público,25,19
+2026,30,8,130,MUNICIPALIDAD DE SANTA ROSA MISIONES,III - Municipalidades,Resto del sector público,92,22
+2026,30,8,131,MUNICIPALIDAD DE SANTIAGO,III - Municipalidades,Resto del sector público,39,18
+2026,30,9,140,MUNICIPALIDAD DE LA COLMENA,III - Municipalidades,Resto del sector público,36,12
+2026,30,9,141,MUNICIPALIDAD DE MBUYAPEY,III - Municipalidades,Resto del sector público,21,15
+2026,30,9,142,MUNICIPALIDAD DE PIRAYU,III - Municipalidades,Resto del sector público,51,15
+2026,30,9,143,MUNICIPALIDAD DE QUIINDY,III - Municipalidades,Resto del sector público,49,28
+2026,30,9,144,MUNICIPALIDAD DE QUYQUYHO,III - Municipalidades,Resto del sector público,36,10
+2026,30,9,146,MUNICIPALIDAD DE SAPUCAI,III - Municipalidades,Resto del sector público,11,14
+2026,30,9,148,MUNICIPALIDAD DE YAGUARON,III - Municipalidades,Resto del sector público,76,28
+2026,30,9,149,MUNICIPALIDAD DE YBYCUI,III - Municipalidades,Resto del sector público,44,19
+2026,30,10,151,MUNICIPALIDAD DE CIUDAD DEL ESTE,III - Municipalidades,Resto del sector público,2068,304
+2026,30,10,152,MUNICIPALIDAD DE PRESIDENTE FRANCO,III - Municipalidades,Resto del sector público,468,96
+2026,30,10,153,MUNICIPALIDAD DE DOMINGO MARTINEZ DE IRALA,III - Municipalidades,Resto del sector público,47,13
+2026,30,10,154,MUNICIPALIDAD DE JUAN LEON MALLORQUIN,III - Municipalidades,Resto del sector público,53,18
+2026,30,10,155,MUNICIPALIDAD DE HERNANDARIAS,III - Municipalidades,Resto del sector público,333,120
+2026,30,10,156,MUNICIPALIDAD DE SANTA FE DEL PARANA,III - Municipalidades,Resto del sector público,48,24
+2026,30,10,157,MUNICIPALIDAD DE ITAKYRY,III - Municipalidades,Resto del sector público,77,25
+2026,30,10,158,MUNICIPALIDAD DE JUAN E. O'LEARY,III - Municipalidades,Resto del sector público,39,17
+2026,30,10,159,MUNICIPALIDAD DE ÑACUNDAY,III - Municipalidades,Resto del sector público,21,27
+2026,30,10,160,MUNICIPALIDAD DE YGUAZU,III - Municipalidades,Resto del sector público,44,24
+2026,30,10,161,MUNICIPALIDAD DE LOS CEDRALES,III - Municipalidades,Resto del sector público,58,25
+2026,30,10,162,MUNICIPALIDAD DE MINGA GUAZU,III - Municipalidades,Resto del sector público,172,93
+2026,30,10,163,MUNICIPALIDAD DE SAN CRISTOBAL,III - Municipalidades,Resto del sector público,40,18
+2026,30,10,164,MUNICIPALIDAD DE SANTA RITA,III - Municipalidades,Resto del sector público,87,145
+2026,30,10,165,MUNICIPALIDAD DE NARANJAL,III - Municipalidades,Resto del sector público,66,20
+2026,30,10,166,MUNICIPALIDAD DE STA. ROSA DEL MONDAY,III - Municipalidades,Resto del sector público,44,24
+2026,30,10,167,MUNICIPALIDAD DE MINGA PORA,III - Municipalidades,Resto del sector público,67,21
+2026,30,10,170,MUNICIPALIDAD DE IRUÑA,III - Municipalidades,Resto del sector público,24,21
+2026,30,10,240,MUNICIPALIDAD DE TAVAPY,III - Municipalidades,Resto del sector público,34,18
+2026,30,10,246,MUNICIPALIDAD DE DR. RAUL PENA,III - Municipalidades,Resto del sector público,10,16
+2026,30,11,171,MUNICIPALIDAD DE AREGUA,III - Municipalidades,Resto del sector público,118,64
+2026,30,11,172,MUNICIPALIDAD DE CAPIATA,III - Municipalidades,Resto del sector público,1058,160
+2026,30,11,173,MUNICIPALIDAD DE FERNANDO DE LA MORA,III - Municipalidades,Resto del sector público,717,387
+2026,30,11,174,MUNICIPALIDAD DE GUARAMBARE,III - Municipalidades,Resto del sector público,124,39
+2026,30,11,175,MUNICIPALIDAD DE ITA,III - Municipalidades,Resto del sector público,206,16
+2026,30,11,176,MUNICIPALIDAD DE ITAUGUA,III - Municipalidades,Resto del sector público,360,57
+2026,30,11,177,MUNICIPALIDAD DE LAMBARE,III - Municipalidades,Resto del sector público,571,292
+2026,30,11,178,MUNICIPALIDAD DE LIMPIO,III - Municipalidades,Resto del sector público,162,131
+2026,30,11,179,MUNICIPALIDAD DE LUQUE,III - Municipalidades,Resto del sector público,786,299
+2026,30,11,180,MUNICIPALIDAD DE MARIANO ROQUE ALONSO,III - Municipalidades,Resto del sector público,425,230
+2026,30,11,181,MUNICIPALIDAD DE NUEVA ITALIA,III - Municipalidades,Resto del sector público,55,17
+2026,30,11,182,MUNICIPALIDAD DE ÑEMBY,III - Municipalidades,Resto del sector público,421,39
+2026,30,11,183,MUNICIPALIDAD DE SAN ANTONIO,III - Municipalidades,Resto del sector público,172,40
+2026,30,11,184,MUNICIPALIDAD DE SAN LORENZO,III - Municipalidades,Resto del sector público,933,454
+2026,30,11,185,MUNICIPALIDAD DE VILLA ELISA,III - Municipalidades,Resto del sector público,280,103
+2026,30,11,186,MUNICIPALIDAD DE VILLETA,III - Municipalidades,Resto del sector público,132,48
+2026,30,11,188,MUNICIPALIDAD DE YPANE,III - Municipalidades,Resto del sector público,134,13
+2026,30,12,191,MUNICIPALIDAD DE ALBERDI,III - Municipalidades,Resto del sector público,23,19
+2026,30,12,192,MUNICIPALIDAD DE CERRITO,III - Municipalidades,Resto del sector público,112,17
+2026,30,12,195,MUNICIPALIDAD DE GUAZU CUA,III - Municipalidades,Resto del sector público,27,13
+2026,30,12,196,MUNICIPALIDAD DE HUMAITA,III - Municipalidades,Resto del sector público,35,15
+2026,30,12,197,MUNICIPALIDAD DE ISLA UMBU,III - Municipalidades,Resto del sector público,31,14
+2026,30,12,200,MUNICIPALIDAD DE PASO DE PATRIA,III - Municipalidades,Resto del sector público,127,12
+2026,30,12,202,MUNICIPALIDAD DE TACUARAS,III - Municipalidades,Resto del sector público,29,22
+2026,30,12,203,MUNICIPALIDAD DE VILLA FRANCA,III - Municipalidades,Resto del sector público,26,18
+2026,30,12,205,MUNICIPALIDAD DE VILLALBIN,III - Municipalidades,Resto del sector público,29,16
+2026,30,13,206,MUNICIPALIDAD DE PEDRO J. CABALLERO,III - Municipalidades,Resto del sector público,324,153
+2026,30,13,207,MUNICIPALIDAD DE BELLA VISTA - NORTE,III - Municipalidades,Resto del sector público,10,26
+2026,30,13,208,MUNICIPALIDAD DE CAPITAN BADO,III - Municipalidades,Resto del sector público,33,44
+2026,30,13,242,MUNICIPALIDAD DE ZANJA PYTA,III - Municipalidades,Resto del sector público,24,9
+2026,30,14,209,MUNICIPALIDAD DE SALTO DEL GUAIRA,III - Municipalidades,Resto del sector público,223,26
+2026,30,14,210,MUNICIPALIDAD DE CORPUS CHRISTI,III - Municipalidades,Resto del sector público,32,18
+2026,30,14,211,MUNICIPALIDAD DE VILLA CURUGUATY,III - Municipalidades,Resto del sector público,73,20
+2026,30,14,212,MUNICIPALIDAD DE YASY CAÑY,III - Municipalidades,Resto del sector público,15,14
+2026,30,14,213,MUNICIPALIDAD DE VILLA YGATIMI,III - Municipalidades,Resto del sector público,26,22
+2026,30,14,214,MUNICIPALIDAD DE ITANARA,III - Municipalidades,Resto del sector público,13,15
+2026,30,14,215,MUNICIPALIDAD DE YPE JHU,III - Municipalidades,Resto del sector público,24,12
+2026,30,14,216,MUNICIPALIDAD DE GENERAL FRANCISCO CABALLERO ALVAREZ,III - Municipalidades,Resto del sector público,26,25
+2026,30,14,217,MUNICIPALIDAD DE KATUETE,III - Municipalidades,Resto del sector público,96,23
+2026,30,14,218,MUNICIPALIDAD DE LA PALOMA,III - Municipalidades,Resto del sector público,21,21
+2026,30,14,219,MUNICIPALIDAD DE NUEVA ESPERANZA,III - Municipalidades,Resto del sector público,80,25
+2026,30,14,244,MUNICIPALIDAD DE YVYRAROBANA,III - Municipalidades,Resto del sector público,5,14
+2026,30,14,247,MUNICIPALIDAD DE YBY PYTA,III - Municipalidades,Resto del sector público,27,12
+2026,30,14,251,MUNICIPALIDAD DE MARACANA,III - Municipalidades,Resto del sector público,27,14
+2026,30,14,255,MUNICIPALIDAD DE PUERTO ADELA,III - Municipalidades,Resto del sector público,13,14
+2026,30,14,256,MUNICIPALIDAD DE LAUREL,III - Municipalidades,Resto del sector público,17,12
+2026,30,15,220,MUNICIPALIDAD DE BENJAMIN ACEVAL,III - Municipalidades,Resto del sector público,13,97
+2026,30,15,221,MUNICIPALIDAD DE PUERTO PINASCO,III - Municipalidades,Resto del sector público,122,16
+2026,30,15,222,MUNICIPALIDAD DE VILLA HAYES,III - Municipalidades,Resto del sector público,191,111
+2026,30,15,223,MUNICIPALIDAD DE NANAWA,III - Municipalidades,Resto del sector público,37,14
+2026,30,15,224,MUNICIPALIDAD DE JOSE FALCON,III - Municipalidades,Resto del sector público,71,46
+2026,30,15,229,MUNICIPALIDAD DE TTE. 1RO. MANUEL IRALA FERNANDEZ,III - Municipalidades,Resto del sector público,26,18
+2026,30,15,232,MUNICIPALIDAD DE TENIENTE ESTEBAN MARTINEZ,III - Municipalidades,Resto del sector público,45,18
+2026,30,15,258,MUNICIPALIDAD DE CAMPO ACEVAL,III - Municipalidades,Resto del sector público,19,13
+2026,30,15,262,MUNICIPALIDAD DE NUEVA ASUNCION,III - Municipalidades,Resto del sector público,125,15
+2026,30,16,230,MUNICIPALIDAD DE FILADELFIA,III - Municipalidades,Resto del sector público,185,17
+2026,30,16,231,MUNICIPALIDAD DE LOMA PLATA,III - Municipalidades,Resto del sector público,131,17
+2026,30,16,261,MUNICIPALIDAD DE BOQUERON,III - Municipalidades,Resto del sector público,70,13
+2026,30,17,226,MUNICIPALIDAD DE LA VICTORIA,III - Municipalidades,Resto del sector público,19,27
+2026,30,17,227,MUNICIPALIDAD DE BAHIA NEGRA,III - Municipalidades,Resto del sector público,6,27
+2026,30,17,235,MUNICIPALIDAD DE CARMELO PERALTA,III - Municipalidades,Resto del sector público,14,15
+2026,40,1,1,COMPAÑIA PARAGUAYA DE COMUNICACIONES S.A.,IV - Sociedades Anónimas del Estado,Resto del sector público,1880,335
+2026,40,2,1,EMPRESA DE SERVICIOS SANITARIOS DEL PARAGUAY S.A.,IV - Sociedades Anónimas del Estado,Resto del sector público,194,1852
+2026,40,3,1,CAÑAS PARAGUAYAS S.A.,IV - Sociedades Anónimas del Estado,Resto del sector público,9,102

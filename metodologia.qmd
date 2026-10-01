@@ -1,0 +1,37 @@
+---
+title: "Metodología"
+subtitle: "Qué miden nuestros datos y cómo los procesamos"
+---
+
+## Fuentes de datos
+
+| Fuente | Contenido | Uso en Pulso del Estado |
+|---|---|---|
+| SICCA / SINARH: funcionarios | Personas por institución (OEE), mes, vínculo y sexo | Dotación de personal |
+| SICCA / SINARH: nivel y categoría | Cantidad, monto presupuestado y devengado por categoría salarial | Estructura salarial y brechas |
+| SICCA / SINARH: presupuesto | Presupuestado y devengado por objeto de gasto | Masa salarial y sus componentes |
+| BCP | Índice de precios al consumidor (IPC) | Valores en términos reales |
+
+## Definiciones clave
+
+**Vínculos pagados en el mes.** Cantidad de relaciones laborales (permanentes o contratadas) con al menos un pago en el mes, según el registro DW SICCA-SINARH. Es la serie principal de Pulso del Estado y llega hasta el mes más reciente disponible.
+
+**Personas que cobraron en el mes.** Cantidad de personas con al menos un pago registrado en ese mes.
+
+**Personas distintas en el año.** Cantidad de personas diferentes que cobraron al menos una vez entre enero y el último mes informado del año. Es la mejor aproximación a "cuántas personas cobran del Estado" en un año, porque no cuenta dos veces a quien cobró varios meses.
+
+**Vínculo.** Relación laboral de la persona con la institución: **permanente** (nombrado) o **contratado**. Una persona puede tener más de un vínculo; por eso la suma de vínculos puede superar a la cantidad de personas.
+
+**Nivel institucional.** Agrupación del Presupuesto General de la Nación (Poder Ejecutivo, Poder Judicial, municipalidades, entes autónomos, etc.).
+
+## Advertencias
+
+- **Las comparaciones se hacen desde 2017.** En 2015 y 2016 se fueron incorporando instituciones a los registros (por ejemplo, entre abril y mayo de 2015 aparecen cerca de 56.000 personas más, y durante 2016 la cantidad de instituciones que reportan pasa de unas 260 a más de 320). Comparar con esos años mezclaría crecimiento real con ampliación de cobertura.
+- **Los meses más recientes son preliminares.** Algunas instituciones cargan sus datos con atraso; las comparaciones interanuales se hacen con el mismo conjunto de instituciones en ambos períodos (panel constante).
+- **Vínculos, personas y cargos no son lo mismo.** Un *vínculo* es una relación laboral pagada en el mes; una *persona* puede tener más de uno; un *cargo presupuestado* es la autorización de gasto en el Presupuesto General de la Nación, que puede estar ocupado o no.
+- En el resumen de **personas distintas**, 2025 es un año parcial (enero a mayo en la versión actual de los datos). En el registro de **vínculos** (DW SICCA-SINARH) los datos llegan hasta agosto de 2026.
+- La cobertura de algunas instituciones, como las fuerzas públicas, puede diferir entre fuentes; se indica en cada nota cuando corresponde.
+
+## Reproducibilidad
+
+El código que transforma los datos originales en las series publicadas está en el [repositorio del sitio](https://github.com/pulsoestado/pulsoestado.github.io), en la carpeta `scripts/`.

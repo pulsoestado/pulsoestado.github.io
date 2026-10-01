@@ -1,0 +1,270 @@
+---
+title: "Radiografía del empleo público: seis hallazgos a agosto de 2026"
+description: "Salud y Policía explican dos de cada tres nuevos vínculos desde 2017, más de la mitad del personal de Salud es contratado, Educación no creció y las mujeres ya son mayoría en el Estado."
+date: 2026-10-02
+categories: [Dotación, Contratados, Género, Salud, Seguridad, SITUCAP]
+image: social.png
+image-alt: "Seis hallazgos sobre el empleo público en Paraguay a agosto de 2026"
+---
+
+```{python}
+#| label: setup
+import pandas as pd
+import plotly.graph_objects as go
+
+DATOS = "../../data/processed/"
+mensual = pd.read_csv(DATOS + "dw_mensual.csv")
+sector_m = pd.read_csv(DATOS + "dw_mensual_sector.csv")
+sector_a = pd.read_csv(DATOS + "dw_anual_sector.csv")
+panel = pd.read_csv(DATOS + "dw_panel_interanual.csv")
+
+MESES = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto",
+         "septiembre", "octubre", "noviembre", "diciembre"]
+MES_C = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"]
+
+def miles(x):
+    return f"{x:,.0f}".replace(",", ".")
+
+def pct(x, dec=1):
+    return f"{x:.{dec}f}".replace(".", ",") + "%"
+
+def signo(x, f=miles):
+    return ("+" if x >= 0 else "−") + f(abs(x))
+
+# Periodo de análisis
+BASE = 2017                       # primer año con cobertura institucional estable
+ULT_COMPLETO = int(sector_a.anho.max())
+ult = mensual.iloc[-1]
+A1, M1 = int(ult.anho), int(ult.mes)
+mensual["fecha_d"] = pd.to_datetime(mensual.fecha + "-01")
+sector_m["fecha_d"] = pd.to_datetime(sector_m.fecha + "-01")
+
+# 1. Nivel actual y récord
+rec = mensual.loc[mensual.total.idxmax()]
+total_ult = int(ult.total)
+
+# 2. Último año con panel constante de instituciones
+k = ["codigo_nivel", "codigo_entidad", "codigo_oee"]
+p0 = panel[panel.anho == A1 - 1].set_index(k)
+p1 = panel[panel.anho == A1].set_index(k)
+comunes = p0.index.intersection(p1.index)
+oee_faltan = len(p0.index.difference(p1.index))
+vinc_faltan = int((p0.loc[p0.index.difference(p1.index), ["permanente", "contratado"]].sum()).sum())
+dP = p1.loc[comunes, "permanente"].sum() - p0.loc[comunes, "permanente"].sum()
+dC = p1.loc[comunes, "contratado"].sum() - p0.loc[comunes, "contratado"].sum()
+t0 = p0.loc[comunes, ["permanente", "contratado"]].sum().sum()
+var_anual = (dP + dC) / t0 * 100
+parte_c_anual = dC / (dP + dC) * 100
+
+# 3. Crecimiento por sector (promedios anuales)
+sa = sector_a.pivot(index="sector", columns="anho", values="total")
+sa["dif"] = sa[ULT_COMPLETO] - sa[BASE]
+sa["var"] = (sa[ULT_COMPLETO] / sa[BASE] - 1) * 100
+crec_total = sa["dif"].sum()
+sa["aporte"] = sa["dif"] / crec_total * 100
+tot_base, tot_ult = sa[BASE].sum(), sa[ULT_COMPLETO].sum()
+aporte_sp = sa.loc[["Salud (MSPBS)", "Policía Nacional"], "aporte"].sum()
+
+# 4. Salud
+sal = sector_m[sector_m.sector == "Salud (MSPBS)"].set_index("fecha")
+sal_ult = sal.iloc[-1]
+pc_sal = sal_ult.contratado / sal_ult.total * 100
+sal_dic19 = sal.loc["2019-12"]
+cruce_sal = sal[sal.contratado > sal.permanente].index[0]
+anio_cruce, mes_cruce = int(cruce_sal[:4]), int(cruce_sal[5:])
+
+# 5. Policía
+pol = sector_m[sector_m.sector == "Policía Nacional"].set_index("fecha")
+pol_ult = pol.iloc[-1].total
+pol_hace2 = pol.loc[f"{A1-2}-{M1:02d}"].total
+var_pol2 = (pol_ult / pol_hace2 - 1) * 100
+
+# 6. Mujeres
+mensual["pct_m"] = mensual.mujeres / mensual.total * 100
+cruce_m = mensual[(mensual.anho >= BASE) & (mensual.mujeres > mensual.hombres)].iloc[0]
+pm_ult = ult.mujeres / ult.total * 100
+dif_m = int(ult.mujeres - ult.hombres)
+
+# Estilo común de los gráficos
+AZUL, NARANJA, ROJO, GRIS, NAVY = "#2a78d6", "#eb6834", "#e34948", "#8a8984", "#0f2a44"
+def estilo(fig, alto=380):
+    fig.update_layout(
+        height=alto, margin=dict(l=10, r=20, t=10, b=10),
+        font=dict(family="Inter, system-ui, sans-serif", size=13, color="#77766f"),
+        paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
+        separators=",.", hovermode="x unified",
+        hoverlabel=dict(font=dict(family="Inter, sans-serif")),
+        legend=dict(orientation="h", y=1.1, x=0, title=None),
+    )
+    fig.update_xaxes(showgrid=False, linecolor="rgba(128,128,128,.4)", ticks="", fixedrange=True)
+    fig.update_yaxes(gridcolor="rgba(128,128,128,.18)", zeroline=False, ticks="", fixedrange=True)
+    return fig
+CONFIG = {"displayModeBar": False, "locale": "es"}
+```
+
+::: {.en-breve}
+**Seis hallazgos, en breve**
+
+1. En **`{python} MESES[int(rec.mes)-1]` de `{python} int(rec.anho)`** el Estado pagó **`{python} miles(rec.total)` vínculos**, el máximo de la serie.
+2. En el último año, **7 de cada 10 nuevos vínculos fueron contratos** (`{python} pct(parte_c_anual, 0)`).
+3. **Salud y Policía** explican el **`{python} pct(aporte_sp, 0)`** del crecimiento desde `{python} BASE`.
+4. **`{python} pct(pc_sal, 0)` del personal de Salud es contratado**: los contratos de la pandemia nunca se revirtieron.
+5. La **Policía creció `{python} pct(var_pol2, 0)` en dos años**, con grandes ingresos en mayo de 2025 y de 2026.
+6. **Las mujeres son mayoría** en el Estado desde fines de 2020, pero muy concentradas en Salud y Educación.
+:::
+
+```{python}
+#| label: kpis
+#| output: asis
+tiles = [
+    (miles(total_ult), f"vínculos pagados en {MESES[M1-1]} de {A1} (preliminar)"),
+    (signo(var_anual, lambda x: pct(x)), f"variación interanual ({MES_C[M1-1]} {A1-1} – {MES_C[M1-1]} {A1}, mismas instituciones)"),
+    (pct(ult.contratado / ult.total * 100), "de los vínculos son contratos"),
+    (pct(pm_ult), "de los vínculos corresponden a mujeres"),
+]
+print('<div class="kpis">' + "".join(
+    f'<div class="kpi"><div class="valor">{v}</div><div class="etiqueta">{e}</div></div>'
+    for v, e in tiles) + "</div>")
+```
+
+Esta nota usa el registro mensual de **vínculos pagados** que reportan los sistemas SICCA y SINARH, desde enero de 2015 hasta **`{python} MESES[M1-1]` de `{python} A1`**. Un vínculo es una relación laboral pagada en el mes: una persona con dos cargos cuenta dos veces. Por eso estas cifras no coinciden exactamente con los **cargos presupuestados** que publica el Ministerio de Economía (ver el recuadro al final).
+
+## 1. Un nuevo máximo histórico
+
+```{python}
+#| label: fig-total
+#| fig-cap: "Vínculos pagados por mes en el sector público"
+s = mensual[mensual.anho >= BASE]
+fig = go.Figure(go.Scatter(
+    x=s.fecha_d, y=s.total, mode="lines", line=dict(color=AZUL, width=2.2),
+    hovertemplate="%{x|%b %Y}: <b>%{y:,.0f}</b> vínculos<extra></extra>",
+))
+fig.add_trace(go.Scatter(
+    x=[pd.Timestamp(f"{int(rec.anho)}-{int(rec.mes):02d}-01")], y=[rec.total], mode="markers",
+    marker=dict(size=10, color=NAVY, line=dict(width=2, color="#fcfcfb")), hoverinfo="skip",
+))
+fig.add_annotation(x=pd.Timestamp(f"{int(rec.anho)}-{int(rec.mes):02d}-01"), y=rec.total,
+                   text=f"<b>Máximo: {miles(rec.total)}</b><br>{MES_C[int(rec.mes)-1]} {int(rec.anho)}",
+                   showarrow=False, yshift=26, xanchor="right", font=dict(size=12, color=NAVY))
+estilo(fig).update_layout(showlegend=False, hovermode="closest")
+fig.update_yaxes(tickformat=",.0f", range=[290000, 390000])
+fig.update_xaxes(tickformat="%Y", dtick="M12")
+fig.show(config=CONFIG)
+```
+
+Desde `{python} BASE` el número de vínculos pasó de unos `{python} miles(tot_base)` a `{python} miles(tot_ult)` en promedio anual (`{python} ULT_COMPLETO`), un aumento de `{python} pct((tot_ult/tot_base-1)*100)`. La serie tiene un **patrón que se repite cada año**: cae en enero y se recupera en febrero y marzo. Ese bache se explica sobre todo por el Ministerio de Educación y por la renovación anual de contratos en varias instituciones; como los vínculos se recuperan en pocas semanas, no refleja bajas definitivas.
+
+## 2. En el último año, el crecimiento vino de los contratos
+
+Para comparar `{python} MESES[M1-1]` de `{python} A1` con el mismo mes de `{python} A1-1` usamos solo las **`{python} len(comunes)` instituciones que reportaron en ambos meses**. Así evitamos confundir crecimiento con datos todavía no cargados.
+
+En ese conjunto, los vínculos aumentaron **`{python} signo(dP + dC)`** (`{python} signo(var_anual, lambda x: pct(x))`). De ese aumento, **`{python} signo(dC)` fueron contratos** y solo `{python} signo(dP)` cargos permanentes. Es decir, el **`{python} pct(parte_c_anual, 0)`** del crecimiento del último año fue vía contratación.
+
+## 3. Salud y Policía, los motores del crecimiento
+
+```{python}
+#| label: fig-aporte
+#| fig-cap: "Variación de vínculos por sector, promedio anual 2017–2025"
+orden = sa.sort_values("dif")
+fig = go.Figure(go.Bar(
+    y=orden.index, x=orden.dif, orientation="h",
+    marker_color=[AZUL if v >= 0 else ROJO for v in orden.dif], marker_line_width=0,
+    text=[signo(v) for v in orden.dif],
+    textposition="outside", textfont=dict(color="#77766f"), cliponaxis=False,
+    customdata=list(zip(orden[BASE], orden[ULT_COMPLETO], orden["var"], orden["aporte"])),
+    hovertemplate="<b>%{y}</b><br>" + f"{BASE}: " + "%{customdata[0]:,.0f}<br>" + f"{ULT_COMPLETO}: " +
+                  "%{customdata[1]:,.0f}<br>Variación: %{customdata[2]:.1f}%<br>Aporte al crecimiento: %{customdata[3]:.0f}%<extra></extra>",
+))
+estilo(fig, alto=330).update_layout(hovermode="closest", margin=dict(l=10, r=10), bargap=0.35)
+fig.update_xaxes(range=[orden.dif.min() - 9500, orden.dif.max() * 1.45], showgrid=True,
+                 gridcolor="rgba(128,128,128,.18)", tickformat=",.0f", zeroline=True,
+                 zerolinecolor="rgba(128,128,128,.5)")
+fig.show(config=CONFIG)
+```
+
+Entre `{python} BASE` y `{python} ULT_COMPLETO` el sector público sumó `{python} miles(crec_total)` vínculos en promedio anual. **Salud** aportó `{python} miles(sa.loc['Salud (MSPBS)','dif'])` (`{python} pct(sa.loc['Salud (MSPBS)','var'], 0)` más que en `{python} BASE`) y la **Policía Nacional** `{python} miles(sa.loc['Policía Nacional','dif'])` (+`{python} pct(sa.loc['Policía Nacional','var'], 0)`). Juntas explican el **`{python} pct(aporte_sp, 0)`** del crecimiento.
+
+En el otro extremo, **Educación** tiene hoy `{python} miles(abs(sa.loc['Educación (MEC)','dif']))` vínculos menos que en `{python} BASE` (−`{python} pct(abs(sa.loc['Educación (MEC)','var']))`). Con unos `{python} miles(sa.loc['Educación (MEC)', ULT_COMPLETO])` vínculos, el MEC sigue siendo la mayor institución del Estado, pero su planta está estancada.
+
+## 4. Más de la mitad del personal de Salud es contratado
+
+```{python}
+#| label: fig-salud
+#| fig-cap: "Ministerio de Salud: vínculos permanentes y contratados por mes"
+s = sector_m[(sector_m.sector == "Salud (MSPBS)") & (sector_m.anho >= BASE)]
+fig = go.Figure()
+for col, nombre, color in [("contratado", "Contratados", NARANJA), ("permanente", "Permanentes", AZUL)]:
+    fig.add_trace(go.Scatter(x=s.fecha_d, y=s[col], name=nombre, mode="lines",
+                             line=dict(color=color, width=2.4),
+                             hovertemplate=f"{nombre}: <b>%{{y:,.0f}}</b><extra></extra>"))
+    fig.add_annotation(x=s.fecha_d.iloc[-1], y=s[col].iloc[-1], text=f"<b>{nombre}</b>",
+                       xanchor="left", xshift=8, showarrow=False, font=dict(color=color, size=13))
+fig.add_vrect(x0="2020-03-01", x1="2021-12-31", fillcolor="rgba(128,128,128,.10)", line_width=0)
+fig.add_annotation(x="2020-03-01", y=1, yref="paper", text="Pandemia", showarrow=False,
+                   xanchor="left", yanchor="top", xshift=4, font=dict(size=12, color=GRIS))
+estilo(fig).update_layout(margin=dict(r=110))
+fig.update_yaxes(tickformat=",.0f", rangemode="tozero")
+fig.update_xaxes(tickformat="%Y", dtick="M12", range=[s.fecha_d.min(), s.fecha_d.max() + pd.Timedelta(days=20)])
+fig.show(config=CONFIG)
+```
+
+En diciembre de 2019 el Ministerio de Salud tenía `{python} miles(sal_dic19.contratado)` contratados y `{python} miles(sal_dic19.permanente)` permanentes. La respuesta a la pandemia se apoyó en contratos y, en **`{python} MESES[mes_cruce-1]` de `{python} anio_cruce`**, los contratados pasaron a ser mayoría. La tendencia nunca se revirtió: hoy hay **`{python} miles(sal_ult.contratado)` contratados frente a `{python} miles(sal_ult.permanente)` permanentes**, es decir, el `{python} pct(pc_sal, 0)` del personal.
+
+Esto tiene implicancias: los contratos tienen menos estabilidad y otra estructura de beneficios, y su renovación anual depende del presupuesto de cada año.
+
+## 5. La Policía creció `{python} pct(var_pol2, 0)` en dos años
+
+```{python}
+#| label: fig-policia
+#| fig-cap: "Policía Nacional: vínculos pagados por mes"
+s = sector_m[(sector_m.sector == "Policía Nacional") & (sector_m.anho >= BASE)]
+fig = go.Figure(go.Scatter(
+    x=s.fecha_d, y=s.total, mode="lines", line=dict(color=AZUL, width=2.4, shape="hv"),
+    hovertemplate="%{x|%b %Y}: <b>%{y:,.0f}</b> vínculos<extra></extra>",
+))
+estilo(fig, alto=340).update_layout(showlegend=False, hovermode="closest")
+fig.update_yaxes(tickformat=",.0f", rangemode="tozero")
+fig.update_xaxes(tickformat="%Y", dtick="M12")
+fig.show(config=CONFIG)
+```
+
+La Policía Nacional pasó de `{python} miles(pol_hace2)` vínculos en `{python} MESES[M1-1]` de `{python} A1-2` a **`{python} miles(pol_ult)`** en `{python} MESES[M1-1]` de `{python} A1`. El crecimiento ocurre **en escalones**: grandes ingresos en mayo de 2025 y mayo de 2026, probablemente asociados al egreso de nuevas promociones de agentes. El salto de 2026 es coherente con los más de 5.000 nuevos cargos policiales previstos en el Presupuesto 2026. A diferencia de Salud, casi todo el personal policial es permanente.
+
+## 6. Las mujeres ya son mayoría, pero no en todos lados
+
+```{python}
+#| label: fig-mujeres
+#| fig-cap: "Proporción de mujeres en los vínculos de cada sector, promedio 2025"
+x = sector_a[sector_a.anho == ULT_COMPLETO].copy()
+x["pm"] = x.mujeres / x.total * 100
+x = x.sort_values("pm")
+total_pm = x.mujeres.sum() / x.total.sum() * 100
+fig = go.Figure(go.Bar(
+    y=x.sector, x=x.pm, orientation="h", marker_color=NARANJA, marker_line_width=0,
+    text=[pct(v, 0) for v in x.pm], textposition="outside", textfont=dict(color="#77766f"),
+    cliponaxis=False, customdata=x.mujeres,
+    hovertemplate="<b>%{y}</b><br>Mujeres: %{x:.1f}% (%{customdata:,.0f} vínculos)<extra></extra>",
+))
+fig.add_vline(x=50, line=dict(color=GRIS, width=1, dash="dot"))
+estilo(fig, alto=300).update_layout(hovermode="closest", bargap=0.35)
+fig.update_xaxes(range=[0, 85], ticksuffix="%", showgrid=True, gridcolor="rgba(128,128,128,.18)")
+fig.show(config=CONFIG)
+```
+
+Desde **`{python} MESES[int(cruce_m.mes)-1]` de `{python} int(cruce_m.anho)`** hay más vínculos de mujeres que de hombres en el Estado, y la diferencia sigue creciendo: hoy son `{python} miles(dif_m)` más (`{python} pct(pm_ult)` del total). Pero la distribución es muy desigual: las mujeres son cerca de 7 de cada 10 en **Salud y Educación**, y menos de 2 de cada 10 en la **Policía** y en **Defensa**.
+
+## Qué tener en cuenta
+
+::: {.callout-note collapse="false"}
+## ¿Por qué estas cifras no coinciden con las de la prensa?
+
+Medios como [Última Hora](https://www.ultimahora.com/mas-de-11-000-nuevos-cargos-publicos-se-sumarian-en-el-2026) y [ABC Color](https://www.abc.com.py/economia/2024/03/11/cargos-publicos-mas-de-21000-creados-en-los-ultimos-seis-anos/) citan los **cargos presupuestados** del Presupuesto General de la Nación (por ejemplo, 334.541 cargos en 2025 y 11.105 nuevos para 2026, sin municipalidades). Esa cifra mide **cuántos cargos se autoriza financiar**. Aquí medimos **cuántos vínculos se pagaron efectivamente cada mes**, incluyendo municipalidades y sociedades anónimas con participación estatal. Las dos miradas se complementan: una es la intención presupuestaria y la otra, lo que efectivamente ocurre en la planilla.
+:::
+
+- **Los datos de los últimos meses son preliminares.** En `{python} MESES[M1-1]` de `{python} A1` todavía faltan `{python} oee_faltan` instituciones que sí reportaron un año antes (unos `{python} miles(vinc_faltan)` vínculos, sobre todo municipalidades). Por eso las comparaciones interanuales se hacen con el mismo conjunto de instituciones.
+- **Partimos de `{python} BASE`** porque en 2015 y 2016 se fueron incorporando instituciones a los registros, y las comparaciones con esos años mezclarían crecimiento real con ampliación de cobertura. Aun desde 2017 se suman algunas instituciones pequeñas (sobre todo municipalidades), por lo que parte del crecimiento del "resto del sector público" puede deberse a mayor cobertura; los sectores identificados por institución (Salud, Policía, Educación, Defensa) no tienen ese problema.
+- Los sectores se identifican por institución: Salud es el Ministerio de Salud Pública y Bienestar Social; Educación, el Ministerio de Educación y Ciencias; Defensa, el Ministerio de Defensa Nacional. Otras instituciones del área (hospitales de entes autónomos, universidades, etc.) están en "Resto del sector público".
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SICCA y SINARH (vínculos por mes, OEE, tipo de vínculo y sexo), enero de 2015 a `{python} MESES[M1-1]` de `{python} A1`. Ver [metodología](/metodologia.qmd) y [descargar los datos](/datos/).
+:::

@@ -1,0 +1,19 @@
+---
+title: "Datos"
+subtitle: "Series procesadas, listas para descargar"
+toc: false
+---
+
+Todos los datos están en formato CSV (separador coma, codificación UTF-8) y se publican bajo licencia [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/deed.es): podés usarlos citando a **Pulso del Estado** y a la fuente original.
+
+| Archivo | Descripción | Periodo |
+|---|---|---|
+| [dw_mensual.csv](/data/processed/dw_mensual.csv) | Vínculos pagados por mes: permanentes, contratados, mujeres, hombres e instituciones que reportan | ene 2015 – ago 2026 |
+| [dw_mensual_sector.csv](/data/processed/dw_mensual_sector.csv) | Vínculos por mes y sector (Salud, Educación, Policía, Defensa, resto) | ene 2015 – ago 2026 |
+| [dw_anual_sector.csv](/data/processed/dw_anual_sector.csv) | Promedio anual de vínculos por sector | 2015 – 2025 |
+| [dw_panel_interanual.csv](/data/processed/dw_panel_interanual.csv) | Vínculos por institución en el último mes y el mismo mes del año anterior | ago 2025 y ago 2026 |
+| [dotacion_anual.csv](/data/processed/dotacion_anual.csv) | Personas distintas por año, promedio mensual, permanentes y contratados | 2015 – 2025 (parcial) |
+| [dotacion_mensual.csv](/data/processed/dotacion_mensual.csv) | Personas que cobraron cada mes y vínculos por tipo | ene 2015 – may 2025 |
+| [dotacion_anual_nivel.csv](/data/processed/dotacion_anual_nivel.csv) | Personas distintas por año y nivel institucional | 2015 – 2025 (parcial) |
+
+Las definiciones de cada columna están en la [metodología](/metodologia.qmd).

@@ -1,0 +1,97 @@
+project:
+  type: website
+  output-dir: _site
+  resources:
+    - data/processed/*.csv
+
+website:
+  title: "Pulso del Estado"
+  description: "Datos y análisis sobre la dotación de personal y la masa salarial del sector público paraguayo."
+  site-url: "https://pulsoestado.github.io"
+  repo-url: "https://github.com/pulsoestado/pulsoestado.github.io"
+  favicon: assets/img/favicon.svg
+  image: assets/img/social-default.png
+  search: true
+  page-navigation: true
+  back-to-top-navigation: true
+  open-graph:
+    locale: es_PY
+  twitter-card:
+    site: "@pulsoestadopy"
+    creator: "@pulsoestadopy"
+    card-style: summary_large_image
+  navbar:
+    logo: assets/img/logo.svg
+    logo-alt: "Logo de Pulso del Estado"
+    title: "Pulso del Estado"
+    left:
+      - text: "Análisis"
+        href: index.qmd
+      - text: "SITUCAP"
+        href: situcap/index.qmd
+      - text: "Datos"
+        href: datos/index.qmd
+      - text: "Metodología"
+        href: metodologia.qmd
+      - text: "Acerca de"
+        href: about.qmd
+    right:
+      - icon: twitter-x
+        href: https://x.com/pulsoestadopy
+        aria-label: "X (Twitter)"
+      - icon: instagram
+        href: https://instagram.com/pulsoestado
+        aria-label: "Instagram"
+      - icon: github
+        href: https://github.com/pulsoestado
+        aria-label: "GitHub"
+      - icon: rss
+        href: index.xml
+        aria-label: "RSS"
+  page-footer:
+    left: "© 2026 Pulso del Estado · Contenido bajo licencia [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/deed.es)"
+    right:
+      - icon: envelope
+        href: mailto:pulsoestado@gmail.com
+        aria-label: "Correo"
+      - icon: twitter-x
+        href: https://x.com/pulsoestadopy
+        aria-label: "X (Twitter)"
+      - icon: instagram
+        href: https://instagram.com/pulsoestado
+        aria-label: "Instagram"
+  # Analítica (opcional): reemplazar por tu ID de Google Analytics y descomentar
+  # google-analytics: "G-XXXXXXXXXX"
+  # Comentarios con giscus (opcional): ver README.md para obtener repo-id y category-id
+  # comments:
+  #   giscus:
+  #     repo: pulsoestado/pulsoestado.github.io
+  #     repo-id: "R_xxxxxxxx"
+  #     category: "Comentarios"
+  #     category-id: "DIC_xxxxxxxx"
+  #     mapping: pathname
+  #     reactions-enabled: true
+  #     language: es
+
+lang: es
+
+format:
+  html:
+    theme:
+      light: [cosmo, assets/styles/brand.scss]
+      dark: [cosmo, assets/styles/brand.scss, assets/styles/dark.scss]
+    respect-user-color-scheme: true
+    toc: true
+    toc-title: "En esta nota"
+    code-fold: true
+    code-summary: "Ver código"
+    code-tools: false
+    smooth-scroll: true
+    link-external-newwindow: true
+    fig-responsive: true
+    lang: es
+
+execute:
+  echo: false
+  warning: false
+  message: false
