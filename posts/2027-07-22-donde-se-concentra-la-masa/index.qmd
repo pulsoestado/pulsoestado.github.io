@@ -1,0 +1,88 @@
+---
+title: "¿Dónde se concentra la masa salarial?"
+description: "Cientos de instituciones pagan salarios, pero un puñado concentra la mayor parte del gasto. Cuántas hacen falta para sumar la mitad, tres cuartos y nueve de cada diez guaraníes de la masa salarial."
+date: 2027-07-22
+categories: [Masa salarial, Instituciones]
+image: social.png
+image-alt: "Curva de concentración de la masa salarial por institución"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import numpy as np
+import plotly.graph_objects as go
+
+UA = ultimo_anio_completo()
+m = masa_oee_anual(UA); m = m[m.masa > 0].sort_values("masa", ascending=False).reset_index(drop=True)
+N = len(m); T = m.masa.sum()
+m["acum"] = m.masa.cumsum() / T * 100; m["rank"] = np.arange(1, N + 1)
+n50 = int((m.acum < 50).sum()) + 1; n75 = int((m.acum < 75).sum()) + 1; n90 = int((m.acum < 90).sum()) + 1
+mu = m[m.sector == "Municipalidades"]
+p_mu = mu.masa.sum() / T * 100; n_mu = len(mu)
+peq = m[m.masa < m.masa.quantile(0.5)]
+p_peq = peq.masa.sum() / T * 100
+top10 = m.head(10)
+a0 = masa_oee_anual(2017); a0 = a0[a0.masa > 0].sort_values("masa", ascending=False)
+p10_17 = a0.head(10).masa.sum() / a0.masa.sum() * 100
+```
+
+::: {.en-breve}
+**En breve**
+
+- En `{python} UA`, **`{python} N` instituciones** pagaron salarios. Pero **`{python} n50` concentran la mitad** de la masa salarial, `{python} n75` tres cuartos y `{python} n90` el 90%.
+- Las 10 más grandes reúnen el `{python} pct(top10.masa.sum() / T * 100, 0)` de la masa (en 2017, el `{python} pct(p10_17, 0)`).
+- Las `{python} n_mu` municipalidades con datos son la mayoría de las instituciones, pero suman el `{python} pct(p_mu, 1)` de la masa.
+- La mitad más chica de las instituciones paga, en conjunto, el `{python} pct(p_peq, 1)` del total.
+:::
+
+```{python}
+#| label: fig
+#| fig-cap: "Masa salarial acumulada según la cantidad de instituciones, de la más grande a la más chica"
+fig = go.Figure(go.Scatter(x=m["rank"], y=m.acum, mode="lines", line=dict(color=AZUL, width=3),
+                           customdata=m.nombre_largo, hovertemplate="%{x} instituciones (hasta %{customdata}): <b>%{y:.1f}%</b><extra></extra>"))
+for n_, lab in [(n50, "50%"), (n75, "75%"), (n90, "90%")]:
+    fig.add_annotation(x=n_, y=m.acum.iloc[n_ - 1], text=f"{n_} instituciones: {lab}", showarrow=True, arrowhead=0, ax=60, ay=20,
+                       font=dict(color=NARANJA, size=12))
+estilo(fig, alto=360, leyenda=False)
+fig.update_xaxes(type="log", title="Cantidad de instituciones (escala logarítmica)", showgrid=True, gridcolor="rgba(128,128,128,.12)")
+fig.update_yaxes(ticksuffix="%", range=[0, 102])
+fig.show(config=CONFIG)
+```
+
+La curva sube casi vertical al principio: el **Ministerio de Educación** por sí solo paga el `{python} pct(m.acum.iloc[0], 0)` de la masa; con el **Ministerio de Salud** y la **Policía Nacional**, se supera la mitad. Después se aplana: hacen falta cientos de instituciones, casi todas municipalidades y organismos chicos, para sumar el último 10%.
+
+```{python}
+#| label: tbl
+#| output: asis
+print("| # | Institución | Masa salarial (mil M Gs) | % del total | % acumulado |\n|--:|---|--:|--:|--:|")
+for _, r in top10.iterrows():
+    print(f"| {r['rank']} | {r.nombre_largo} | {milmillones(r.masa)} | {pct(r.masa / T * 100)} | {pct(r.acum, 0)} |")
+print(f"\n: Las 10 instituciones con mayor masa salarial, {UA}")
+```
+
+## Qué implica
+
+Para el control del gasto en personal, la concentración es una ventaja: lo que pasa con los sueldos y el personal de cinco o seis instituciones explica casi todo lo que pasa con la masa salarial del país. Por eso los reajustes docentes, la planta de Salud y las promociones policiales son las tres decisiones que más mueven el gasto en personal ([¿Más gente o mejores sueldos?](../2026-10-30-mas-gente-o-mejores-sueldos/)). Para la transparencia es al revés: los cientos de instituciones chicas, que en conjunto pesan poco, son las que más se atrasan en reportar sus datos ([cuántas instituciones reportan](../2027-02-22-cuantas-instituciones-reportan/)).
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA (devengado del grupo 100 por institución). [Descargar los datos](/datos/).
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_portada, ig_dato, barras_h as bh
+cort = lambda x: (x.replace("Ministerio de Salud Pública y Bienestar Social", "Min. de Salud").replace("Ministerio de Educación y Ciencias", "Min. de Educación")
+                   .replace("Instituto de Previsión Social", "IPS").replace("Universidad Nacional de Asunción", "UNA").replace("Ministerio de", "Min. de"))
+social("¿Dónde se concentra\nla masa salarial?", f"{n50} de {N}", "instituciones pagan la mitad de los salarios del Estado", (list(m["rank"][:60]), list(m.acum[:60])))
+ig_portada("Masa salarial", "¿Dónde se\nconcentra la\nmasa salarial?", f"{n50} instituciones pagan la mitad;\n{n90}, el 90%.", (list(m["rank"][:60]), list(m.acum[:60])))
+o = top10.head(8).iloc[::-1]
+ig_dato(2, "Las más grandes", "Las 10 instituciones más grandes pagan", pct(top10.masa.sum() / T * 100, 0), "de la masa salarial del Estado",
+        "% de la masa salarial", bh([cort(x) for x in o.nombre_largo], o.masa / T * 100, [pct(x / T * 100, 1) for x in o.masa]))
+```

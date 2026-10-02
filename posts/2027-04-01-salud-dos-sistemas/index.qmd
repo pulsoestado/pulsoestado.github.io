@@ -1,0 +1,131 @@
+---
+title: "Salud: dos sistemas, dos plantas"
+description: "El Ministerio de Salud y el IPS sumaron casi treinta mil vínculos desde 2017, la mayoría con contratos. Cómo creció cada uno, cuánto cuesta y qué pasó con su remuneración media."
+date: 2027-04-01
+categories: [Salud, Dotación, Contratados]
+image: social.png
+image-alt: "Vínculos del Ministerio de Salud y del IPS por tipo, desde 2017"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import plotly.graph_objects as go
+
+UA = ultimo_anio_completo(); A1, M = ultimo_mes(); A0 = 2017
+MS, IPS = "Ministerio de Salud Pública y Bienestar Social", "Instituto de Previsión Social"
+CORTO = {MS: "Ministerio de Salud", IPS: "IPS"}
+v = vin_oee(); v = v[v.nombre.isin([MS, IPS])]
+a = v.groupby(["anho", "nombre"])[["total", "contratado", "mujeres"]].mean()
+m = leer("masa_anual_oee.csv").merge(instituciones()[K_OEE + ["nombre"]], on=K_OEE)
+m = m[m.nombre.isin([MS, IPS]) & m.anho.between(A0, UA)]
+masa = m.groupby(["anho", "nombre"]).devengado.sum()
+sin_ag = m[m.componente != "Aguinaldo"].groupby(["anho", "nombre"]).devengado.sum()
+contr = m[m.componente == "Personal contratado"].groupby(["anho", "nombre"]).devengado.sum()
+dfl = deflactor(UA)
+rem = (sin_ag / 12 / a.total.reindex(sin_ag.index)) * dfl.reindex(sin_ag.index.get_level_values(0)).values
+f = {}
+for n in [MS, IPS]:
+    f[n] = dict(v0=a.loc[(A0, n), "total"], v1=a.loc[(UA, n), "total"], c0=a.loc[(A0, n), "contratado"],
+                c1=a.loc[(UA, n), "contratado"], pm=a.loc[(UA, n), "mujeres"] / a.loc[(UA, n), "total"] * 100,
+                masa=masa.loc[(UA, n)], rem0=rem.loc[(A0, n)], rem1=rem.loc[(UA, n)],
+                pcm=contr.get((UA, n), 0) / masa.loc[(UA, n)] * 100)
+    f[n]["dv"] = f[n]["v1"] - f[n]["v0"]; f[n]["dc"] = f[n]["c1"] - f[n]["c0"]
+    f[n]["vr"] = (f[n]["rem1"] / f[n]["rem0"] - 1) * 100
+dv = f[MS]["dv"] + f[IPS]["dv"]; dc = f[MS]["dc"] + f[IPS]["dc"]
+s = v.groupby(["anho", "mes", "nombre"])[["permanente", "contratado"]].sum().reset_index()
+s = s[s.anho >= A0]; s["fecha"] = pd.to_datetime(dict(year=s.anho, month=s.mes, day=1))
+```
+
+::: {.en-breve}
+**En breve**
+
+- Entre `{python} A0` y `{python} UA`, el **Ministerio de Salud** y el **IPS** sumaron **`{python} miles(dv)` vínculos** en promedio. De ellos, `{python} miles(dc)` fueron contratos: el `{python} pct(dc / dv * 100, 0)`.
+- Hoy el `{python} pct(f[MS]['c1'] / f[MS]['v1'] * 100, 0)` del personal del Ministerio de Salud y el `{python} pct(f[IPS]['c1'] / f[IPS]['v1'] * 100, 0)` del IPS son contratados.
+- La remuneración media real por vínculo cambió `{python} spct(f[MS]['vr'])` en el Ministerio y `{python} spct(f[IPS]['vr'])` en el IPS: los vínculos nuevos entraron con remuneraciones más bajas que el promedio.
+- En `{python} UA`, los dos juntos costaron `{python} billones(f[MS]['masa'] + f[IPS]['masa'])` billones de guaraníes en salarios.
+:::
+
+## Cómo crecieron
+
+```{python}
+#| label: fig-serie
+#| fig-cap: "Vínculos por mes y tipo: Ministerio de Salud e IPS"
+fig = go.Figure()
+for n, dash in [(MS, "solid"), (IPS, "dot")]:
+    d = s[s.nombre == n]
+    fig.add_trace(go.Scatter(x=d.fecha, y=d.permanente, name=f"{CORTO[n]}: permanentes", mode="lines",
+                             line=dict(color=AZUL, width=2.4, dash=dash), hovertemplate="%{y:,.0f}<extra></extra>"))
+    fig.add_trace(go.Scatter(x=d.fecha, y=d.contratado, name=f"{CORTO[n]}: contratados", mode="lines",
+                             line=dict(color=NARANJA, width=2.4, dash=dash), hovertemplate="%{y:,.0f}<extra></extra>"))
+estilo(fig, alto=380).update_yaxes(tickformat=",.0f")
+fig.update_layout(legend=dict(y=1.18))
+fig.show(config=CONFIG)
+```
+
+Las dos instituciones siguieron el mismo camino. Entre 2020 y 2022, durante la pandemia, sumaron miles de contratos para atender la emergencia, y la mayor parte de ese personal se quedó cuando la emergencia terminó. La planta permanente, en cambio, casi no se movió. En el Ministerio de Salud los contratados ya son más que los permanentes.
+
+## La ficha
+
+```{python}
+#| label: tbl-ficha
+#| output: asis
+print(f"| | Ministerio de Salud | IPS |\n|---|--:|--:|")
+filas = [("Vínculos " + str(A0), "v0", miles), (f"Vínculos {UA}", "v1", miles), ("Cambio", "dv", signo),
+         ("Contratados " + str(A0), "c0", miles), (f"Contratados {UA}", "c1", miles),
+         (f"% mujeres {UA}", "pm", lambda x: pct(x, 0)), (f"Masa salarial {UA} (mil M Gs)", "masa", milmillones),
+         ("% de la masa pagada como contratos", "pcm", lambda x: pct(x, 0)),
+         (f"Remuneración media {A0} (M Gs de {UA})", "rem0", millones), (f"Remuneración media {UA} (M Gs)", "rem1", millones),
+         ("Cambio real de la remuneración media", "vr", spct)]
+for et, k, fn in filas:
+    print(f"| {et} | {fn(f[MS][k])} | {fn(f[IPS][k])} |")
+print(f"\n: Ministerio de Salud Pública y Bienestar Social e Instituto de Previsión Social, promedios anuales")
+```
+
+## Más gente, menos remuneración media
+
+```{python}
+#| label: fig-rem
+#| fig-cap: "Remuneración media mensual por vínculo, sin aguinaldo, en millones de guaraníes del último año completo"
+r = rem.unstack()
+fig = go.Figure()
+for n, c in [(MS, NARANJA), (IPS, VERDE_AGUA)]:
+    fig.add_trace(go.Scatter(x=r.index, y=r[n] / 1e6, name=CORTO[n], mode="lines+markers", line=dict(color=c, width=2.6),
+                             hovertemplate=CORTO[n] + ": %{y:.2f} millones<extra></extra>"))
+estilo(fig, alto=320).update_xaxes(dtick=1)
+fig.show(config=CONFIG)
+```
+
+Que la remuneración media baje no significa que a alguien le hayan bajado el sueldo. Cuando se suman miles de vínculos con remuneraciones menores al promedio, el promedio cae. El resultado es un sector que hoy tiene mucho más personal, con una proporción alta de contratos y sin la estabilidad de la planta permanente.
+
+::: {.callout-note collapse="true"}
+## Notas
+
+- Salud = Ministerio de Salud Pública y Bienestar Social e Instituto de Previsión Social (clasificación de Pulso del Estado). El IPS es una entidad de seguridad social y su presupuesto incluye también personal administrativo.
+- Remuneración media = devengado en servicios personales sin aguinaldo / 12 / vínculos promedio, en guaraníes del último año completo (IPC del BCP).
+:::
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH, SICCA y del Banco Central del Paraguay. [Descargar los datos](/datos/).
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_portada, ig_dato, barras
+tot = s.groupby("fecha")[["permanente", "contratado"]].sum()
+social("Salud: dos sistemas,\ndos plantas", signo(dv) + " vínculos", f"desde {A0} en Ministerio de Salud e IPS · {pct(dc / dv * 100, 0)} contratos",
+       (list(range(len(tot))), list(tot.contratado)))
+ig_portada("Salud", "Salud: dos\nsistemas,\ndos plantas", f"{miles(dv)} vínculos más desde {A0},\n{pct(dc / dv * 100, 0)} de ellos con contrato.",
+           (list(range(len(tot))), list(tot.contratado)))
+ig_dato(2, "Contratados", "En el Ministerio de Salud, los contratados son el", pct(f[MS]['c1'] / f[MS]['v1'] * 100, 0),
+        f"del personal (IPS: {pct(f[IPS]['c1'] / f[IPS]['v1'] * 100, 0)})", f"Contratados promedio, {A0} y {UA}",
+        barras([f"MSPBS {A0}", f"MSPBS {UA}", f"IPS {A0}", f"IPS {UA}"], [f[MS]["c0"], f[MS]["c1"], f[IPS]["c0"], f[IPS]["c1"]],
+               [miles(x) for x in [f[MS]["c0"], f[MS]["c1"], f[IPS]["c0"], f[IPS]["c1"]]],
+               colores=["#f5b89f", NARANJA, "#f5b89f", NARANJA]))
+```

@@ -1,0 +1,92 @@
+---
+title: "Vínculos, personas y cargos: tres maneras de contar al Estado"
+description: "¿Son 334 mil, 359 mil o 369 mil? Las cifras de funcionarios públicos que circulan no se contradicen: miden cosas distintas. Una guía para leerlas sin confundirse."
+date: 2026-11-27
+categories: [Metodología, Dotación]
+image: social.png
+image-alt: "Tres medidas del empleo público en Paraguay: cargos presupuestados, personas y vínculos"
+draft: true  # programada
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import plotly.graph_objects as go
+
+v = leer("vinculos_mensual_sector.csv")
+per = leer("dotacion_mensual.csv").set_index(["anho", "mes"])
+vin = v.groupby(["anho", "mes"]).total.sum()
+vin_sin_muni = v[v.sector != "Municipalidades"].groupby(["anho", "mes"]).total.sum()
+
+CARGOS_PGN_2025 = 334541          # MEF, cargos presupuestados 2025, sin municipalidades
+v_may, p_may = vin.loc[(2025, 5)], per.loc[(2025, 5), "cantidad_mensual"]
+p_acum = per.loc[(2025, 5), "cantidad_acumulada"]
+multi = v_may - p_may
+v_jul, v_jul_sm = vin.loc[(2025, 7)], vin_sin_muni.loc[(2025, 7)]
+```
+
+::: {.en-breve}
+**En breve**
+
+- **Cargos presupuestados** (`{python} miles(CARGOS_PGN_2025)` en 2025): los puestos que el Presupuesto autoriza financiar, sin municipalidades.
+- **Personas** (`{python} miles(p_may)` en mayo de 2025): cuántas personas distintas cobraron en el mes.
+- **Vínculos** (`{python} miles(v_may)` en mayo de 2025): cuántas relaciones laborales se pagaron. Una persona con dos cargos cuenta dos veces.
+- Las tres son correctas. La diferencia está en **qué se cuenta** y **qué instituciones se incluyen**.
+:::
+
+En los últimos meses circularon cifras muy distintas sobre el tamaño del Estado paraguayo. La prensa habla de [334.541 cargos públicos](https://www.abc.com.py/edicion-impresa/editorial/2025/07/29/demasiada-gente-hoy-vive-del-estado/) y de [11.105 nuevos cargos para 2026](https://www.ultimahora.com/mas-de-11-000-nuevos-cargos-publicos-se-sumarian-en-el-2026). En Pulso del Estado publicamos **373.559 vínculos** en agosto. ¿Cuál es la correcta?
+
+Todas lo son. Miden cosas distintas.
+
+## Tres preguntas, tres respuestas
+
+```{python}
+#| label: fig-medidas
+#| fig-cap: "Tres medidas del empleo público en 2025"
+etq = ["Cargos presupuestados (PGN 2025, sin municipalidades)",
+       "Personas que cobraron en el mes (mayo 2025)",
+       "Vínculos pagados en el mes (mayo 2025)",
+       "Personas que cobraron al menos una vez (enero–mayo 2025)"]
+val = [CARGOS_PGN_2025, p_may, v_may, p_acum]
+col = [GRIS, AZUL, NARANJA, VERDE_AGUA]
+fig = go.Figure(go.Bar(y=etq[::-1], x=val[::-1], orientation="h", marker_color=col[::-1], marker_line_width=0,
+                       text=[miles(x) for x in val[::-1]], textposition="outside", cliponaxis=False,
+                       textfont=dict(color=TINTA_GRAF), hovertemplate="%{y}: <b>%{x:,.0f}</b><extra></extra>"))
+estilo(fig, alto=300, leyenda=False).update_layout(hovermode="closest", bargap=0.35, margin=dict(l=10, r=60))
+fig.update_xaxes(range=[0, max(val) * 1.15], tickformat=",.0f", showgrid=True, gridcolor="rgba(128,128,128,.18)")
+fig.show(config=CONFIG)
+```
+
+| Medida | Qué responde | Quién la produce | Incluye municipalidades |
+|---|---|---|---|
+| **Cargos presupuestados** | ¿Cuántos puestos autoriza a financiar el Presupuesto? | Ministerio de Economía y Finanzas (PGN) | No |
+| **Personas en el mes** | ¿Cuántas personas distintas cobraron este mes? | Registros SINARH y SICCA, con identificación de cada persona | Sí |
+| **Vínculos en el mes** | ¿Cuántas relaciones laborales se pagaron este mes? | Registros SINARH y SICCA | Sí |
+| **Personas en el año** | ¿Cuántas personas distintas cobraron al menos una vez en el año? | Registros SINARH y SICCA | Sí |
+
+: Qué mide cada cifra
+
+## Por qué no coinciden
+
+**Cargos no es lo mismo que gente.** Un cargo presupuestado es una autorización de gasto: puede estar ocupado o vacante. Además, la cifra del Presupuesto que suele citarse no incluye a las municipalidades, que pagan unos 28.000 vínculos. Sin ellas, los vínculos pagados en julio de 2025 eran `{python} miles(v_jul_sm)`, una cifra mucho más cercana a los cargos presupuestados.
+
+**Vínculos no es lo mismo que personas.** Un médico que trabaja en un hospital del Ministerio de Salud y da clases en la universidad nacional tiene dos vínculos con el Estado. En mayo de 2025 había **`{python} miles(multi)` vínculos más que personas**. Si cada una de esas personas tuviera dos vínculos, serían alrededor del `{python} pct(multi / p_may * 100)` del personal.
+
+**El mes no es lo mismo que el año.** Mucha gente entra y sale del Estado durante el año: contratos de pocos meses, reemplazos, jubilaciones. Por eso la cantidad de personas que cobró al menos una vez entre enero y mayo de 2025 (`{python} miles(p_acum)`) supera a las que cobraron en cualquier mes puntual.
+
+**Y el mismo dato puede cambiar con el tiempo.** Los meses más recientes son preliminares: algunas instituciones cargan sus pagos con atraso, y una cifra publicada apenas cerrado el mes puede subir o bajar unos miles cuando se completa la información. Por eso conviene comparar meses ya consolidados o, como hacemos en el SITUCAP, solo las instituciones que reportaron en ambos períodos.
+
+## ¿Cuál usar?
+
+- Para discutir **cuánto autoriza gastar el Presupuesto**, los cargos presupuestados.
+- Para saber **cuánta gente depende de un sueldo público**, las personas distintas.
+- Para seguir **la evolución mensual del empleo y del gasto**, los vínculos: son la serie más larga, más actualizada y la que se puede cruzar con el gasto por institución. Es la medida principal de Pulso del Estado y del [SITUCAP](/situcap/).
+
+Lo importante es no mezclarlas: comparar los cargos presupuestados de un año con los vínculos de otro produce aumentos o caídas que no existen.
+
+::: {.fuente}
+**Fuentes:** elaboración de Pulso del Estado con datos de SINARH y SICCA (vínculos y personas por mes). Cargos presupuestados 2025 y 2026: Ministerio de Economía y Finanzas, según [Última Hora](https://www.ultimahora.com/mas-de-11-000-nuevos-cargos-publicos-se-sumarian-en-el-2026) y [ABC Color](https://www.abc.com.py/edicion-impresa/editorial/2025/07/29/demasiada-gente-hoy-vive-del-estado/). [Metodología](/metodologia.qmd).
+:::

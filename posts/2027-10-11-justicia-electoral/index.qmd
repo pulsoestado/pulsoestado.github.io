@@ -1,0 +1,60 @@
+---
+title: "La Justicia Electoral y sus contratos"
+description: "La Justicia Electoral organiza cada elección y ajusta su personal contratado al calendario electoral. Cuántos contratos tiene hoy y cómo se movieron en los ciclos anteriores."
+date: 2027-10-11
+categories: [El dato de la semana, Ciclo electoral, Poder Judicial]
+image: social.png
+image-alt: "Contratados de la Justicia Electoral por mes"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import plotly.graph_objects as go
+
+v = vin_oee()
+j = v[v.nombre == "Justicia Electoral"].groupby(["anho", "mes"])[["total", "contratado"]].sum().reset_index()
+j = j[j.anho >= 2017]; j["fecha"] = pd.to_datetime(dict(year=j.anho, month=j.mes, day=1))
+u = j.iloc[-1]; mx = j.loc[j.contratado.idxmax()]
+E = [(2017, 12), (2018, 4), (2021, 6), (2021, 10), (2022, 12), (2023, 4), (2026, 6), (2026, 10)]
+```
+
+```{python}
+#| label: kpis
+#| output: asis
+print(kpis([(miles(u.contratado), f"contratados en {fecha_txt(u.anho, u.mes)}"), (miles(mx.contratado), f"el máximo, en {fecha_txt(mx.anho, mx.mes)}"),
+            (pct(u.contratado / u.total * 100, 0), "de su personal")]))
+```
+
+La **Justicia Electoral** tiene `{python} miles(u.total)` vínculos, de los cuales `{python} miles(u.contratado)` son contratos (`{python} fecha_txt(u.anho, u.mes)`). El máximo de la serie fue en `{python} fecha_txt(mx.anho, mx.mes)`, con `{python} miles(mx.contratado)` contratados. En la mayoría de los años, sus contratos caen en enero a menos de la mitad y se recuperan en febrero: el mismo calendario de renovación anual que se ve en el resto del Estado, pero mucho más marcado.
+
+```{python}
+#| label: fig
+#| fig-cap: "Contratados de la Justicia Electoral por mes; las líneas punteadas marcan elecciones"
+fig = go.Figure(go.Scatter(x=j.fecha, y=j.contratado, mode="lines", line=dict(color=NARANJA, width=2.4), hovertemplate="%{x|%b %Y}: <b>%{y:,.0f}</b><extra></extra>"))
+for a, m in E:
+    if pd.Timestamp(a, m, 1) <= j.fecha.max():
+        fig.add_vline(x=pd.Timestamp(a, m, 1), line=dict(color=GRIS, width=1, dash="dot"))
+estilo(fig, alto=320, leyenda=False).update_yaxes(tickformat=",.0f", rangemode="tozero")
+fig.show(config=CONFIG)
+```
+
+Desde mediados de 2023, después de las elecciones generales, la Justicia Electoral tiene menos contratos que en los años anteriores. Con las internas partidarias y las elecciones generales de 2028 por delante, es una de las instituciones a seguir en los próximos meses.
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH. [Descargar los datos](/datos/).
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_dato, lineas
+social("La Justicia Electoral\ny sus contratos", miles(u.contratado) + " contratos", f"en {fecha_txt(u.anho, u.mes)} · máximo: {miles(mx.contratado)}", (list(range(len(j))), list(j.contratado)))
+ig_dato(1, "El dato de la semana", "La Justicia Electoral tiene", miles(u.contratado), f"contratados ({fecha_txt(u.anho, u.mes)})", "Contratados por mes",
+        lineas(list(range(len(j))), {"Contratados": (list(j.contratado), NARANJA)}, fmt=miles))
+```

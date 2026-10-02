@@ -1,0 +1,58 @@
+---
+title: "Qué mirar del Presupuesto 2028 en personal"
+description: "El 1 de septiembre el Poder Ejecutivo presenta el proyecto de Presupuesto 2028. Cinco cifras para leerlo en lo que hace al personal del Estado."
+date: 2027-08-30
+categories: [El dato de la semana, Presupuesto, Masa salarial]
+image: social.png
+image-alt: "Cinco cifras para leer el Presupuesto 2028"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+
+UA = ultimo_anio_completo()
+m = leer("masa_mensual_sector.csv"); u = m[m.anho == UA].pivot_table(index="sector", columns="componente", values="devengado", aggfunc="sum").fillna(0)
+T = u.values.sum(); un_punto = (T - u.get("Dietas", 0).sum() - u.get("Gastos de representación", 0).sum()) * 0.01
+v = leer("vinculos_mensual_sector.csv")
+va = v[v.anho.isin([UA - 1, UA])].groupby(["anho", "mes"])[["total", "contratado"]].sum().groupby("anho").mean()
+pc = va.contratado[UA] / va.total[UA] * 100; crec = va.total[UA] - va.total[UA - 1]
+tres = u.loc[["Educación", "Salud", "Fuerzas públicas"]].values.sum() / T * 100
+A1, M = ultimo_mes()
+```
+
+El **1 de septiembre** el Poder Ejecutivo presenta al Congreso el proyecto de Presupuesto General de la Nación para 2028. En lo que hace al personal, estas son las cinco cifras de referencia, con los últimos datos disponibles:
+
+```{python}
+#| label: kpis
+#| output: asis
+print(kpis([(billones(T) + " bill.", f"masa salarial devengada en {UA}"), (milmillones(un_punto) + " mil M", "costo anual de cada 1% de aumento general"),
+            (pct(tres, 0), "de la masa va a Educación, Salud y Fuerzas públicas"), (pct(pc, 0), "de los vínculos son contratos"),
+            (signo(crec), f"vínculos promedio en {UA} frente a {UA - 1}")]))
+```
+
+1. **El total.** Cuánto propone el proyecto para servicios personales (grupo 100) y cuánto crece frente a lo que realmente se devengó en `{python} UA`, `{python} billones(T)` billones de guaraníes. Comparar con lo devengado, y no solo con el presupuesto del año anterior, muestra cuánto del aumento es real.
+2. **Los reajustes.** Si hay un aumento general o para grupos específicos (docentes, salud, policías y militares). Cada punto de aumento general cuesta unos `{python} milmillones(un_punto)` mil millones de guaraníes por año ([la simulación](../2027-07-08-cuanto-cuesta-un-punto/)).
+3. **Los cargos nuevos.** Cuántos cargos permanentes se crean en el Anexo de Personal y en qué instituciones. En `{python} UA`, el Estado pagó `{python} signo(crec)` vínculos más en promedio que el año anterior.
+4. **Los contratos.** Cuánto se prevé para personal contratado (objetos 141 a 148), que hoy son el `{python} pct(pc, 0)` de los vínculos.
+5. **Las ampliaciones del Congreso.** Durante el tratamiento del proyecto, el Congreso suele agregar cargos y aumentos. Comparar el proyecto con la ley aprobada muestra cuánto cambió.
+
+Cuando el proyecto esté disponible, publicaremos el análisis [Presupuesto 2028: qué pide en personal](../2027-09-02-presupuesto-2028/).
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA. Último mes con datos: `{python} fecha_txt(A1, M)`. [Descargar los datos](/datos/).
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_dato, barras
+social("Qué mirar del Presupuesto\n2028 en personal", billones(T) + " billones", f"fue la masa salarial de {UA} · cada 1% de aumento cuesta {milmillones(un_punto)} mil M")
+ig_dato(1, "El dato de la semana · PGN 2028", f"La masa salarial de {UA} fue de", billones(T) + " bill.", "de guaraníes: la base para leer el Presupuesto 2028",
+        "Cinco cifras de referencia", barras(["Educ., Salud y\nF. públicas", "Contratos"], [tres, pc], [pct(tres, 0), pct(pc, 0)], colores=[AZUL, NARANJA], ylim=(0, 100)))
+```

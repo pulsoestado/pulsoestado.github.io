@@ -1,0 +1,80 @@
+---
+title: "Presupuesto 2028: qué pide en personal"
+description: "El proyecto de Presupuesto General de la Nación 2028 llegó al Congreso. Cuánto prevé para servicios personales, en qué instituciones crece y cómo se compara con lo que efectivamente se pagó."
+date: 2027-09-02
+categories: [Presupuesto, Masa salarial, PGN 2028]
+image: social.png
+image-alt: "Servicios personales en el proyecto de Presupuesto 2028 por sector"
+resources: ["ig_*.png"]
+requiere:
+  archivo: "data/manual/pgn_2028_servicios_personales.csv"
+draft: true  # programada
+---
+
+<!--
+CÓMO COMPLETAR ESTA NOTA
+Esta nota se publica sola cuando existe el archivo data/manual/pgn_2028_servicios_personales.csv,
+con una fila por institución y estas columnas (montos en guaraníes, grupo 100 - servicios personales):
+  codigo_nivel,codigo_entidad,codigo_oee,proyecto_2028
+Se arma con el proyecto de PGN 2028 que el Ministerio de Economía publica en su sitio (presupuesto por
+institución y objeto de gasto). Antes de publicar, revisar el texto: los números se calculan solos.
+-->
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import plotly.graph_objects as go
+
+pg = pd.read_csv(raiz / "data/manual/pgn_2028_servicios_personales.csv")
+UA = ultimo_anio_completo(); A1, M = ultimo_mes()
+mm = leer("masa_mensual_oee.csv")
+dev = mm[mm.anho == UA].groupby(K_OEE).devengado.sum().rename("dev")
+pres = mm[mm.anho == A1].groupby(K_OEE).presupuestado.sum().rename("pres_curso")
+j = pg.set_index(K_OEE).join(dev).join(pres).join(instituciones().set_index(K_OEE)[["nombre_largo", "sector"]])
+P = j.proyecto_2028.sum(); D = j.dev.sum()
+var = (P / D - 1) * 100
+s = j.groupby("sector")[["proyecto_2028", "dev"]].sum(); s["var"] = (s.proyecto_2028 / s.dev - 1) * 100; s = s.sort_values("var")
+i = j.dropna(subset=["dev"]).assign(dif=lambda d: d.proyecto_2028 - d.dev).sort_values("dif", ascending=False)
+```
+
+::: {.en-breve}
+**En breve**
+
+- El proyecto de Presupuesto 2028 prevé **`{python} billones(P)` billones de guaraníes** para servicios personales.
+- Es `{python} pct(abs(var), 0)` `{python} "más" if var >= 0 else "menos"` que lo efectivamente devengado en `{python} UA` (`{python} billones(D)` billones).
+- El sector con mayor aumento previsto frente a lo devengado es **`{python} s.index[-1]`** (`{python} spct(s['var'].iloc[-1], 0)`).
+:::
+
+```{python}
+#| label: fig
+#| fig-cap: "Proyecto 2028 frente a lo devengado en el último año completo, por sector (%)"
+fig = barras_h(s.index, s["var"], [spct(x, 0) for x in s["var"]], rango=[min(0, s["var"].min() * 1.3), s["var"].max() * 1.4])
+fig.update_xaxes(ticksuffix="%"); fig.show(config=CONFIG)
+```
+
+```{python}
+#| label: tbl
+#| output: asis
+print(f"| Institución | Proyecto 2028 (mil M Gs) | Devengado {UA} (mil M Gs) | Diferencia (mil M Gs) |\n|---|--:|--:|--:|")
+for _, r in i.head(10).iterrows():
+    print(f"| {r.nombre_largo} | {milmillones(r.proyecto_2028)} | {milmillones(r.dev)} | {signo(r.dif / 1e9, miles)} |")
+print("\n: Las 10 instituciones con mayor aumento previsto frente a lo devengado")
+```
+
+Comparar el proyecto con lo devengado, y no solo con el presupuesto vigente, permite separar el crecimiento real del gasto en personal de las previsiones que después no se ejecutan ([presupuestado y pagado](../2027-08-26-presupuestado-y-pagado/)). El Congreso tiene hasta fin de año para aprobarlo y suele introducir cambios: actualizaremos este análisis con la ley aprobada.
+
+::: {.fuente}
+**Fuentes:** Ministerio de Economía y Finanzas, proyecto de Presupuesto General de la Nación 2028. Elaboración de Pulso del Estado con datos de SINARH y SICCA. [Descargar los datos](/datos/).
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_dato, barras_h as bh
+social("Presupuesto 2028:\nqué pide en personal", billones(P) + " billones", f"para servicios personales · {spct(var, 0)} frente a lo devengado en {UA}")
+ig_dato(1, "Presupuesto 2028", "El proyecto prevé para servicios personales", billones(P) + " bill.", f"de guaraníes ({spct(var, 0)} frente a {UA})",
+        "Cambio por sector frente a lo devengado", bh(s.index[-6:], s["var"].iloc[-6:], [spct(x, 0) for x in s["var"].iloc[-6:]]))
+```

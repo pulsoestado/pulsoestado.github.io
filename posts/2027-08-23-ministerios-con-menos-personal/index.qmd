@@ -1,0 +1,59 @@
+---
+title: "Los ministerios con menos personal que en 2017"
+description: "Mientras el Estado creció, varios ministerios del servicio civil del Ejecutivo tienen hoy menos vínculos que hace casi una década."
+date: 2027-08-23
+categories: [El dato de la semana, Servicio civil, Instituciones]
+image: social.png
+image-alt: "Ministerios con menos vínculos que en 2017"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+
+UA = ultimo_anio_completo(); A0 = 2017
+v = vin_oee(); sc = v[v.sector == "Servicio civil del Ejecutivo"]
+a = sc.groupby(["anho", "nombre"]).total.mean().unstack()
+d = (a.loc[UA] - a.loc[A0]).dropna(); vr = (a.loc[UA] / a.loc[A0] - 1) * 100
+baja = d[d < 0].sort_values(); baja = baja[baja.index.str.startswith("Ministerio")]
+t = sc.groupby(["anho", "mes"]).total.sum().groupby("anho").mean()
+vt = (t[UA] / t[A0] - 1) * 100
+```
+
+```{python}
+#| label: kpis
+#| output: asis
+print(kpis([(str(len(baja)), f"ministerios con menos vínculos que en {A0}"), (spct(vt), f"servicio civil del Ejecutivo, {A0}–{UA}")]))
+```
+
+El **servicio civil del Poder Ejecutivo**, que agrupa a los ministerios y secretarías que no son Educación, Salud, Interior ni Defensa, cambió `{python} spct(vt)` en vínculos entre `{python} A0` y `{python} UA`. Dentro de él, `{python} len(baja)` ministerios tienen hoy menos personal que entonces. La caída más grande es la del **`{python} baja.index[0]`** (`{python} signo(baja.iloc[0])`, `{python} spct(vr[baja.index[0]], 0)`).
+
+```{python}
+#| label: fig
+#| fig-cap: "Ministerios con menos vínculos que en 2017 (promedio anual)"
+o = baja.iloc[::-1]
+fig = barras_h(o.index, o.values, [f"{signo(x)} ({spct(vr[k], 0)})" for k, x in o.items()], colores=[ROJO] * len(o), rango=[o.min() * 1.7, 0])
+fig.show(config=CONFIG)
+```
+
+En algunos casos la caída refleja reorganizaciones: parte del personal del Ministerio de Economía pasó a la Dirección Nacional de Ingresos Tributarios ([la DNIT](../2027-08-16-la-dnit/)). En otros, como Agricultura y Obras Públicas, la reducción es sostenida en el tiempo. Puede deberse a jubilaciones que no se reemplazaron o a funciones que pasaron a otras instituciones, pero los registros no permiten distinguir entre esas causas.
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA. [Descargar los datos](/datos/).
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_dato, barras_h as bh
+cort = lambda x: x.replace("Ministerio de ", "").replace("Ministerio del ", "")
+o = baja.head(6).iloc[::-1]
+social("Los ministerios con\nmenos personal que en 2017", str(len(baja)) + " ministerios", f"tienen menos vínculos que en {A0}", color=ROJO)
+ig_dato(1, "El dato de la semana", f"Desde {A0}, el {baja.index[0].replace('Ministerio', 'Min.')} perdió", miles(abs(baja.iloc[0])), "vínculos, más que ningún otro ministerio",
+        f"Cambio en vínculos, {A0}–{UA}", bh([cort(x) for x in o.index], o.values, [signo(x) for x in o.values], colores=[ROJO] * len(o)), color=ROJO)
+```

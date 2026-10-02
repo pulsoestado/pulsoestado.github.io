@@ -1,0 +1,97 @@
+---
+title: "Ciclo electoral I: ¿se contrata más antes de votar?"
+description: "Se dice que el empleo público crece antes de las elecciones. Con los datos de las elecciones de 2017 a 2026, comparamos los contratos de los seis meses previos a cada votación con los mismos meses de otros años."
+date: 2027-10-07
+categories: [Ciclo electoral, Contratados, Dotación]
+image: social.png
+image-alt: "Cambio de contratos en los seis meses previos a cada elección frente a otros años"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import numpy as np
+import plotly.graph_objects as go
+
+E = [("Internas partidarias", 2017, 12), ("Elecciones generales", 2018, 4), ("Internas municipales", 2021, 6),
+     ("Elecciones municipales", 2021, 10), ("Internas partidarias", 2022, 12), ("Elecciones generales", 2023, 4),
+     ("Internas municipales", 2026, 6), ("Elecciones municipales", 2026, 10)]
+def mm(a, m, k):
+    t = a * 12 + m - 1 + k; return (t // 12, t % 12 + 1)
+
+def tabla(s):
+    filas = []
+    for n, a, m in E:
+        b = mm(a, m, -6)
+        if (a, m) not in s.index or b not in s.index: continue
+        pre = s.loc[(a, m)] - s.loc[b]
+        otros = [s.loc[(y, m)] - s.loc[mm(y, m, -6)] for y in range(2017, 2100)
+                 if y != a and (y, m) in s.index and mm(y, m, -6) in s.index and abs(y - a) >= 1]
+        filas.append(dict(eleccion=f"{n} {a}", fecha=pd.Timestamp(a, m, 1), pre=pre, normal=np.mean(otros), dif=pre - np.mean(otros)))
+    return pd.DataFrame(filas)
+
+v = leer("vinculos_mensual_sector.csv")
+tot = v.groupby(["anho", "mes"]).contratado.sum()
+mun = v[v.sector == "Municipalidades"].groupby(["anho", "mes"]).contratado.sum()
+t = tabla(tot); tm = tabla(mun)
+mas = int((t.dif > 0).sum()); n = len(t)
+tm_mun = tm[tm.eleccion.str.startswith("Elecciones municipales")]
+s = serie_mensual(); s = s[s.anho >= 2017]
+```
+
+::: {.en-breve}
+**En breve**
+
+- En `{python} mas` de las `{python} n` elecciones con datos, los contratos del Estado crecieron en los seis meses previos **más** que en los mismos meses de otros años; en las otras `{python} n - mas`, crecieron menos o bajaron.
+- En el total del Estado **no aparece un patrón claro** de contratación preelectoral: las diferencias son chicas frente a un total de casi cien mil contratos, y las más grandes coinciden con la pandemia de 2020 y 2021.
+- En las **municipalidades**, en los seis meses previos a las elecciones municipales, la diferencia de contratos frente a lo normal fue de `{python} "; ".join(f"{signo(r.dif)} en {r.fecha.year}" for _, r in tm_mun.iterrows())`.
+:::
+
+## Seis meses antes de votar
+
+```{python}
+#| label: tbl
+#| output: asis
+print("| Elección | Cambio en contratos, 6 meses previos | Mismos meses, otros años (promedio) | Diferencia |\n|---|--:|--:|--:|")
+for _, r in t.iterrows():
+    print(f"| {r.eleccion} | {signo(r.pre)} | {signo(r.normal)} | **{signo(r.dif)}** |")
+print("\n: Vínculos contratados de todo el Estado. «Otros años» = el mismo período de seis meses en los años sin esa elección")
+```
+
+Comparar con los mismos meses de otros años es importante porque los contratos tienen un calendario propio: caen en enero y se recuperan durante el primer semestre ([el calendario del empleo público](../2027-02-01-el-calendario-del-empleo-publico/)). Una suba de contratos antes de una elección de abril o junio puede ser solo esa recuperación normal.
+
+```{python}
+#| label: fig
+#| fig-cap: "Vínculos contratados por mes, con las fechas de elecciones"
+fig = go.Figure(go.Scatter(x=s.fecha, y=s.contratado, mode="lines", line=dict(color=NARANJA, width=2.4), hovertemplate="%{x|%b %Y}: <b>%{y:,.0f}</b><extra></extra>"))
+for n_, a, m in E:
+    if pd.Timestamp(a, m, 1) <= s.fecha.max():
+        fig.add_vline(x=pd.Timestamp(a, m, 1), line=dict(color=GRIS, width=1, dash="dot"))
+estilo(fig, alto=340, leyenda=False).update_yaxes(tickformat=",.0f")
+fig.show(config=CONFIG)
+```
+
+## Lo que no se puede ver en el total
+
+Que el total no muestre un salto no descarta que haya contrataciones con fines electorales en algunas instituciones o que, a la vez, se den de baja otros contratos. Para eso hace falta mirar institución por institución y persona por persona, algo que los datos abiertos todavía no permiten ([los indicadores que faltan](../2027-05-27-indicadores-de-nomina/)). Lo que sí se ve con claridad es lo que pasa **después** de las elecciones generales, cuando cambia el gobierno: lo analizamos en la segunda parte, la semana próxima.
+
+::: {.fuente}
+**Fuentes:** elaboración de Pulso del Estado con datos de SINARH y SICCA. Fechas electorales: Tribunal Superior de Justicia Electoral. [Descargar los datos](/datos/).
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_portada, ig_dato, barras_h as bh
+social("Ciclo electoral I:\n¿se contrata más antes de votar?", f"{mas} de {n}", "elecciones con más contratos que lo normal en los 6 meses previos")
+ig_portada("Ciclo electoral", "¿Se contrata\nmás antes\nde votar?", "Seis meses antes de cada elección,\nfrente a los mismos meses de otros años.")
+o = t.iloc[::-1]
+ig_dato(2, "Seis meses antes", "Elecciones con más contratos que lo normal:", f"{mas} de {n}", "en el total del Estado no hay un patrón claro",
+        "Diferencia frente a los mismos meses de otros años", bh([e.replace("Elecciones ", "").replace("Internas ", "Int. ") for e in o.eleccion], o.dif,
+                                                               [signo(x) for x in o.dif], colores=[NARANJA if x > 0 else GRIS for x in o.dif]))
+```

@@ -1,0 +1,61 @@
+---
+title: "La DNIT, la nueva recaudadora"
+description: "La Dirección Nacional de Ingresos Tributarios reunió desde 2024 la recaudación de impuestos y las aduanas. Cuánto personal tiene, cuánto cuesta y cómo cambió."
+date: 2027-08-16
+categories: [El dato de la semana, Instituciones, Reorganización]
+image: social.png
+image-alt: "Vínculos de la Dirección Nacional de Ingresos Tributarios por mes"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import plotly.graph_objects as go
+
+N = "Dirección Nacional de Ingresos Tributarios"
+v = vin_oee()
+d = v[v.nombre == N].groupby(["anho", "mes"])[["total", "contratado", "mujeres"]].sum().reset_index()
+d["fecha"] = pd.to_datetime(dict(year=d.anho, month=d.mes, day=1))
+i, u = d.iloc[0], d.iloc[-1]
+UA = ultimo_anio_completo()
+mo = masa_oee_anual(UA); r = mo[mo.nombre == N].iloc[0]
+rem = (r.masa - r.Aguinaldo) / 12 / d[d.anho == UA].total.mean()
+est = leer("masa_anual_sector.csv").query("anho == @UA"); rem_e = est.devengado_sin_aguinaldo.sum() / 12 / est.vinculos_promedio.sum()
+```
+
+```{python}
+#| label: kpis
+#| output: asis
+print(kpis([(miles(u.total), f"vínculos en {fecha_txt(u.anho, u.mes)}"), (signo(u.total - i.total), f"desde {fecha_txt(i.anho, i.mes)}"),
+            (coma(rem / rem_e, 1) + " veces", "la remuneración media del Estado")]))
+```
+
+La **Dirección Nacional de Ingresos Tributarios** (DNIT) aparece en los registros desde `{python} fecha_txt(i.anho, i.mes)`, cuando empezó a funcionar con el personal de la antigua Subsecretaría de Tributación y de la Dirección Nacional de Aduanas. Empezó con `{python} miles(i.total)` vínculos; en `{python} fecha_txt(u.anho, u.mes)` tenía **`{python} miles(u.total)`** (`{python} signo(u.total - i.total)`), el `{python} pct(u.contratado / u.total * 100, 0)` contratados y el `{python} pct(u.mujeres / u.total * 100, 0)` mujeres.
+
+```{python}
+#| label: fig
+#| fig-cap: "Vínculos de la DNIT por mes"
+fig = go.Figure(go.Scatter(x=d.fecha, y=d.total, mode="lines", line=dict(color=AZUL, width=2.8), hovertemplate="%{x|%b %Y}: <b>%{y:,.0f}</b><extra></extra>"))
+estilo(fig, alto=300, leyenda=False).update_yaxes(tickformat=",.0f")
+fig.show(config=CONFIG)
+```
+
+En `{python} UA` su masa salarial fue de `{python} milmillones(r.masa)` mil millones de guaraníes, con una remuneración media de `{python} millones(rem)` millones por vínculo y por mes, `{python} coma(rem / rem_e, 1)` veces la del Estado. Las reorganizaciones como esta cambian las cifras de varias instituciones a la vez, y por eso conviene compararlas con cuidado ([quién creció y quién se achicó](../2027-01-28-quien-crecio-y-quien-se-achico/)).
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA. [Descargar los datos](/datos/).
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_dato, lineas
+social("La DNIT, la nueva\nrecaudadora", miles(u.total) + " vínculos", f"{signo(u.total - i.total)} desde su creación", (list(range(len(d))), list(d.total)), color=AZUL)
+ig_dato(1, "El dato de la semana", "La Dirección Nacional de Ingresos Tributarios tiene", miles(u.total), f"vínculos ({signo(u.total - i.total)} desde su inicio)",
+        "Vínculos por mes", lineas(list(range(len(d))), {"DNIT": (list(d.total), AZUL)}, fmt=miles), color=AZUL)
+```

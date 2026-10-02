@@ -6,3 +6,4 @@ nbclient
 ipykernel
 matplotlib
 openpyxl
+pyyaml

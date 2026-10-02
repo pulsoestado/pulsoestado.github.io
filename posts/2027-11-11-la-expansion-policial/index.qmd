@@ -1,0 +1,95 @@
+---
+title: "La expansión policial: cuánto creció y cuánto cuesta"
+description: "Desde 2024, la Policía Nacional sumó más de diez mil vínculos con varias promociones de agentes. Cuánto cambió su masa salarial, cuánto cuesta cada nuevo agente y qué parte del crecimiento del Estado explica."
+date: 2027-11-11
+categories: [Fuerzas públicas, Masa salarial, Dotación]
+image: social.png
+image-alt: "Vínculos y masa salarial de la Policía Nacional desde 2017"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import plotly.graph_objects as go
+
+PN = "Policía Nacional"; B = 2024
+A1, M = ultimo_mes(); UA = ultimo_anio_completo()
+v = vin_oee(); p = v[v.nombre == PN].groupby(["anho", "mes"])[["total", "mujeres"]].sum()
+mm = leer("masa_mensual_oee.csv").merge(instituciones()[K_OEE + ["nombre"]], on=K_OEE)
+pm = mm[mm.nombre == PN].groupby(["anho", "mes"])[["devengado", "aguinaldo"]].sum()
+# Base: diciembre de 2023
+b0 = p.loc[(B - 1, 12), "total"]; u = p.loc[(A1, M), "total"]; dv = u - b0
+# Masa de los últimos 12 meses (sin aguinaldo) frente a 2023, en términos reales
+def ult12(df, a, m, col):
+    idx = [(a - (1 if mm_ > m else 0), mm_) for mm_ in range(1, 13)]
+    return sum(df.loc[i, col] - df.loc[i, "aguinaldo"] for i in idx if i in df.index)
+m12 = ult12(pm, A1, M, "devengado")
+m23 = sum(pm.loc[(B - 1, k), "devengado"] - pm.loc[(B - 1, k), "aguinaldo"] for k in range(1, 13))
+ipc = leer("ipc_salarios_bcp.csv").set_index("anho").ipc
+f = ipc.loc[min(A1, ipc.index.max())] / ipc.loc[B - 1]
+dm_real = m12 - m23 * f
+costo = dm_real / 12 / dv if dv > 0 else None
+s = v.groupby(["anho", "mes"]).total.sum()
+de = s.loc[(A1, M)] - s.loc[(B - 1, 12)]
+part = dv / de * 100 if de > 0 else None
+a = p.reset_index(); a = a[a.anho >= 2017]; a["fecha"] = pd.to_datetime(dict(year=a.anho, month=a.mes, day=1))
+pmr = pm.reset_index(); pmr = pmr[pmr.anho.between(2017, UA)].groupby("anho").devengado.sum()
+pmr_real = pmr * deflactor(UA).reindex(pmr.index)
+ms = leer("masa_anual_sector.csv").groupby("anho").devengado.sum()
+peso = pmr / ms.reindex(pmr.index) * 100
+```
+
+::: {.en-breve}
+**En breve**
+
+- Entre diciembre de `{python} B - 1` y `{python} fecha_txt(A1, M)`, la Policía Nacional pasó de `{python} miles(b0)` a **`{python} miles(u)` vínculos**: `{python} signo(dv)`.
+- En ese período explica `{python} f"el {pct(part, 0)}" if part else "buena parte"` del aumento de vínculos de todo el Estado.
+- Su masa salarial de los últimos doce meses, sin aguinaldo, es `{python} milmillones(dm_real)` mil millones de guaraníes mayor que la de `{python} B - 1` en términos reales: unos **`{python} millones(costo, 1) if costo else "—"` millones de guaraníes por mes por cada nuevo vínculo**.
+- La Policía pasó de representar el `{python} pct(peso.loc[2017], 1)` de la masa salarial pública en 2017 al `{python} pct(peso.loc[UA], 1)` en `{python} UA`.
+:::
+
+```{python}
+#| label: fig
+#| fig-cap: "Vínculos de la Policía Nacional por mes"
+fig = go.Figure(go.Scatter(x=a.fecha, y=a.total, mode="lines", line=dict(color=NAVY, width=2.8), line_shape="hv", hovertemplate="%{x|%b %Y}: <b>%{y:,.0f}</b><extra></extra>"))
+fig.add_vline(x=pd.Timestamp(B, 1, 1), line=dict(color=GRIS, width=1, dash="dot"))
+estilo(fig, alto=320, leyenda=False).update_yaxes(tickformat=",.0f")
+fig.show(config=CONFIG)
+```
+
+## Cuánto cuesta
+
+```{python}
+#| label: fig-masa
+#| fig-cap: "Masa salarial de la Policía Nacional, miles de millones de guaraníes del último año completo, y su peso en la masa salarial pública"
+fig = go.Figure()
+fig.add_trace(go.Bar(x=pmr_real.index, y=pmr_real / 1e9, name="Masa salarial real", marker_color=NAVY, hovertemplate="%{x}: %{y:,.0f} mil millones<extra></extra>"))
+fig.add_trace(go.Scatter(x=peso.index, y=peso, name="% de la masa pública", mode="lines+markers", line=dict(color=NARANJA, width=2.6), yaxis="y2",
+                         hovertemplate="%{x}: %{y:.1f}%<extra></extra>"))
+estilo(fig, alto=340)
+fig.update_layout(yaxis=dict(tickformat=",.0f"), yaxis2=dict(overlaying="y", side="right", ticksuffix="%", showgrid=False, fixedrange=True, rangemode="tozero"))
+fig.update_xaxes(dtick=1)
+fig.show(config=CONFIG)
+```
+
+Cada nuevo agente suma su sueldo, sus bonificaciones y, en diciembre, su aguinaldo. Como la Policía es parte de la planta permanente, ese costo se repite todos los años. Una política de seguridad que se apoya en más efectivos es también una decisión de largo plazo sobre la masa salarial.
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA e IPC del Banco Central del Paraguay. [Descargar los datos](/datos/).
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_portada, ig_dato, barras
+y = a[a.mes == M].set_index("anho").total
+social("La expansión policial", signo(dv) + " vínculos", f"desde diciembre de {B - 1} · {pct(part, 0) if part else '—'} del aumento del Estado", (list(range(len(a))), list(a.total)), color=NARANJA)
+ig_portada("Seguridad", "La expansión\npolicial", f"{signo(dv)} vínculos desde fines de {B - 1}.\nCuánto cuesta.", (list(range(len(a))), list(a.total)))
+ig_dato(2, "El costo", "Cada nuevo vínculo policial cuesta unos", (millones(costo, 1) + " M") if costo else "—", "de guaraníes por mes",
+        f"Vínculos de la Policía, {MESES[M - 1]} de cada año (miles)", barras(list(y.index), list(y / 1000), [coma(x / 1000, 1) for x in y], colores=[NAVY] * len(y)))
+```

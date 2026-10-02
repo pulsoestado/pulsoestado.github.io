@@ -1,0 +1,68 @@
+---
+title: "Explicador: cómo leer las cifras de empleo público en campaña"
+description: "Se viene un año electoral y con él, cifras sobre el tamaño del Estado. Seis preguntas para saber si una cifra de empleo público está bien usada."
+date: 2027-11-04
+categories: [Explicador, Ciclo electoral, Metodología]
+image: social.png
+image-alt: "Seis preguntas para leer cifras de empleo público"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+
+A1, M = ultimo_mes(); UA = ultimo_anio_completo()
+s = serie_mensual().set_index(["anho", "mes"])
+ene, dic = s.loc[(UA, 1), "total"], s.loc[(UA, 12), "total"]
+t = leer("masa_anual_sector.csv").groupby("anho").devengado.sum()
+nom = (t[UA] / t[2017] - 1) * 100
+real = (t[UA] * deflactor(UA)[UA] / (t[2017] * deflactor(UA)[2017]) - 1) * 100
+r = leer("personas_vinculos_oee.csv"); pa = int(r[(r.mes == 6) & (r.personas > 0)].anho.max()); rr = r[(r.anho == pa) & (r.mes == 6)]
+mu = leer("vinculos_mensual_oee.csv").merge(instituciones()[K_OEE + ["sector"]], on=K_OEE)
+n_ult = mu[(mu.anho == A1) & (mu.mes == M) & (mu.total > 0)].shape[0]; n_ant = mu[(mu.anho == A1 - 1) & (mu.mes == M) & (mu.total > 0)].shape[0]
+```
+
+En un año electoral, el tamaño del Estado es tema de discursos, debates y titulares. Muchas cifras son correctas, pero se leen mal. Estas seis preguntas ayudan a distinguir una cifra bien usada de una que confunde, con ejemplos de los datos de SINARH y SICCA.
+
+## 1. ¿Habla de personas, de vínculos o de cargos?
+
+Una persona puede tener dos vínculos (un cargo permanente y un contrato) y un vínculo puede tener varios cargos (un docente con dos turnos). En junio de `{python} pa`, había `{python} miles(rr.personas.sum())` personas y `{python} miles(rr.vinculos.sum())` vínculos según el resumen por institución. Las diferencias son chicas en el total, pero grandes en Educación ([una persona, varios cargos](../2027-06-24-una-persona-varios-cargos/)).
+
+## 2. ¿Qué mes compara?
+
+El empleo público tiene un calendario: cae cada enero y sube durante el año. En `{python} UA`, entre diciembre y enero hubo una diferencia de `{python} miles(abs(dic - ene))` vínculos sin que nadie fuera despedido ([el bache de enero](../2027-01-04-el-bache-de-enero/)). Comparar enero con diciembre exagera las bajas; comparar diciembre con enero, las altas. Lo correcto es comparar el mismo mes de dos años.
+
+## 3. ¿Están todas las instituciones?
+
+En los meses recientes faltan datos: en `{python} fecha_txt(A1, M)` reportaron `{python} n_ult` instituciones, frente a `{python} n_ant` en el mismo mes del año anterior. Una caída del empleo en los últimos meses puede ser solo carga tardía ([cuántas instituciones reportan](../2027-02-22-cuantas-instituciones-reportan/)).
+
+## 4. ¿Está en términos reales?
+
+Entre 2017 y `{python} UA`, la masa salarial creció `{python} pct(nom, 0)` en guaraníes de cada año, pero `{python} pct(real, 0)` descontada la inflación. Una cifra en guaraníes corrientes, sin descontar la inflación, siempre parece más grande ([qué es la masa salarial](../2027-04-08-que-es-la-masa-salarial/)).
+
+## 5. ¿Mezcla reorganizaciones con altas y bajas?
+
+Cuando una función pasa de una institución a otra, una pierde personal y la otra lo gana, pero el Estado no cambia de tamaño. La creación de la Dirección Nacional de Ingresos Tributarios es el ejemplo reciente más claro ([la DNIT](../2027-08-16-la-dnit/)).
+
+## 6. ¿El promedio esconde algo?
+
+La remuneración media puede bajar sin que baje ningún sueldo, si entran muchos vínculos con remuneraciones bajas. Y puede subir sin aumentos, si salen los de remuneraciones bajas. Antes de concluir que "los sueldos bajaron" o "subieron", conviene mirar qué pasó con la cantidad y la composición del personal ([¿más gente o mejores sueldos?](../2026-10-30-mas-gente-o-mejores-sueldos/)).
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH, SICCA y del Banco Central del Paraguay. [Descargar los datos](/datos/).
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_portada, ig_dato, barras
+social("Cómo leer las cifras de\nempleo público en campaña", "6 preguntas", "para saber si una cifra está bien usada")
+ig_portada("Explicador · año electoral", "Cómo leer\nlas cifras\nen campaña", "Seis preguntas para saber si una cifra\nde empleo público está bien usada.")
+ig_dato(2, "Pregunta 4: ¿real o nominal?", f"Entre 2017 y {UA}, la masa salarial creció", pct(nom, 0), f"en guaraníes corrientes, pero {pct(real, 0)} real",
+        "Crecimiento de la masa salarial", barras(["Nominal", "Real"], [nom, real], [pct(nom, 0), pct(real, 0)], colores=["#9db9de", AZUL]))
+```

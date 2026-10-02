@@ -1,0 +1,132 @@
+---
+title: "¿Cuánto paga el Estado en salarios?"
+description: "En 2025 el Estado pagó 30,4 billones de guaraníes en salarios. Descontada la inflación, la masa salarial creció 14% desde 2017, casi lo mismo que la cantidad de vínculos: el sueldo medio real casi no cambió."
+date: 2026-10-16
+categories: [Masa salarial, Inflación]
+image: social.png
+image-alt: "Masa salarial del sector público paraguayo en términos reales, 2017-2025"
+draft: true  # programada
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import plotly.graph_objects as go
+
+A0, A1 = 2017, 2025
+anual = leer("masa_anual_sector.csv")
+ipc = leer("ipc_salarios_bcp.csv").set_index("anho")
+t = anual[anual.anho.between(A0, A1)].groupby("anho")[
+    ["devengado", "devengado_real_2025", "sin_aguinaldo_real_2025", "devengado_sin_aguinaldo", "vinculos_promedio"]].sum()
+t["rem_real"] = t.sin_aguinaldo_real_2025 / 12 / t.vinculos_promedio
+t["rem_nom"] = t.devengado_sin_aguinaldo / 12 / t.vinculos_promedio
+
+masa1 = t.loc[A1, "devengado"]
+var_real = (t.loc[A1, "devengado_real_2025"] / t.loc[A0, "devengado_real_2025"] - 1) * 100
+var_nom = (t.loc[A1, "devengado"] / t.loc[A0, "devengado"] - 1) * 100
+var_vin = (t.loc[A1, "vinculos_promedio"] / t.loc[A0, "vinculos_promedio"] - 1) * 100
+var_rem = (t.loc[A1, "rem_real"] / t.loc[A0, "rem_real"] - 1) * 100
+var_ipc = (ipc.loc[A1, "ipc"] / ipc.loc[A0, "ipc"] - 1) * 100
+pico = int(t.rem_real.idxmax())
+caida = (t.loc[2022, "devengado_real_2025"] / t.loc[2020, "devengado_real_2025"] - 1) * 100
+
+s25 = anual[anual.anho == A1].set_index("sector")
+s25["part"] = s25.devengado / s25.devengado.sum() * 100
+tres = s25.loc[["Educación", "Salud", "Fuerzas públicas"], "part"].sum()
+```
+
+::: {.en-breve}
+**En breve**
+
+- En `{python} A1` el Estado pagó **`{python} billones(masa1)` billones de guaraníes** en salarios (servicios personales devengados), unos `{python} milmillones(masa1 / 12)` mil millones por mes.
+- Descontada la inflación, la masa salarial creció **`{python} pct(var_real)`** entre `{python} A0` y `{python} A1`. La cantidad de vínculos creció `{python} pct(var_vin)`.
+- Resultado: la **remuneración media real por vínculo es hoy `{python} pct(abs(var_rem))` más baja** que en `{python} A0`. Llegó a su máximo en `{python} pico` y cayó con la inflación de 2021 y 2022.
+- **Educación, Salud y Fuerzas públicas** se llevan el `{python} pct(tres, 0)` de la masa salarial.
+:::
+
+```{python}
+#| label: kpis
+#| output: asis
+print(kpis([
+    (billones(masa1) + " billones", f"de guaraníes pagados en salarios en {A1}"),
+    (spct(var_real), f"variación real de la masa salarial {A0}–{A1}"),
+    (spct(var_vin), f"variación de los vínculos {A0}–{A1}"),
+    (millones(t.loc[A1, 'rem_nom']) + " millones", f"remuneración media por vínculo y por mes en {A1}, sin aguinaldo"),
+]))
+```
+
+La **masa salarial** es todo lo que el Estado paga a su personal en un año: sueldos, bonificaciones, contratos, aguinaldo, dietas y gastos de representación. En esta nota usamos el monto efectivamente **devengado** en servicios personales (grupo 100 del clasificador presupuestario) que registran el SINARH y el SICCA.
+
+## En guaraníes corrientes, siempre sube; en guaraníes de hoy, no tanto
+
+```{python}
+#| label: fig-masa
+#| fig-cap: "Masa salarial anual del sector público, en billones de guaraníes"
+fig = go.Figure()
+fig.add_trace(go.Scatter(x=t.index, y=t.devengado / 1e12, name="Guaraníes corrientes", mode="lines+markers",
+                         line=dict(color=GRIS, width=2, dash="dot"), marker=dict(size=7),
+                         hovertemplate="Corrientes: <b>%{y:.1f} billones</b><extra></extra>"))
+fig.add_trace(go.Scatter(x=t.index, y=t.devengado_real_2025 / 1e12, name="Guaraníes de 2025 (real)",
+                         mode="lines+markers", line=dict(color=AZUL, width=2.6),
+                         marker=dict(size=8, line=dict(width=2, color="#fcfcfb")),
+                         hovertemplate="Real (precios 2025): <b>%{y:.1f} billones</b><extra></extra>"))
+estilo(fig)
+fig.update_yaxes(rangemode="tozero", ticksuffix=" bill.")
+fig.update_xaxes(dtick=1)
+fig.show(config=CONFIG)
+```
+
+En guaraníes corrientes la masa salarial creció `{python} pct(var_nom, 0)` entre `{python} A0` y `{python} A1`. Pero en el mismo período los precios subieron `{python} pct(var_ipc, 0)` según el IPC del Banco Central. **Medida en guaraníes de 2025, la suba fue de `{python} pct(var_real)`**, y no fue pareja: la masa real cayó `{python} pct(abs(caida))` entre 2020 y 2022, cuando la inflación se aceleró y los salarios no la acompañaron. Recién en 2025 superó el nivel de 2020.
+
+## Más vínculos, el mismo sueldo real
+
+```{python}
+#| label: fig-rem
+#| fig-cap: "Remuneración media mensual por vínculo, en millones de guaraníes de 2025 (sin aguinaldo)"
+fig = go.Figure(go.Scatter(
+    x=t.index, y=t.rem_real / 1e6, mode="lines+markers", line=dict(color=NARANJA, width=2.6),
+    marker=dict(size=8, line=dict(width=2, color="#fcfcfb")),
+    hovertemplate="%{x}: <b>%{y:.2f} millones</b> por mes<extra></extra>"))
+estilo(fig, alto=320, leyenda=False).update_layout(hovermode="closest")
+fig.update_yaxes(range=[5.5, 7.5], ticksuffix=" M")
+fig.update_xaxes(dtick=1)
+fig.show(config=CONFIG)
+```
+
+Si se divide la masa salarial (sin aguinaldo) entre los vínculos pagados cada mes, se obtiene una **remuneración media por vínculo**: `{python} millones(t.loc[A1, 'rem_nom'])` millones de guaraníes por mes en `{python} A1`. En términos reales, esa cifra es prácticamente la misma que en `{python} A0` (`{python} spct(var_rem)`). Dicho de otra forma: **casi todo el aumento de la masa salarial real desde `{python} A0` se explica por más vínculos, no por mejores sueldos promedio**.
+
+Ese promedio esconde historias muy distintas entre sectores: en Educación los sueldos reales subieron con fuerza, mientras que en Salud el promedio bajó porque la mayoría de los nuevos vínculos fueron contratos. Lo analizamos en detalle en la próxima nota: *¿Más gente o mejores sueldos?*
+
+## Adónde va la plata
+
+```{python}
+#| label: fig-sectores
+#| fig-cap: "Participación de cada sector en la masa salarial de 2025"
+o = s25.sort_values("part")
+fig = barras_h(o.index, o.part, [pct(v) for v in o.part], colores=[AZUL] * len(o),
+               hover="<b>%{y}</b>: %{text} de la masa<extra></extra>")
+fig.update_xaxes(ticksuffix="%", range=[0, o.part.max() * 1.18])
+fig.show(config=CONFIG)
+```
+
+Un tercio de la masa salarial corresponde a **Educación** (Ministerio de Educación y universidades nacionales), seguida por **Salud** (Ministerio de Salud e IPS) y **Fuerzas públicas** (Policía Nacional y Ministerio de Defensa). Entre los tres suman `{python} pct(tres, 0)` del total.
+
+::: {.callout-warning collapse="true"}
+## Un dato corregido: el aguinaldo de diciembre de 2021
+
+En el registro de presupuesto, el aguinaldo pagado en diciembre de 2021 figura en **6,0 billones de guaraníes**, cuando en 2020 y 2022 fue de unos 1,2 billones. El salto aparece en casi todas las instituciones a la vez y no tiene correlato en la cantidad de vínculos, por lo que lo tratamos como un **error de registro**: para cada institución reemplazamos ese monto por el promedio de sus aguinaldos de 2020 y 2022. Sin esta corrección, la masa salarial de 2021 aparecería 4,8 billones más alta y daría la falsa impresión de un pico de gasto ese año.
+:::
+
+## Qué tener en cuenta
+
+- **Cobertura.** Los datos incluyen la Administración Central, la Descentralizada, las municipalidades y las sociedades anónimas con participación estatal que registran sus pagos en SINARH o SICCA. Por eso no coinciden con el rubro *servicios personales* del Presupuesto General de la Nación (35,7 billones previstos para 2026 según el [proyecto del MEF](https://economia.com.py/paraguay-proyecta-crecer-el-aparato-estatal-en-11-105-nuevos-cargos-con-un-presupuesto-de-g-1492-billones-para-2026/)), que es un monto autorizado y no lo efectivamente pagado.
+- **Partimos de 2017** porque en 2015 y 2016 se fueron incorporando instituciones a los registros.
+- **Términos reales:** deflactamos con el IPC promedio anual del Banco Central del Paraguay (Anexo Estadístico), a precios de 2025.
+- La remuneración media por vínculo es un promedio simple: mezcla jornadas completas y parciales, y cambia también cuando cambia la composición del personal.
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA (presupuestado y devengado por objeto de gasto, y vínculos por mes) y del Banco Central del Paraguay (IPC). [Descargar los datos](/datos/) · [Metodología](/metodologia.qmd).
+:::

@@ -1,0 +1,69 @@
+---
+title: "El sueldo básico de la Policía Nacional"
+description: "Cuánto es el sueldo básico medio de los cargos policiales, cómo se distribuye entre categorías y cuánto cambió desde 2018."
+date: 2027-09-20
+categories: [El dato de la semana, Fuerzas públicas, Remuneraciones]
+image: social.png
+image-alt: "Sueldo básico medio de la Policía Nacional, nominal y real"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import plotly.graph_objects as go
+
+c = leer("categorias_oee.csv")
+c = c[(c.codigo_nivel == 12) & (c.codigo_entidad == 3) & (c.codigo_oee == 2) & (c.mes == 6) & (c.anho >= 2018)]
+a = c.groupby("anho")[["cantidad", "devengado"]].sum(); a["s"] = a.devengado / a.cantidad
+A = int(a.index.max())
+ipc = leer("bcp_salario_minimo.csv").set_index("anho").ipc
+a["real"] = a.s * ipc.loc[A] / ipc.reindex(a.index)
+vr = (a.real[A] / a.real[2018] - 1) * 100
+k = c[c.anho == A].groupby("nivel_categoria")[["cantidad", "devengado"]].sum().sort_values("cantidad", ascending=False)
+k["s"] = k.devengado / k.cantidad; k["p"] = k.cantidad / k.cantidad.sum() * 100
+pr = k.iloc[0]
+mo = masa_oee_anual(ultimo_anio_completo()); r = mo[mo.nombre == "Policía Nacional"].iloc[0]
+psb = r["Sueldo básico"] / r.masa * 100
+```
+
+```{python}
+#| label: kpis
+#| output: asis
+print(kpis([(millones(a.s[A], 2) + " M", f"de Gs: sueldo básico medio por cargo policial (junio de {A})"), (spct(vr, 0), "real desde 2018"),
+            (pct(psb, 0), "de la masa salarial policial es sueldo básico")]))
+```
+
+En junio de `{python} A`, el sueldo básico medio de los `{python} miles(a.cantidad[A])` cargos de la **Policía Nacional** fue de **`{python} millones(a.s[A], 2)` millones de guaraníes**. Descontada la inflación, cambió `{python} spct(vr, 0)` desde 2018. La categoría más numerosa, **`{python} k.index[0]`**, reúne el `{python} pct(pr.p, 0)` de los cargos, con un sueldo básico medio de `{python} millones(pr.s, 2)` millones.
+
+```{python}
+#| label: fig
+#| fig-cap: "Sueldo básico medio por cargo en la Policía Nacional, junio de cada año (millones de guaraníes)"
+fig = go.Figure()
+fig.add_trace(go.Bar(x=a.index, y=a.s / 1e6, name="Guaraníes de cada año", marker_color="#8fa3b8", hovertemplate="%{x}: %{y:.2f} millones<extra></extra>"))
+fig.add_trace(go.Scatter(x=a.index, y=a.real / 1e6, name=f"Guaraníes de {A}", mode="lines+markers", line=dict(color=NAVY, width=2.8),
+                         hovertemplate="%{x}: %{y:.2f} millones de " + str(A) + "<extra></extra>"))
+estilo(fig, alto=320).update_xaxes(dtick=1)
+fig.show(config=CONFIG)
+```
+
+El sueldo básico es solo una parte de lo que cobra un policía: las bonificaciones y asignaciones son una porción importante de la masa salarial policial ([fuerzas públicas](../2027-05-13-fuerzas-publicas/)). Además, el promedio cambia con la composición: cuando ingresa una promoción grande de agentes, que suele empezar en las categorías iniciales, el promedio tiende a bajar aunque ningún sueldo baje. En los últimos años, la Policía también sumó miles de cargos en una categoría con un sueldo básico menor a medio millón de guaraníes, lo que baja el promedio.
+
+La serie empieza en 2018 porque en junio de 2017 el sueldo básico registrado de la Policía es casi 50% más alto que el de los años vecinos, probablemente por un pago extraordinario o un error de registro.
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH (sueldo básico, objeto 111, por categoría, junio de cada año) e IPC del Banco Central del Paraguay. [Descargar los datos](/datos/).
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_dato, barras
+social("El sueldo básico de la\nPolicía Nacional", millones(a.s[A], 2) + " millones", f"de Gs por cargo (junio de {A}) · {spct(vr, 0)} real desde 2018", (list(a.index), list(a.real)), color=NARANJA)
+ig_dato(1, "El dato de la semana", "El sueldo básico medio de un cargo policial es de", millones(a.s[A], 2) + " M", f"de guaraníes ({spct(vr, 0)} real desde 2018)",
+        f"Millones de Gs de {A}, junio de cada año", barras(list(a.index), list(a.real / 1e6), [coma(x / 1e6, 1) for x in a.real], colores=[NAVY] * len(a)))
+```

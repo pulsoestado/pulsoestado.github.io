@@ -1,0 +1,62 @@
+---
+title: "Mujeres con contrato, sector por sector"
+description: "En qué sectores las mujeres tienen más contratos que los hombres y dónde la diferencia es mayor."
+date: 2027-11-15
+categories: [El dato de la semana, Género, Contratados]
+image: social.png
+image-alt: "Proporción de contratados entre mujeres y hombres por sector"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import plotly.graph_objects as go
+
+A1, M = ultimo_mes()
+x = leer("vinculos_tipo_sexo.csv"); u = x[(x.anho == A1) & (x.mes == M)]
+t = u.pivot_table(index=["sector", "sexo"], columns="vinculo", values="total", aggfunc="sum").fillna(0)
+t["pc"] = t.CONTRATADO / (t.CONTRATADO + t.PERMANENTE) * 100
+pc = t.pc.unstack("sexo"); pc = pc[(t.CONTRATADO + t.PERMANENTE).unstack("sexo").min(axis=1) >= 500]
+pc["dif"] = pc.FEMENINO - pc.MASCULINO; pc = pc.sort_values("dif")
+g = u.groupby(["sexo", "vinculo"]).total.sum().unstack(); gm = g.loc["FEMENINO", "CONTRATADO"] / g.loc["FEMENINO"].sum() * 100
+gh = g.loc["MASCULINO", "CONTRATADO"] / g.loc["MASCULINO"].sum() * 100
+```
+
+```{python}
+#| label: kpis
+#| output: asis
+print(kpis([(pct(gm, 0), f"de los vínculos de mujeres son contratos ({fecha_txt(A1, M)})"), (pct(gh, 0), "en los hombres")]))
+```
+
+En `{python} fecha_txt(A1, M)`, el `{python} pct(gm, 0)` de los vínculos públicos de mujeres eran contratos, frente al `{python} pct(gh, 0)` de los de hombres. Pero sector por sector la diferencia cambia: es mayor en **`{python} pc.index[-1]`** (`{python} signo(pc.dif.iloc[-1], lambda v: coma(v, 0))` puntos) y se invierte en **`{python} pc.index[0]`** (`{python} signo(pc.dif.iloc[0], lambda v: coma(v, 0))`).
+
+```{python}
+#| label: fig
+#| fig-cap: "Proporción de contratados entre las mujeres y entre los hombres de cada sector"
+fig = go.Figure()
+fig.add_trace(go.Bar(y=pc.index, x=pc.MASCULINO, name="Hombres", orientation="h", marker_color="#9db9de", hovertemplate="<b>%{y}</b><br>Hombres: %{x:.0f}%<extra></extra>"))
+fig.add_trace(go.Bar(y=pc.index, x=pc.FEMENINO, name="Mujeres", orientation="h", marker_color=VIOLETA, hovertemplate="<b>%{y}</b><br>Mujeres: %{x:.0f}%<extra></extra>"))
+estilo(fig, alto=440).update_layout(barmode="group", hovermode="closest", bargap=0.25)
+fig.update_xaxes(ticksuffix="%", range=[0, 100], showgrid=True, gridcolor="rgba(128,128,128,.18)"); fig.update_yaxes(showgrid=False)
+fig.show(config=CONFIG)
+```
+
+Parte de la diferencia total puede deberse a dónde trabajan las mujeres: son mayoría en Salud, uno de los sectores con más contratos. Dentro de cada sector, las diferencias varían y no siempre van en el mismo sentido.
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA (vínculos por tipo y sexo). Sectores con al menos 500 vínculos de cada sexo. [Descargar los datos](/datos/).
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_dato, barras
+social("Mujeres con contrato,\nsector por sector", f"{pct(gm, 0)} y {pct(gh, 0)}", f"de los vínculos de mujeres y de hombres son contratos ({fecha_txt(A1, M)})", color=VIOLETA)
+ig_dato(1, "El dato de la semana", "Entre las mujeres del Estado, son contratos el", pct(gm, 0), f"de los vínculos (hombres: {pct(gh, 0)})",
+        "% de contratados", barras(["Mujeres", "Hombres"], [gm, gh], [pct(gm, 0), pct(gh, 0)], colores=[VIOLETA, "#9db9de"], ylim=(0, 50)), color=VIOLETA)
+```

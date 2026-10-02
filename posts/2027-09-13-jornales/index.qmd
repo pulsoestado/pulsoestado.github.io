@@ -1,0 +1,74 @@
+---
+title: "Jornales: quién los paga"
+description: "Los jornales son la segunda forma de contratación más grande del Estado, después de los contratos de personal de salud. Cuánto suman y qué instituciones los usan."
+date: 2027-09-13
+categories: [El dato de la semana, Contratados, Masa salarial]
+image: social.png
+image-alt: "Instituciones que más pagan en jornales"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import plotly.graph_objects as go
+
+UA = ultimo_anio_completo()
+o = leer("masa_anual_objeto.csv")
+j = o[(o.objeto_gasto == 144) & o.anho.between(2017, UA)].groupby("anho").devengado.sum()
+c = o[(o.objeto_gasto // 10 == 14) & (o.anho == UA)].devengado.sum()
+real = j * deflactor(UA).reindex(j.index)
+oo = leer("masa_anual_oee_objeto.csv").merge(instituciones()[K_OEE + ["nombre_largo", "sector"]], on=K_OEE)
+oo = oo[(oo.objeto_gasto == 144) & (oo.anho == UA)]
+top = oo.sort_values("devengado", ascending=False).head(10)
+sec = oo.groupby("sector").devengado.sum().sort_values(ascending=False)
+```
+
+```{python}
+#| label: kpis
+#| output: asis
+print(kpis([(milmillones(j[UA]) + " mil M", f"de guaraníes en jornales ({UA})"), (pct(j[UA] / c * 100, 0), "del gasto en personal contratado"),
+            (spct((real[UA] / real[2017] - 1) * 100, 0), "real desde 2017")]))
+```
+
+El **jornal** (objeto de gasto 144) es una forma de contratación que suele usarse para funciones operativas y de apoyo. En `{python} UA` el Estado pagó **`{python} milmillones(j[UA])` mil millones de guaraníes en jornales**, el `{python} pct(j[UA] / c * 100, 0)` de todo lo que gasta en personal contratado. Descontada la inflación, el monto cambió `{python} spct((real[UA] / real[2017] - 1) * 100, 0)` desde 2017.
+
+```{python}
+#| label: fig
+#| fig-cap: "Jornales (objeto 144), en miles de millones de guaraníes del último año completo"
+fig = go.Figure(go.Bar(x=real.index, y=real / 1e9, marker_color=NARANJA, text=[miles(x / 1e9) for x in real], textposition="outside",
+                       cliponaxis=False, textfont=dict(color=TINTA_GRAF), hovertemplate="%{x}: <b>%{y:,.0f}</b><extra></extra>"))
+estilo(fig, alto=300, leyenda=False).update_layout(hovermode="closest")
+fig.update_xaxes(dtick=1); fig.update_yaxes(range=[0, real.max() / 1e9 * 1.18])
+fig.show(config=CONFIG)
+```
+
+```{python}
+#| label: tbl
+#| output: asis
+print(f"| Institución | Jornales {UA} (mil M Gs) | % del total |\n|---|--:|--:|")
+for _, r in top.iterrows():
+    print(f"| {r.nombre_largo} | {milmillones(r.devengado)} | {pct(r.devengado / j[UA] * 100)} |")
+print(f"\n: Las 10 instituciones que más pagan en jornales, {UA}")
+```
+
+La que más paga es **`{python} top.nombre_largo.iloc[0]`** (`{python} pct(top.devengado.iloc[0] / j[UA] * 100, 0)` del total). Pero, sumadas, las **municipalidades** pagan `{python} pct(sec.get('Municipalidades', 0) / j[UA] * 100, 0)` de todos los jornales.
+
+El salto de 2020 y 2021 coincide con la pandemia, cuando el Ministerio de Salud y el IPS aumentaron sus pagos de jornales. Junto con los contratos de personal de salud (objeto 142), los jornales explican casi nueve de cada diez guaraníes que el Estado paga a su personal contratado ([contratados: quiénes son y dónde están](../2027-06-03-contratados/)).
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA (devengado del objeto 144). [Descargar los datos](/datos/).
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_dato, barras
+social("Jornales: quién\nlos paga", milmillones(j[UA]) + " mil millones", f"de guaraníes en {UA} · {pct(j[UA] / c * 100, 0)} del gasto en contratados", (list(real.index), list(real)), tipo="barras")
+ig_dato(1, "El dato de la semana", f"En {UA}, el Estado pagó en jornales", milmillones(j[UA]) + " mil M", "de guaraníes",
+        f"Miles de millones de Gs de {UA}", barras(list(real.index), list(real / 1e9), [miles(x / 1e9) for x in real], colores=[NARANJA] * len(real)))
+```

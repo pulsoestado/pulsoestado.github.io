@@ -5,11 +5,28 @@ toc: false
 page-layout: article
 title-block-banner: false
 search: false
+listing:
+  id: ultimas
+  contents:
+    - posts
+    - situcap/ediciones
+  sort: "date desc"
+  max-items: 3
+  type: grid
+  grid-columns: 1
+  fields: [image, title, date]
+  date-format: "D [de] MMMM"
+  sort-ui: false
+  filter-ui: false
 ---
 
 ::: {.enlaces}
-<a class="btn-enlace destacado" href="/posts/2026-10-02-radiografia-empleo-publico/?utm_source=instagram&utm_medium=bio&utm_campaign=enlaces">📊 Último análisis: Radiografía del empleo público</a>
-<a class="btn-enlace" href="/?utm_source=instagram&utm_medium=bio&utm_campaign=enlaces">Todos los análisis</a>
+**Lo último**
+
+::: {#ultimas}
+:::
+
+<a class="btn-enlace destacado" href="/?utm_source=instagram&utm_medium=bio&utm_campaign=enlaces">📊 Todos los análisis</a>
 <a class="btn-enlace" href="/situcap/?utm_source=instagram&utm_medium=bio&utm_campaign=enlaces">SITUCAP · Situación del Capital Humano Público</a>
 <a class="btn-enlace" href="/datos/?utm_source=instagram&utm_medium=bio&utm_campaign=enlaces">Descargar datos</a>
 <a class="btn-enlace" href="https://x.com/pulsoestadopy">Seguinos en X</a>

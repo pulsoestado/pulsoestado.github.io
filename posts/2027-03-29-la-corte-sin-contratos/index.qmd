@@ -1,0 +1,70 @@
+---
+title: "La Corte Suprema, casi sin contratados"
+description: "En 2017 la Corte Suprema de Justicia llegó a pagar más de dos mil contratos en un mes. Desde 2023 casi no tiene contratados."
+date: 2027-03-29
+categories: [El dato de la semana, Poder Judicial, Contratados]
+image: social.png
+image-alt: "Contratados de la Corte Suprema de Justicia por mes"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import plotly.graph_objects as go
+
+v = vin_oee()
+c = v[v.nombre == "Corte Suprema de Justicia"].groupby(["anho", "mes"])[["total", "contratado", "permanente"]].sum().reset_index()
+c = c[c.anho >= 2017]; c["fecha"] = pd.to_datetime(dict(year=c.anho, month=c.mes, day=1))
+a = c.groupby("anho")[["contratado", "permanente", "total"]].mean()
+mx = c.loc[c.contratado.idxmax()]; u = c.iloc[-1]
+A1 = int(u.anho)
+dp = a.permanente.loc[A1] - a.permanente.loc[2017]
+```
+
+```{python}
+#| label: kpis
+#| output: asis
+print(kpis([
+    (miles(mx.contratado), f"contratados en {fecha_txt(mx.anho, mx.mes)}"),
+    (miles(u.contratado), f"en {fecha_txt(u.anho, u.mes)}"),
+    (signo(dp), f"permanentes, promedio {A1} frente a 2017"),
+]))
+```
+
+La **Corte Suprema de Justicia** tenía un patrón propio: cada enero sumaba cientos de contratos, que se reducían a lo largo del año. En `{python} fecha_txt(mx.anho, mx.mes)` llegó a pagar **`{python} miles(mx.contratado)` contratos**. Desde 2023 ese ciclo desapareció y en `{python} fecha_txt(u.anho, u.mes)` registraba **`{python} miles(u.contratado)`**. En el mismo período, su planta permanente pasó de `{python} miles(a.permanente.loc[2017])` a `{python} miles(a.permanente.loc[A1])` vínculos en promedio.
+
+```{python}
+#| label: fig-c
+#| fig-cap: "Vínculos de la Corte Suprema de Justicia por mes, por tipo"
+fig = go.Figure()
+fig.add_trace(go.Scatter(x=c.fecha, y=c.contratado, name="Contratados", mode="lines", line=dict(color=NARANJA, width=2.6),
+                         hovertemplate="Contratados: %{y:,.0f}<extra></extra>"))
+fig.add_trace(go.Scatter(x=c.fecha, y=c.permanente, name="Permanentes", mode="lines", line=dict(color=AZUL, width=2.6),
+                         yaxis="y2", hovertemplate="Permanentes: %{y:,.0f}<extra></extra>"))
+estilo(fig, alto=340)
+fig.update_layout(yaxis=dict(title="Contratados", tickformat=",.0f", rangemode="tozero"),
+                  yaxis2=dict(title="Permanentes", overlaying="y", side="right", tickformat=",.0f", showgrid=False, fixedrange=True))
+fig.show(config=CONFIG)
+```
+
+Los registros no dicen por qué se dejó de contratar ni si esas funciones pasaron a cubrirse con personal permanente. Pero el cambio es claro: en la Corte, el contrato dejó de ser una forma habitual de vinculación, algo que no ocurrió en la mayoría de las instituciones grandes.
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA (vínculos pagados por mes). [Descargar los datos](/datos/).
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_dato, barras
+social("La Corte Suprema, casi\nsin contratados", miles(u.contratado) + " contratos", f"en {fecha_txt(u.anho, u.mes)}, frente a {miles(mx.contratado)} en {fecha_txt(mx.anho, mx.mes)}",
+       (list(range(len(c))), list(c.contratado)))
+ig_dato(1, "El dato de la semana", f"La Corte Suprema pasó de {miles(mx.contratado)} contratados a", miles(u.contratado),
+        f"en {fecha_txt(u.anho, u.mes)}", "Promedio anual de contratados",
+        barras(list(a.index), list(a.contratado), [miles(x) for x in a.contratado], colores=[NARANJA] * len(a)))
+```

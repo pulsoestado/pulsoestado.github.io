@@ -1,0 +1,65 @@
+---
+title: "Pagos extraordinarios: dónde se pagan"
+description: "Además del sueldo, el Estado paga remuneraciones temporales, extraordinarias y adicionales. Cuánto suman y qué instituciones concentran estos pagos."
+date: 2027-07-19
+categories: [El dato de la semana, Masa salarial, Remuneraciones]
+image: social.png
+image-alt: "Remuneraciones temporales y extraordinarias por institución"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import plotly.graph_objects as go
+
+UA = ultimo_anio_completo()
+o = leer("masa_anual_objeto.csv"); o = o[(o.objeto_gasto // 10 == 12) & o.anho.between(2017, UA)]
+t = o.groupby("anho").devengado.sum(); real = t * deflactor(UA).reindex(t.index)
+m = masa_oee_anual(UA)
+g = m[m["Remuneraciones temporales"] > 0].sort_values("Remuneraciones temporales", ascending=False)
+top = g.head(10); r1 = top.iloc[0]
+part1 = r1["Remuneraciones temporales"] / t[UA] * 100
+peso1 = r1["Remuneraciones temporales"] / r1.masa * 100
+var = (real[UA] / real[2017] - 1) * 100
+```
+
+```{python}
+#| label: kpis
+#| output: asis
+print(kpis([(milmillones(t[UA]) + " mil M", f"de guaraníes en remuneraciones temporales y extraordinarias ({UA})"),
+            (pct(part1, 0), f"las paga {r1.nombre_largo}")]))
+```
+
+El subgrupo 12x del presupuesto reúne las **remuneraciones temporales**: pagos extraordinarios y adicionales al sueldo, y personal temporal. En `{python} UA` sumaron **`{python} milmillones(t[UA])` mil millones de guaraníes**. Están muy concentradas: **`{python} r1.nombre_largo`** pagó el `{python} pct(part1, 0)` del total, el equivalente al `{python} pct(peso1, 0)` de su propia masa salarial. Descontada la inflación, el total cambió `{python} spct(var)` desde 2017.
+
+```{python}
+#| label: fig
+#| fig-cap: "Las 10 instituciones que más pagan en remuneraciones temporales (subgrupo 12x), miles de millones de guaraníes"
+s = top.sort_values("Remuneraciones temporales")
+fig = barras_h(s.nombre_largo, s["Remuneraciones temporales"] / 1e9, [coma(x / 1e9, 1) for x in s["Remuneraciones temporales"]],
+               colores=[AMARILLO] * len(s), rango=[0, s["Remuneraciones temporales"].max() / 1e9 * 1.2])
+fig.show(config=CONFIG)
+```
+
+En empresas que prestan servicios las 24 horas, como la distribución de energía, es habitual que una parte de la remuneración se pague por guardias o trabajo fuera del horario normal. La [guía del BID sobre nómina pública](../2027-05-27-indicadores-de-nomina/) recomienda seguir estos componentes por separado, porque son los que más varían entre instituciones.
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA (devengado de los objetos 122 a 125). [Descargar los datos](/datos/).
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_dato, barras_h as bh
+cort = lambda x: x.replace("Ministerio de", "Min. de").replace("Dirección Nacional de", "Dir. Nac. de").replace("Empresa de Servicios Sanitarios del Paraguay S.A.", "ESSAP")
+s = top.head(6).sort_values("Remuneraciones temporales")
+social("Pagos extraordinarios:\ndónde se pagan", milmillones(t[UA]) + " mil millones", f"de guaraníes en {UA} · {pct(part1, 0)} en {cort(r1.nombre_largo)}", color=AMARILLO)
+ig_dato(1, "El dato de la semana", f"{cort(r1.nombre_largo)} paga", pct(part1, 0), "de las remuneraciones extraordinarias del Estado",
+        "Miles de millones de guaraníes", bh([cort(x) for x in s.nombre_largo], s["Remuneraciones temporales"] / 1e9,
+                                             [coma(x / 1e9, 1) for x in s["Remuneraciones temporales"]], colores=[AMARILLO] * len(s)), color=AMARILLO)
+```

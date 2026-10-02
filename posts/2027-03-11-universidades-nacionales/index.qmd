@@ -1,0 +1,117 @@
+---
+title: "Universidades nacionales por dentro"
+description: "Diez universidades públicas pagan más de veinte mil vínculos. La Universidad Nacional de Asunción concentra siete de cada diez. Personal, contratos, mujeres y masa salarial de cada una."
+date: 2027-03-11
+categories: [Educación, Universidades, Instituciones]
+image: social.png
+image-alt: "Vínculos de las universidades nacionales"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import plotly.graph_objects as go
+
+UA = ultimo_anio_completo(); A0 = 2017
+def uni(a):
+    p = vin_promedio_oee(a); return p[p.nivel == "UNIVERSIDADES NACIONALES"].set_index(K_OEE)
+u1, u0 = uni(UA), uni(A0)
+mo = masa_oee_anual(UA).set_index(K_OEE)
+u1 = u1.join(mo[["masa", "Aguinaldo"]])
+u1["pc"] = u1.contratado / u1.total * 100; u1["pm"] = u1.mujeres / u1.total * 100
+u1["rem"] = (u1.masa - u1.Aguinaldo) / 12 / u1.total
+u1["v0"] = u0.total.reindex(u1.index); u1["var"] = (u1.total / u1.v0 - 1) * 100
+u1 = u1.sort_values("total", ascending=False)
+T = u1.total.sum(); una = u1[u1.nombre == "Universidad Nacional de Asunción"].iloc[0]
+part_una = una.total / T * 100
+tot_estado = leer("masa_anual_sector.csv").query("anho == @UA").devengado.sum()
+masa_part = u1.masa.sum() / tot_estado * 100
+var_t = (T / u0.total.sum() - 1) * 100
+corto = lambda x: x.replace("Universidad Nacional de ", "UN ").replace("Universidad Nacional del ", "UN del ").replace("Villarrica del Espíritu Santo", "Villarrica").replace("Universidad Politécnica Taiwan-Paraguay", "Politécnica Taiwán-Paraguay")
+# serie mensual UNA
+v = vin_oee(); s = v[v.nivel == "UNIVERSIDADES NACIONALES"]
+s = s.assign(g=s.nombre.where(s.nombre == "Universidad Nacional de Asunción", "Las demás")) \
+     .groupby(["anho", "g"]).total.mean().unstack().loc[A0:UA]
+```
+
+::: {.en-breve}
+**En breve**
+
+- En `{python} UA` las **`{python} len(u1)` universidades nacionales** pagaron en promedio **`{python} miles(T)` vínculos** por mes y `{python} milmillones(u1.masa.sum())` mil millones de guaraníes en salarios (el `{python} pct(masa_part)` de la masa salarial pública).
+- La **Universidad Nacional de Asunción** concentra el **`{python} pct(part_una, 0)`** del personal universitario: `{python} miles(una.total)` vínculos.
+- Desde `{python} A0` el personal universitario creció `{python} pct(var_t)`, mucho menos que el resto del Estado.
+- Las mujeres son la mitad o más del personal en casi todas.
+:::
+
+```{python}
+#| label: fig-unis
+#| fig-cap: "Vínculos promedio de cada universidad nacional, último año completo"
+o = u1.sort_values("total")
+fig = barras_h([corto(x) for x in o.nombre], o.total, [miles(x) for x in o.total], colores=[VERDE_AGUA] * len(o),
+               rango=[0, o.total.max() * 1.18])
+fig.update_xaxes(type="log", tickformat=",.0f", range=[1, 4.5])
+fig.show(config=CONFIG)
+```
+
+La escala del gráfico es logarítmica, porque la UNA es `{python} coma(una.total / u1.total.iloc[1], 0)` veces más grande que la siguiente. Le siguen la `{python} u1.nombre.iloc[1]` (`{python} miles(u1.total.iloc[1])`), la `{python} u1.nombre.iloc[2]` (`{python} miles(u1.total.iloc[2])`) y la `{python} u1.nombre.iloc[3]` (`{python} miles(u1.total.iloc[3])`).
+
+## La ficha de cada una
+
+```{python}
+#| label: tbl-ficha
+#| output: asis
+print(f"| Universidad | Vínculos {UA} | Cambio desde {A0} | % contratados | % mujeres | Masa salarial (mil M Gs) | Remuneración media (M Gs/mes) |")
+print("|---|--:|--:|--:|--:|--:|--:|")
+for _, r in u1.iterrows():
+    cambio = spct(r["var"]) if pd.notna(r["var"]) else "nueva"
+    print(f"| {r.nombre} | {miles(r.total)} | {cambio} | {pct(r.pc, 0)} | {pct(r.pm, 0)} | {milmillones(r.masa)} | {millones(r.rem)} |")
+print(f"\n: Universidades nacionales, promedio de {UA}. Remuneración media = masa salarial sin aguinaldo / 12 / vínculos")
+```
+
+En la UNA, el `{python} pct(una.pc, 0)` de los vínculos son contratos, una proporción mayor que en las demás universidades. En las universidades del interior predominan los cargos permanentes.
+
+## Casi el mismo tamaño que en `{python} A0`
+
+```{python}
+#| label: fig-serie
+#| fig-cap: "Vínculos promedio de cada año: UNA y las demás universidades nacionales"
+fig = go.Figure()
+for g_, c in [("Universidad Nacional de Asunción", VERDE_AGUA), ("Las demás", AZUL)]:
+    fig.add_trace(go.Bar(x=s.index, y=s[g_], name=g_.replace("Universidad Nacional de Asunción", "UNA"), marker_color=c,
+                         hovertemplate=f"{g_}: %{{y:,.0f}}<extra></extra>"))
+estilo(fig, alto=320).update_layout(barmode="stack", bargap=0.3)
+fig.update_xaxes(dtick=1); fig.update_yaxes(tickformat=",.0f")
+fig.show(config=CONFIG)
+```
+
+El personal universitario público creció poco desde `{python} A0`. En el mismo período, el Estado en su conjunto sumó más de 15% de vínculos, impulsado por Salud y Fuerzas públicas ([quién creció y quién se achicó](../2027-01-28-quien-crecio-y-quien-se-achico/)).
+
+::: {.callout-note collapse="true"}
+## Notas
+
+- Universidades nacionales = nivel 28 del Presupuesto General de la Nación. El personal del Hospital de Clínicas forma parte de la Universidad Nacional de Asunción.
+- La remuneración media mezcla docentes, investigadores, personal de salud y personal administrativo, con cargas horarias muy distintas.
+:::
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA. [Descargar los datos](/datos/).
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_portada, ig_dato, barras_h as bh
+o = u1.head(8).sort_values("total")
+social("Universidades\nnacionales por dentro", miles(T) + " vínculos", f"en {len(u1)} universidades · {pct(part_una, 0)} en la UNA",
+       (list(range(len(o))), list(o.total)), color=VERDE_AGUA, tipo="barras")
+ig_portada("Educación superior", "Universidades\nnacionales\npor dentro", f"{miles(T)} vínculos y {milmillones(u1.masa.sum())} mil millones\nde guaraníes en salarios.",
+           (list(range(len(o))), list(o.total)), color=VERDE_AGUA, tipo="barras")
+ig_dato(2, "La UNA", "La Universidad Nacional de Asunción concentra", pct(part_una, 0), "del personal universitario público",
+        f"Vínculos promedio de {UA}", bh([corto(x) for x in o.nombre], o.total, [miles(x) for x in o.total],
+                                        colores=[VERDE_AGUA] * len(o)), color=VERDE_AGUA)
+```

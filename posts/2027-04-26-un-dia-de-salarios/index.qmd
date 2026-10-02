@@ -1,0 +1,64 @@
+---
+title: "Un día de salarios del Estado"
+description: "Si se reparte la masa salarial anual entre los días del año, cuánto paga el Estado en salarios por día y por hora."
+date: 2027-04-26
+categories: [El dato de la semana, Masa salarial]
+image: social.png
+image-alt: "Masa salarial del Estado por día"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+
+UA = ultimo_anio_completo()
+m = leer("masa_anual_sector.csv")
+t = m.groupby("anho").devengado.sum().loc[2017:UA]
+dia = t[UA] / 365; hora = dia / 24
+real = t * deflactor(UA).reindex(t.index)
+dia17 = real[2017] / 365
+s = m[m.anho == UA].set_index("sector").devengado.sort_values(ascending=False) / 365
+```
+
+```{python}
+#| label: kpis
+#| output: asis
+print(kpis([
+    (milmillones(dia, 1) + " mil M", f"de guaraníes por día en salarios ({UA})"),
+    (miles(hora / 1e6) + " M", "por hora"),
+]))
+```
+
+En `{python} UA` el Estado devengó `{python} billones(t[UA])` billones de guaraníes en salarios. Repartido entre los 365 días del año, son **`{python} milmillones(dia, 1)` mil millones de guaraníes por día**, unos `{python} miles(hora / 1e6)` millones por hora. En guaraníes de hoy, en 2017 un día costaba `{python} milmillones(dia17, 1)` mil millones.
+
+```{python}
+#| label: tbl-sec
+#| output: asis
+print("| Sector | Por día (mil millones de Gs) |\n|---|--:|")
+for k, x in s.items():
+    print(f"| {k} | {coma(x / 1e9, 1)} |")
+print(f"| **Total** | **{coma(s.sum() / 1e9, 1)}** |")
+print(f"\n: Masa salarial de {UA} dividida por 365 días")
+```
+
+Solo **Educación** cuesta `{python} coma(s.get('Educación', 0) / 1e9, 1)` mil millones por día, y **Salud**, `{python} coma(s.get('Salud', 0) / 1e9, 1)`. Es una forma de dimensionar una cifra que, dicha en billones, cuesta imaginar. Para comparar en el tiempo, lo correcto es usar términos reales, como hacemos en [¿Cuánto paga el Estado en salarios?](../2026-10-16-masa-salarial-real/).
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA (devengado del grupo 100). [Descargar los datos](/datos/).
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_dato, barras_h as bh
+o = s.head(6).iloc[::-1]
+social("Un día de salarios\ndel Estado", milmillones(dia, 1) + " mil millones", f"de guaraníes por día ({UA})")
+ig_dato(1, "El dato de la semana", f"En {UA}, cada día el Estado pagó", milmillones(dia, 1) + " mil M",
+        "de guaraníes en salarios", "Mil millones de guaraníes por día, por sector",
+        bh([x.replace("Servicio civil del Ejecutivo", "Servicio civil") for x in o.index], o / 1e9, [coma(x / 1e9, 1) for x in o]))
+```

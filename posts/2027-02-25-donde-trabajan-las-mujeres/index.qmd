@@ -1,0 +1,107 @@
+---
+title: "Dónde trabajan las mujeres del Estado"
+description: "Siete de cada diez vínculos de mujeres están en Educación y Salud. En las Fuerzas públicas, las empresas del Estado y muchas municipalidades siguen siendo minoría."
+date: 2027-02-25
+categories: [Género, Sectores, Instituciones]
+image: social.png
+image-alt: "Proporción de mujeres en los vínculos públicos por sector"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import plotly.graph_objects as go
+
+A1, M = ultimo_mes(); A0 = 2017
+x = leer("vinculos_tipo_sexo.csv")
+u = x[(x.anho == A1) & (x.mes == M)]
+s = u.pivot_table(index="sector", columns="sexo", values="total", aggfunc="sum").fillna(0)
+s["tot"] = s.sum(axis=1); s["p"] = s.FEMENINO / s.tot * 100
+s["dist"] = s.FEMENINO / s.FEMENINO.sum() * 100
+s = s.sort_values("p")
+pm = s.FEMENINO.sum() / s.tot.sum() * 100
+edsal = s.loc[["Educación", "Salud"], "dist"].sum()
+a = x[(x.anho == A0) & (x.mes == M)].pivot_table(index="sector", columns="sexo", values="total", aggfunc="sum")
+a["p"] = a.FEMENINO / a.sum(axis=1) * 100
+cambio = (s.p - a.p.reindex(s.index)).dropna().sort_values()
+v = vin_oee(); v = v[(v.anho == A1) & (v.mes == M) & (v.total >= 500)].copy()
+v["p"] = v.mujeres / v.total * 100
+alto = v.sort_values("p", ascending=False).head(10); bajo = v.sort_values("p").head(10)
+tipo = u.pivot_table(index="vinculo", columns="sexo", values="total", aggfunc="sum")
+tipo["p"] = tipo.FEMENINO / tipo.sum(axis=1) * 100
+```
+
+::: {.en-breve}
+**En breve**
+
+- En `{python} fecha_txt(A1, M)` las mujeres eran el **`{python} pct(pm)`** de los vínculos públicos.
+- **Educación y Salud** reúnen el **`{python} pct(edsal, 0)`** de todos los vínculos de mujeres del Estado. En los dos sectores, las mujeres son dos de cada tres.
+- En las **Fuerzas públicas** son el `{python} pct(s.loc['Fuerzas públicas', 'p'], 0)` y en las **empresas públicas**, el `{python} pct(s.loc['Empresas públicas', 'p'], 0)`.
+- Desde `{python} A0`, el sector donde más creció la proporción de mujeres es **`{python} cambio.index[-1]`** (`{python} signo(cambio.iloc[-1], coma)` puntos).
+:::
+
+## Por sector
+
+```{python}
+#| label: fig-sector
+#| fig-cap: "Proporción de mujeres en los vínculos, por sector"
+fig = barras_h(s.index, s.p, [f"{pct(p_, 0)} · {miles(f_)}" for p_, f_ in zip(s.p, s.FEMENINO)],
+               colores=[VIOLETA if p_ >= 50 else "#a99fd6" for p_ in s.p], rango=[0, 100])
+fig.add_vline(x=50, line=dict(color=GRIS, width=1, dash="dot"))
+fig.update_xaxes(ticksuffix="%"); fig.show(config=CONFIG)
+```
+
+Las mujeres son mayoría en tres sectores: **Salud** (`{python} pct(s.loc['Salud', 'p'], 0)`), **Educación** (`{python} pct(s.loc['Educación', 'p'], 0)`) y el **Poder Judicial** (`{python} pct(s.loc['Poder Judicial', 'p'], 0)`). En el resto del Estado son minoría. La distribución sigue la de muchas profesiones: la docencia y la enfermería tienen una presencia femenina alta; la seguridad, la ingeniería y los oficios técnicos de las empresas públicas, baja.
+
+## Por institución
+
+```{python}
+#| label: tbl-inst
+#| output: asis
+print("| Mayor proporción de mujeres | % | Menor proporción de mujeres | % |\n|---|--:|---|--:|")
+for (_, r1), (_, r2) in zip(alto.iterrows(), bajo.iterrows()):
+    print(f"| {r1.nombre_largo} | {pct(r1.p, 0)} | {r2.nombre_largo} | {pct(r2.p, 0)} |")
+print(f"\n: Instituciones con al menos 500 vínculos, {fecha_txt(A1, M)}")
+```
+
+## Contratos y planta permanente
+
+Las mujeres son el `{python} pct(tipo.loc['CONTRATADO', 'p'], 0)` de los contratos y el `{python} pct(tipo.loc['PERMANENTE', 'p'], 0)` de la planta permanente. La diferencia se explica en buena medida por Salud, el sector con más contratos y con mayoría de mujeres.
+
+## Qué cambió desde `{python} A0`
+
+```{python}
+#| label: fig-cambio
+#| fig-cap: "Cambio en la proporción de mujeres por sector, en puntos porcentuales"
+lim = max(abs(cambio).max(), 1)
+fig = barras_h(cambio.index, cambio.values, [signo(c, coma) for c in cambio.values],
+               colores=[VIOLETA if c >= 0 else GRIS for c in cambio.values], rango=[-lim * 1.6, lim * 1.6])
+fig.show(config=CONFIG)
+```
+
+En `{python} fecha_txt(A0, M)` las mujeres eran el `{python} pct(a.FEMENINO.sum() / a[['FEMENINO', 'MASCULINO']].sum().sum() * 100)` de los vínculos. En la mayoría de los sectores los cambios fueron de pocos puntos; el mayor aumento se dio en `{python} cambio.index[-1]`.
+
+¿Ocupan también los cargos mejor pagos? Lo miramos en el próximo análisis, [¿Hay un techo de cristal en el Estado?](../2027-03-04-el-techo-de-cristal/).
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA (vínculos por mes, tipo y sexo). [Descargar los datos](/datos/).
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_portada, ig_dato, barras_h as bh
+corto = lambda x: x.replace("Servicio civil del Ejecutivo", "Servicio civil").replace("Entes autónomos y autárquicos", "Entes autónomos").replace("Gobiernos departamentales", "Gobernaciones")
+social("Dónde trabajan las\nmujeres del Estado", pct(edsal, 0) + " en Educación y Salud", f"de todos los vínculos de mujeres ({fecha_txt(A1, M)})", color=VIOLETA)
+ig_portada("Género", "Dónde\ntrabajan\nlas mujeres", f"Son el {pct(pm)} de los vínculos públicos,\npero no en todos los sectores.",
+           (list(range(len(s))), list(s.p)), color=VIOLETA, tipo="barras")
+ig_dato(2, "Por sector", "Las mujeres son mayoría en Salud", pct(s.loc['Salud', 'p'], 0),
+        f"y minoría en Fuerzas públicas ({pct(s.loc['Fuerzas públicas', 'p'], 0)})", "Proporción de mujeres por sector",
+        bh([corto(i) for i in s.index], s.p, [pct(p_, 0) for p_ in s.p],
+           colores=[VIOLETA if p_ >= 50 else "#a99fd6" for p_ in s.p], ref=50), color=VIOLETA)
+```

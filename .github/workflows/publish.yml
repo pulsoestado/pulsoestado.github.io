@@ -3,6 +3,9 @@ name: Publicar sitio
 on:
   push:
     branches: [main]
+  schedule:
+    # Todos los días a las 07:45 de Asunción (10:45 UTC): publica las notas cuya fecha llegó
+    - cron: "45 10 * * *"
   workflow_dispatch:
 
 permissions:
@@ -32,6 +35,9 @@ jobs:
 
       - name: Instalar Quarto
         uses: quarto-dev/quarto-actions/setup@v2
+
+      - name: Ocultar las notas programadas para fechas futuras
+        run: python scripts/programar_publicaciones.py --retirar
 
       - name: Generar el sitio
         run: quarto render

@@ -1,0 +1,59 @@
+---
+title: "Vínculos públicos por cada 100 habitantes"
+description: "Cuántos vínculos paga el Estado paraguayo por cada 100 habitantes, y cuántos docentes, trabajadores de la salud y policías hay por cada mil."
+date: 2027-09-06
+categories: [El dato de la semana, Dotación, Población]
+image: social.png
+image-alt: "Vínculos públicos por cada mil habitantes, por sector"
+resources: ["ig_*.png"]
+requiere:
+  archivo: "data/manual/poblacion_departamentos_2022.csv"
+draft: true  # programada
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+
+POB = pd.read_csv(raiz / "data/manual/poblacion_departamentos_2022.csv").poblacion_2022.sum()
+A1, M = ultimo_mes()
+v = leer("vinculos_mensual_sector.csv"); u = v[(v.anho == A1) & (v.mes == M)].groupby("sector").total.sum()
+T = u.sum(); x100 = T / POB * 100
+x1000 = (u / POB * 1000).sort_values()
+```
+
+```{python}
+#| label: kpis
+#| output: asis
+print(kpis([(coma(x100, 1), f"vínculos públicos por cada 100 habitantes ({fecha_txt(A1, M)})"),
+            (coma(x1000.get('Educación', 0), 1), "en Educación, por cada mil"), (coma(x1000.get('Salud', 0), 1), "en Salud, por cada mil")]))
+```
+
+Con los `{python} miles(T)` vínculos que pagó el Estado en `{python} fecha_txt(A1, M)` y los `{python} miles(POB)` habitantes que contó el Censo 2022, hay **`{python} coma(x100, 1)` vínculos públicos por cada 100 habitantes**. Por cada mil personas, hay `{python} coma(x1000.get('Educación', 0), 1)` vínculos en Educación, `{python} coma(x1000.get('Salud', 0), 1)` en Salud y `{python} coma(x1000.get('Fuerzas públicas', 0), 1)` en las Fuerzas públicas.
+
+```{python}
+#| label: fig
+#| fig-cap: "Vínculos públicos por cada mil habitantes, por sector"
+fig = barras_h(x1000.index, x1000.values, [coma(x, 1) for x in x1000.values], colores=[AZUL] * len(x1000), rango=[0, x1000.max() * 1.2])
+fig.show(config=CONFIG)
+```
+
+Es una cifra aproximada: se compara el empleo de hoy con la población de 2022, y un vínculo no es una persona (una persona con dos cargos cuenta dos veces). Además, no incluye a la Municipalidad de Asunción. Las comparaciones con otros países requieren cuidado, porque cada país define el sector público de manera distinta ([Paraguay y Argentina](../2027-04-22-paraguay-y-argentina/)).
+
+::: {.fuente}
+**Fuentes:** elaboración de Pulso del Estado con datos de SINARH y SICCA. Población: INE, Censo 2022. [Descargar los datos](/datos/).
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_dato, barras_h as bh
+cort = lambda x: x.replace("Servicio civil del Ejecutivo", "Servicio civil").replace("Entes autónomos y autárquicos", "Entes autónomos")
+o = x1000.tail(6)
+social("Vínculos públicos por\ncada 100 habitantes", coma(x100, 1), f"vínculos por cada 100 habitantes ({fecha_txt(A1, M)})")
+ig_dato(1, "El dato de la semana", "Por cada 100 habitantes, el Estado paga", coma(x100, 1), "vínculos", "Por cada mil habitantes, por sector",
+        bh([cort(x) for x in o.index], o.values, [coma(x, 1) for x in o.values]))
+```

@@ -1,0 +1,65 @@
+---
+title: "Cuánto cuesta el servicio exterior"
+description: "Las remuneraciones del personal que trabaja fuera del país se registran aparte. Cuánto suman, quién las paga y cómo cambiaron."
+date: 2027-06-14
+categories: [El dato de la semana, Masa salarial, Instituciones]
+image: social.png
+image-alt: "Remuneraciones por servicios en el exterior por año"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import plotly.graph_objects as go
+
+UA = ultimo_anio_completo()
+o = leer("masa_anual_objeto.csv"); o = o[(o.objeto_gasto // 10 == 16) & o.anho.between(2017, UA)]
+t = o.groupby("anho").devengado.sum()
+real = t * deflactor(UA).reindex(t.index)
+m = leer("masa_anual_oee.csv").merge(instituciones()[K_OEE + ["nombre"]], on=K_OEE)
+q = m[(m.componente == "Servicio exterior") & (m.anho == UA)].groupby("nombre").devengado.sum().sort_values(ascending=False)
+mre = q.get("Ministerio de Relaciones Exteriores", 0)
+total = leer("masa_anual_sector.csv").query("anho == @UA").devengado.sum()
+mmre = m[(m.nombre == "Ministerio de Relaciones Exteriores") & (m.anho == UA)].devengado.sum()
+var = (real[UA] / real[2017] - 1) * 100
+```
+
+```{python}
+#| label: kpis
+#| output: asis
+print(kpis([(milmillones(t[UA]) + " mil M", f"de guaraníes en remuneraciones por servicios en el exterior ({UA})"),
+            (pct(mre / t[UA] * 100, 0), "las paga el Ministerio de Relaciones Exteriores")]))
+```
+
+Las remuneraciones del personal que presta servicios fuera del país (embajadas, consulados, agregadurías) se registran en un subgrupo propio del presupuesto, el 16x. En `{python} UA` sumaron **`{python} milmillones(t[UA])` mil millones de guaraníes**, el `{python} pct(t[UA] / total * 100, 1)` de la masa salarial pública. El `{python} pct(mre / t[UA] * 100, 0)` lo pagó el **Ministerio de Relaciones Exteriores**, para el que representa el `{python} pct(mre / mmre * 100, 0)` de su masa salarial; el resto, `{python} ", ".join(q.index[1:4])`.
+
+```{python}
+#| label: fig
+#| fig-cap: "Remuneraciones por servicios en el exterior (subgrupo 16x), miles de millones de guaraníes del último año completo"
+fig = go.Figure(go.Bar(x=real.index, y=real / 1e9, marker_color=AZUL, text=[miles(x / 1e9) for x in real], textposition="outside",
+                       cliponaxis=False, textfont=dict(color=TINTA_GRAF), hovertemplate="%{x}: <b>%{y:,.0f}</b><extra></extra>"))
+estilo(fig, alto=320, leyenda=False).update_layout(hovermode="closest")
+fig.update_xaxes(dtick=1); fig.update_yaxes(range=[0, real.max() / 1e9 * 1.18])
+fig.show(config=CONFIG)
+```
+
+Descontada la inflación, el gasto cambió `{python} spct(var)` desde 2017. Como se trata de personal que vive y cobra fuera del país, estas remuneraciones pueden moverse también con el tipo de cambio. El aguinaldo de este personal (objeto 163) de diciembre de 2021 figura en los registros unas cinco veces por encima de lo normal, el mismo error que el del aguinaldo general: lo corregimos con el promedio de 2020 y 2022 (ver la [metodología](/metodologia.qmd)).
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH (devengado de los objetos 161 a 163). [Descargar los datos](/datos/).
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_dato, barras
+social("Cuánto cuesta el\nservicio exterior", milmillones(t[UA]) + " mil millones", f"de guaraníes en {UA} · {pct(mre / t[UA] * 100, 0)} en Relaciones Exteriores",
+       (list(real.index), list(real)), tipo="barras")
+ig_dato(1, "El dato de la semana", f"En {UA}, el personal en el exterior costó", milmillones(t[UA]) + " mil M", "de guaraníes",
+        f"Miles de millones de Gs de {UA}", barras(list(real.index), list(real / 1e9), [miles(x / 1e9) for x in real]))
+```

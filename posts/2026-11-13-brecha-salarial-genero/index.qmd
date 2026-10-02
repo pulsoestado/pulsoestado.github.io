@@ -1,0 +1,112 @@
+---
+title: "¿Ganan menos las mujeres en el Estado?"
+description: "En promedio, el sueldo básico de las mujeres en el sector público ya supera al de los hombres. Pero en la misma institución y la misma categoría, ellas siguen ganando menos: 1,6% en promedio y 5% en Salud."
+date: 2026-11-13
+categories: [Género, Salarios]
+image: social.png
+image-alt: "Brecha salarial de género en el sector público paraguayo: bruta y dentro de la misma categoría"
+draft: true  # programada
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import plotly.graph_objects as go
+
+g = leer("genero_brecha_anual.csv").set_index("anho").loc[2018:]
+gs = leer("genero_brecha_sector.csv").set_index("sector")
+A1 = int(g.index.max()); A0 = int(g.index.min())
+u, p0 = g.loc[A1], g.loc[A0]
+cruce = int(g[g.brecha_bruta_pct < 0].index.min())
+sal, edu, fza, mun = gs.loc["Salud"], gs.loc["Educación"], gs.loc["Fuerzas públicas"], gs.loc["Municipalidades"]
+```
+
+::: {.en-breve}
+**En breve**
+
+- En junio de `{python} A1` el **sueldo básico medio de las mujeres** en cargos permanentes fue de `{python} millones(u.sueldo_medio_mujeres, 2)` millones de guaraníes, **`{python} pct(abs(u.brecha_bruta_pct))` más que el de los hombres** (`{python} millones(u.sueldo_medio_hombres, 2)` millones).
+- Pero esa comparación mezcla cargos muy distintos. **Dentro de la misma institución y la misma categoría salarial, las mujeres ganan `{python} pct(u.brecha_misma_categoria_pct)` menos**.
+- La brecha dentro de la categoría es mayor en las **municipalidades** (`{python} pct(mun.brecha_misma_categoria_pct)`) y en **Salud** (`{python} pct(sal.brecha_misma_categoria_pct)`).
+- El promedio se dio vuelta en `{python} cruce`: hasta entonces los hombres ganaban más en promedio. Los aumentos del salario docente, un cuerpo mayoritariamente femenino, son la explicación más probable del cambio.
+:::
+
+```{python}
+#| label: kpis
+#| output: asis
+print(kpis([
+    (pct(u.pct_mujeres), f"de los cargos permanentes son ocupados por mujeres ({A1})"),
+    (spct(-u.brecha_bruta_pct), "sueldo básico medio de las mujeres frente al de los hombres"),
+    (spct(-u.brecha_misma_categoria_pct), "en la misma institución y categoría"),
+    (spct(-sal.brecha_misma_categoria_pct), "en Salud, misma institución y categoría"),
+]))
+```
+
+## Dos maneras de medir la brecha
+
+La **brecha bruta** compara el sueldo medio de todas las mujeres con el de todos los hombres. Es fácil de calcular, pero mezcla cargos distintos: si las mujeres son mayoría en profesiones con sueldos más altos, la brecha bruta favorecerá a las mujeres aunque en cada cargo ganen menos.
+
+La **brecha dentro de la misma categoría** compara a mujeres y hombres que trabajan en **la misma institución y en la misma categoría salarial** del anexo de personal, y luego promedia esas diferencias según cuántas personas hay en cada celda. Es una medida más cercana a "igual remuneración por igual cargo". Es uno de los indicadores que recomienda la guía de nómina pública del BID.
+
+## La brecha bruta se dio vuelta; la de igual cargo, no
+
+```{python}
+#| label: fig-serie
+#| fig-cap: "Brecha salarial de género en el sueldo básico de cargos permanentes (junio de cada año). Valores positivos: los hombres ganan más"
+fig = go.Figure()
+fig.add_trace(go.Scatter(x=g.index, y=g.brecha_bruta_pct, name="Brecha bruta", mode="lines+markers",
+                         line=dict(color=GRIS, width=2.4, dash="dot"), marker=dict(size=7),
+                         hovertemplate="Bruta: <b>%{y:.1f}%</b><extra></extra>"))
+fig.add_trace(go.Scatter(x=g.index, y=g.brecha_misma_categoria_pct, name="Misma institución y categoría",
+                         mode="lines+markers", line=dict(color=NARANJA, width=2.6),
+                         marker=dict(size=8, line=dict(width=2, color="#fcfcfb")),
+                         hovertemplate="Misma categoría: <b>%{y:.1f}%</b><extra></extra>"))
+fig.add_hline(y=0, line=dict(color="rgba(128,128,128,.6)", width=1))
+fig.add_annotation(x=A0, y=0, text="Paridad", showarrow=False, yshift=-12, xanchor="left",
+                   font=dict(size=12, color=GRIS))
+estilo(fig, alto=380)
+fig.update_yaxes(ticksuffix="%")
+fig.update_xaxes(dtick=1)
+fig.show(config=CONFIG)
+```
+
+En `{python} A0` los hombres ganaban en promedio `{python} pct(p0.brecha_bruta_pct)` más que las mujeres. Desde `{python} cruce` el promedio favorece a las mujeres, y en `{python} A1` la diferencia es de `{python} pct(abs(u.brecha_bruta_pct))` a su favor. **La brecha dentro de la misma categoría, en cambio, sigue del lado de los hombres** y se movió entre `{python} pct(g.brecha_misma_categoria_pct.min())` y `{python} pct(g.brecha_misma_categoria_pct.max())` en todo el período.
+
+¿Por qué el promedio favorece a las mujeres? Porque son dos de cada tres en **Educación** (`{python} pct(edu.pct_mujeres, 0)` de los cargos), el sector cuyos sueldos más crecieron en estos años, y una minoría en **Fuerzas públicas** (`{python} pct(fza.pct_mujeres, 0)`), donde el sueldo básico es más bajo.
+
+## Sector por sector
+
+```{python}
+#| label: fig-sectores
+#| fig-cap: "Brecha salarial de género dentro de la misma institución y categoría, por sector (junio 2026). Positivo: los hombres ganan más"
+o = gs[gs.cargos >= 2000].sort_values("brecha_misma_categoria_pct")
+fig = barras_h(o.index, o.brecha_misma_categoria_pct, [spct(v) for v in o.brecha_misma_categoria_pct],
+               colores=[NARANJA if v > 0 else AZUL for v in o.brecha_misma_categoria_pct],
+               hover="<b>%{y}</b>: %{text}<extra></extra>")
+fig.update_xaxes(ticksuffix="%", range=[o.brecha_misma_categoria_pct.min() - 2, o.brecha_misma_categoria_pct.max() + 2])
+fig.show(config=CONFIG)
+```
+
+```{python}
+#| label: tbl-sectores
+#| output: asis
+print("| Sector | Cargos | % mujeres | Brecha bruta | Brecha en igual categoría |")
+print("|---|--:|--:|--:|--:|")
+for s_, r in gs[gs.cargos >= 2000].sort_values("cargos", ascending=False).iterrows():
+    print(f"| {s_} | {miles(r.cargos)} | {pct(r.pct_mujeres, 0)} | {spct(r.brecha_bruta_pct)} | {spct(r.brecha_misma_categoria_pct)} |")
+print("\n: Brecha de género en el sueldo básico por sector, junio de 2026. Positivo: los hombres ganan más")
+```
+
+Las **Fuerzas públicas** muestran el contraste más claro entre las dos medidas: la brecha bruta es de `{python} pct(fza.brecha_bruta_pct)` porque las mujeres están más concentradas en los grados de menor sueldo, pero dentro de un mismo grado la diferencia es mínima (`{python} pct(fza.brecha_misma_categoria_pct)`). En las **municipalidades** y en **Salud**, en cambio, las mujeres ganan menos incluso en la misma categoría. La explicación puede estar en diferencias de antigüedad, jornada o asignaciones dentro de la misma categoría, que estos datos no permiten observar.
+
+## Qué tener en cuenta
+
+- El análisis usa el **sueldo básico** (objeto de gasto 111) de los **cargos permanentes**, que es lo que registra el archivo de nivel y categoría. No incluye bonificaciones, gastos de representación ni contratos, donde podría haber otras diferencias.
+- La categoría salarial es la letra del anexo de personal. Comparar dentro de la misma institución y categoría acerca la medición a "igual cargo", pero no controla por antigüedad ni por carga horaria.
+- Se excluyen 2015 a 2017 por cambios de cobertura y una anomalía en los datos de junio de 2017. Las celdas comparables cubren más del 99% de los cargos.
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA (sueldo básico presupuestado y devengado por institución, categoría y sexo), junio de cada año. Metodología basada en Schuster, Naranjo Bautista y Lipinski, *Creación de indicadores de nómina pública: guía metodológica* (BID, nota técnica IDB-TN-03246, 2025). [Descargar los datos](/datos/).
+:::

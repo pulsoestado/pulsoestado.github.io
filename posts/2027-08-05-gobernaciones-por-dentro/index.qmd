@@ -1,0 +1,88 @@
+---
+title: "Gobernaciones por dentro"
+description: "Las 17 gobernaciones del país pagan unos dos mil cuatrocientos vínculos. Cuánto personal tiene cada una, cuántos son contratos y cuánto pesan las dietas de las juntas departamentales."
+date: 2027-08-05
+categories: [Gobernaciones, Territorio, Instituciones]
+image: social.png
+image-alt: "Vínculos y composición de la masa salarial de las gobernaciones"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import plotly.graph_objects as go
+
+UA = ultimo_anio_completo(); A0 = 2017
+p = vin_promedio_oee(UA); p = p[p.sector == "Gobiernos departamentales"].set_index("codigo_entidad")
+m = masa_oee_anual(UA); m = m[m.sector == "Gobiernos departamentales"].set_index("codigo_entidad")
+pob = pd.read_csv(raiz / "data/manual/poblacion_departamentos_2022.csv").set_index("codigo_departamento").poblacion_2022
+g = p[["nombre", "total", "contratado", "mujeres"]].join(m[["masa", "Dietas", "Gastos de representación", "Aguinaldo"]]).join(pob)
+g["pc"] = g.contratado / g.total * 100; g["pm"] = g.mujeres / g.total * 100
+g["pd"] = (g.Dietas + g["Gastos de representación"]) / g.masa * 100
+g["rem"] = (g.masa - g.Aguinaldo) / 12 / g.total
+g["x10m"] = g.total / g.poblacion_2022 * 10000
+g = g.sort_values("total", ascending=False)
+T = g.total.sum(); MS = g.masa.sum(); PD = (g.Dietas.sum() + g["Gastos de representación"].sum()) / MS * 100
+v = vin_oee(); s = v[v.sector == "Gobiernos departamentales"].groupby("anho").total.mean().loc[A0:UA]
+var = (s[UA] / s[A0] - 1) * 100
+corto = lambda x: x.replace("Gobernación de ", "")
+```
+
+::: {.en-breve}
+**En breve**
+
+- En `{python} UA` las 17 gobernaciones pagaron en promedio **`{python} miles(T)` vínculos** y `{python} milmillones(MS)` mil millones de guaraníes en salarios.
+- La más grande es la de **`{python} corto(g.nombre.iloc[0])`** (`{python} miles(g.total.iloc[0])` vínculos); la más chica, la de **`{python} corto(g.nombre.iloc[-1])`** (`{python} miles(g.total.iloc[-1])`).
+- Las **dietas** de las juntas departamentales y los **gastos de representación** de gobernadores y otras autoridades suman el **`{python} pct(PD, 0)`** de su masa salarial.
+- Desde `{python} A0`, el personal de las gobernaciones cambió `{python} spct(var)`.
+:::
+
+```{python}
+#| label: fig
+#| fig-cap: "Vínculos de cada gobernación por tipo, promedio del último año completo"
+o = g.sort_values("total")
+fig = go.Figure()
+fig.add_trace(go.Bar(y=[corto(x) for x in o.nombre], x=o.total - o.contratado, name="Permanentes", orientation="h", marker_color=AZUL,
+                     hovertemplate="<b>%{y}</b><br>Permanentes: %{x:,.0f}<extra></extra>"))
+fig.add_trace(go.Bar(y=[corto(x) for x in o.nombre], x=o.contratado, name="Contratados", orientation="h", marker_color=NARANJA,
+                     text=[miles(x) for x in o.total], textposition="outside", cliponaxis=False, textfont=dict(color=TINTA_GRAF),
+                     hovertemplate="<b>%{y}</b><br>Contratados: %{x:,.0f}<extra></extra>"))
+estilo(fig, alto=560).update_layout(barmode="stack", hovermode="closest", bargap=0.3, margin=dict(r=50))
+fig.update_xaxes(showgrid=True, gridcolor="rgba(128,128,128,.18)"); fig.update_yaxes(showgrid=False)
+fig.show(config=CONFIG)
+```
+
+El tamaño de una gobernación no sigue a la población de su departamento: **Central**, el departamento más poblado del país, tiene una gobernación de tamaño mediano, con `{python} coma(g.loc[11, 'x10m'], 1)` vínculos por cada diez mil habitantes, mientras que en **Boquerón** son `{python} coma(g.loc[16, 'x10m'], 1)`.
+
+## La ficha
+
+```{python}
+#| label: tbl
+#| output: asis
+print("| Gobernación | Vínculos | % contratados | % mujeres | Masa salarial (mil M Gs) | Dietas y representación (% de la masa) | Por 10.000 habitantes |\n|---|--:|--:|--:|--:|--:|--:|")
+for _, r in g.iterrows():
+    print(f"| {corto(r.nombre)} | {miles(r.total)} | {pct(r.pc, 0)} | {pct(r.pm, 0)} | {coma(r.masa / 1e9, 1)} | {pct(r.pd, 0)} | {coma(r.x10m, 1)} |")
+print(f"\n: Gobiernos departamentales, promedio de {UA}. Población: Censo 2022")
+```
+
+Cada departamento tiene su junta departamental, y sus dietas pesan mucho en las gobernaciones con poco personal. Es el mismo patrón que en las [municipalidades](../2026-12-18-municipalidades-por-dentro/): los cargos electivos son una parte fija del costo, independiente del tamaño de la administración.
+
+::: {.fuente}
+**Fuentes:** elaboración de Pulso del Estado con datos de SINARH y SICCA. Población: INE, Censo 2022. [Descargar los datos](/datos/).
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_portada, ig_dato, barras_h as bh
+social("Gobernaciones\npor dentro", miles(T) + " vínculos", f"en 17 gobernaciones · {pct(PD, 0)} de su masa son dietas y representación", (list(range(17)), list(o.total)), tipo="barras", color=VERDE_AGUA)
+ig_portada("Territorio", "Gobernaciones\npor dentro", f"{miles(T)} vínculos y {milmillones(MS)} mil millones\nde guaraníes en salarios.", (list(range(17)), list(o.total)), tipo="barras", color=VERDE_AGUA)
+o8 = g.head(8).sort_values("total")
+ig_dato(2, "Las más grandes", f"La Gobernación de {corto(g.nombre.iloc[0])} tiene", miles(g.total.iloc[0]), "vínculos, la mayor del país",
+        f"Vínculos promedio de {UA}", bh([corto(x) for x in o8.nombre], o8.total, [miles(x) for x in o8.total], colores=[VERDE_AGUA] * len(o8)), color=VERDE_AGUA)
+```

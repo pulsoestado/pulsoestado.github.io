@@ -1,0 +1,75 @@
+---
+title: "El bache de enero"
+description: "Cada enero el Estado paga miles de vínculos menos que en diciembre y los recupera en los meses siguientes. La mayor parte del bache está en Educación."
+date: 2027-01-04
+categories: [El dato de la semana, Dotación, Educación]
+image: social.png
+image-alt: "Caída de vínculos entre diciembre y enero de cada año"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import plotly.graph_objects as go
+
+s = serie_mensual().set_index(["anho", "mes"])
+v = leer("vinculos_mensual_sector.csv").set_index(["anho", "mes", "sector"])
+anios = [a for a in range(2017, 2100) if (a, 1) in s.index and (a - 1, 12) in s.index]
+A = anios[-1]
+caida = pd.Series({a: s.loc[(a, 1), "total"] - s.loc[(a - 1, 12), "total"] for a in anios})
+d, e = s.loc[(A - 1, 12)], s.loc[(A, 1)]
+sec = (v.xs((A, 1), level=[0, 1]).total - v.xs((A - 1, 12), level=[0, 1]).total).sort_values()
+edu = sec.get("Educación", 0)
+# ¿Cuándo se recupera? primer mes del año que supera a diciembre
+rec = next((m for m in range(2, 13) if (A, m) in s.index and s.loc[(A, m), "total"] >= d.total), None)
+promedio = caida.loc[A - 4:A].mean()
+```
+
+```{python}
+#| label: kpis
+#| output: asis
+print(kpis([
+    (signo(caida[A]), f"vínculos entre diciembre de {A - 1} y enero de {A}"),
+    (signo(edu), "de ese cambio, en Educación"),
+]))
+```
+
+En diciembre de `{python} A - 1` el Estado pagó `{python} miles(d.total)` vínculos. En enero de `{python} A` fueron `{python} miles(e.total)`: **`{python} miles(abs(caida[A]))` menos**. No es una excepción: en los últimos cinco años, la caída de enero promedió `{python} miles(abs(promedio))` vínculos.
+
+```{python}
+#| label: fig-caida
+#| fig-cap: "Cambio en los vínculos pagados entre diciembre y enero de cada año"
+fig = go.Figure(go.Bar(x=[str(a) for a in caida.index], y=caida.values,
+                       marker_color=[ROJO if x < 0 else AZUL for x in caida.values],
+                       text=[signo(x) for x in caida.values], textposition="outside", cliponaxis=False,
+                       textfont=dict(color=TINTA_GRAF),
+                       hovertemplate="Diciembre → enero de %{x}: <b>%{text}</b><extra></extra>"))
+estilo(fig, alto=340, leyenda=False).update_layout(hovermode="closest")
+fig.update_yaxes(tickformat=",.0f", range=[caida.min() * 1.25, max(caida.max(), 0) + abs(caida.min()) * 0.15])
+fig.show(config=CONFIG)
+```
+
+La mayor parte del bache está en **Educación** (`{python} signo(edu)` vínculos), donde parte del personal docente deja de cobrar durante el receso escolar y vuelve con el inicio de clases. `{python} f"En {A}, el total volvió a superar el nivel de diciembre recién en {MESES[rec - 1]}." if rec else f"En {A}, el total no volvió a alcanzar el nivel de diciembre en los meses informados."`
+
+Por eso, para medir si el Estado crece o se achica conviene comparar el mismo mes de dos años distintos, como hace el [SITUCAP](/situcap/), y no enero con diciembre.
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA (vínculos pagados por mes). [Descargar los datos](/datos/).
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_dato, barras
+ult = caida.tail(6)
+social("El bache de enero", signo(caida[A]) + " vínculos",
+       f"entre diciembre de {A - 1} y enero de {A}", (list(ult.index), list(-ult.values)), color=ROJO, tipo="barras")
+ig_dato(1, "El dato de la semana", f"Entre diciembre de {A - 1} y enero de {A}", signo(caida[A]),
+        "vínculos pagados por el Estado", f"De ese cambio, {signo(edu)} en Educación",
+        barras(ult.index, ult.values, [signo(x) for x in ult.values], colores=[ROJO] * len(ult)), color=ROJO)
+```

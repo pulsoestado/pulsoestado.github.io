@@ -1,0 +1,93 @@
+---
+title: "Entes autónomos, empresas y sociedades del Estado por dentro"
+description: "ANDE, COPACO, ESSAP, el Banco Central, el BNF, la DNIT y decenas de entes: la parte del Estado que no depende de un ministerio. Cuánto personal tiene, cuánto cuesta y qué la distingue."
+date: 2027-11-25
+categories: [Empresas públicas, Entes autónomos, Instituciones]
+image: social.png
+image-alt: "Vínculos y remuneración media de entes, empresas y sociedades del Estado"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import plotly.graph_objects as go
+
+UA = ultimo_anio_completo(); A0 = 2017
+SEC = ["Entes autónomos y autárquicos", "Empresas públicas", "SA del Estado", "Otros organismos"]
+p = vin_promedio_oee(UA); p = p[p.sector.isin(SEC)]
+m = masa_oee_anual(UA)[K_OEE + ["masa", "Aguinaldo", "Bonificaciones y asignaciones"]]
+p = p.merge(m, on=K_OEE, how="left")
+p["rem"] = (p.masa - p.Aguinaldo) / 12 / p.total; p["pb"] = p["Bonificaciones y asignaciones"] / p.masa * 100; p["pc"] = p.contratado / p.total * 100
+s = p.groupby("sector").agg(inst=("total", "size"), v=("total", "sum"), c=("contratado", "sum"), masa=("masa", "sum"), ag=("Aguinaldo", "sum"),
+                             bon=("Bonificaciones y asignaciones", "sum"))
+s["rem"] = (s.masa - s.ag) / 12 / s.v; s["pb"] = s.bon / s.masa * 100; s["pc"] = s.c / s.v * 100
+T = s.v.sum(); MS = s.masa.sum()
+est = leer("masa_anual_sector.csv").query("anho == @UA"); rem_e = est.devengado_sin_aguinaldo.sum() / 12 / est.vinculos_promedio.sum()
+top = p.sort_values("total", ascending=False).head(15)
+v = leer("vinculos_mensual_sector.csv"); h = v[v.sector.isin(SEC) & v.anho.between(A0, UA)].groupby(["anho", "mes", "sector"]).total.sum().groupby(["anho", "sector"]).mean().unstack()
+```
+
+::: {.en-breve}
+**En breve**
+
+- Los entes autónomos, las empresas públicas, las sociedades anónimas del Estado y otros organismos (bancos públicos, cajas, Contraloría) suman **`{python} miles(T)` vínculos** en `{python} p.shape[0]` instituciones y `{python} milmillones(MS)` mil millones de guaraníes en salarios (`{python} UA`).
+- Su remuneración media, `{python} millones((MS - s.ag.sum()) / 12 / T)` millones de guaraníes por mes, es `{python} coma((MS - s.ag.sum()) / 12 / T / rem_e, 1)` veces la del conjunto del Estado.
+- En las **empresas públicas** las bonificaciones son el `{python} pct(s.loc['Empresas públicas', 'pb'], 0)` de la masa salarial.
+- La más grande es **`{python} top.nombre_largo.iloc[0]`**, con `{python} miles(top.total.iloc[0])` vínculos.
+:::
+
+```{python}
+#| label: tbl-sec
+#| output: asis
+print(f"| Grupo | Instituciones | Vínculos | % contratados | Masa salarial (mil M Gs) | Remuneración media (M Gs/mes) | Bonificaciones (% de la masa) |\n|---|--:|--:|--:|--:|--:|--:|")
+for k, r in s.sort_values("v", ascending=False).iterrows():
+    print(f"| {k} | {int(r.inst)} | {miles(r.v)} | {pct(r.pc, 0)} | {milmillones(r.masa)} | {millones(r.rem)} | {pct(r.pb, 0)} |")
+print(f"\n: Promedio de {UA}")
+```
+
+## Las 15 más grandes
+
+```{python}
+#| label: fig
+#| fig-cap: "Vínculos y remuneración media de las 15 instituciones más grandes del grupo, último año completo"
+o = top.sort_values("total")
+fig = barras_h(o.nombre_largo, o.total, [f"{miles(t)} · {millones(r_)} M" for t, r_ in zip(o.total, o.rem)], colores=[AZUL] * len(o), rango=[0, o.total.max() * 1.45])
+fig.update_xaxes(tickformat=",.0f"); fig.show(config=CONFIG)
+```
+
+Estas instituciones tienen en común su autonomía: administran su propio presupuesto, varias se financian con lo que cobran por sus servicios y tienen escalas salariales propias. Eso ayuda a explicar que sus remuneraciones medias sean, en general, más altas que las de la administración central, y que una parte mayor se pague como bonificaciones ([bonificaciones](../2027-09-09-bonificaciones/)).
+
+## Cómo cambiaron
+
+```{python}
+#| label: fig-h
+#| fig-cap: "Vínculos promedio por grupo"
+fig = go.Figure()
+for k, c in zip(SEC, [AZUL, NARANJA, VERDE_AGUA, GRIS]):
+    if k in h: fig.add_trace(go.Scatter(x=h.index, y=h[k], name=k, mode="lines+markers", line=dict(color=c, width=2.4), hovertemplate=k + ": %{y:,.0f}<extra></extra>"))
+estilo(fig, alto=320).update_xaxes(dtick=1); fig.update_yaxes(tickformat=",.0f", rangemode="tozero")
+fig.show(config=CONFIG)
+```
+
+Entre `{python} A0` y `{python} UA`, el promedio de vínculos cambió `{python} spct((h['SA del Estado'][UA] / h['SA del Estado'][A0] - 1) * 100, 0)` en las **sociedades anónimas del Estado** (como COPACO y ESSAP), `{python} spct((h['Entes autónomos y autárquicos'][UA] / h['Entes autónomos y autárquicos'][A0] - 1) * 100, 0)` en los **entes autónomos** y `{python} spct((h['Empresas públicas'][UA] / h['Empresas públicas'][A0] - 1) * 100, 0)` en las **empresas públicas**. Parte de estos cambios refleja la creación, fusión o reclasificación de instituciones ([quién creció y quién se achicó](../2027-01-28-quien-crecio-y-quien-se-achico/)).
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA. [Descargar los datos](/datos/).
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_portada, ig_dato, barras_h as bh
+cort = lambda x: x.replace("Compañía Paraguaya de Comunicaciones S.A.", "COPACO").replace("Empresa de Servicios Sanitarios del Paraguay S.A.", "ESSAP").replace("Dirección Nacional de", "Dir. Nac. de").replace("Banco Nacional de Fomento (BNF)", "BNF").replace("Servicio Nacional de Calidad y Salud Animal", "SENACSA")
+social("Entes, empresas y\nsociedades del Estado", miles(T) + " vínculos", f"en {p.shape[0]} instituciones · {milmillones(MS)} mil M de Gs ({UA})")
+ig_portada("Instituciones", "Entes, empresas\ny sociedades\ndel Estado", f"{miles(T)} vínculos y {milmillones(MS)} mil millones\nde guaraníes en salarios.")
+o = top.head(7).sort_values("total")
+ig_dato(2, "Las más grandes", f"{cort(top.nombre_largo.iloc[0])} tiene", miles(top.total.iloc[0]), "vínculos, la mayor del grupo", f"Vínculos promedio de {UA}",
+        bh([cort(x) for x in o.nombre_largo], o.total, [miles(x) for x in o.total]))
+```

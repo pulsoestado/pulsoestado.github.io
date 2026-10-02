@@ -1,0 +1,68 @@
+---
+title: "El Ministerio de Justicia, uno de los que más creció"
+description: "El Ministerio de Justicia, a cargo del sistema penitenciario, es una de las instituciones del servicio civil que más personal sumó desde 2017, casi todo con contratos."
+date: 2027-04-12
+categories: [El dato de la semana, Instituciones, Contratados]
+image: social.png
+image-alt: "Vínculos del Ministerio de Justicia por tipo, por año"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import plotly.graph_objects as go
+
+UA = ultimo_anio_completo(); A0 = 2017
+v = vin_oee()
+a = v[v.nombre == "Ministerio de Justicia"].groupby("anho")[["total", "contratado", "permanente"]].mean().loc[A0:]
+d = a.total[UA] - a.total[A0]; var = (a.total[UA] / a.total[A0] - 1) * 100
+dc = a.contratado[UA] - a.contratado[A0]
+sc = v[(v.sector == "Servicio civil del Ejecutivo")].groupby(["anho", "nombre"]).total.mean().unstack()
+rk = (sc.loc[UA] - sc.loc[A0]).dropna().sort_values(ascending=False)
+pos = list(rk.index).index("Ministerio de Justicia") + 1
+ult = v[v.nombre == "Ministerio de Justicia"].sort_values(["anho", "mes"]).iloc[-1]
+```
+
+```{python}
+#| label: kpis
+#| output: asis
+print(kpis([
+    (spct(var, 0), f"vínculos del Ministerio de Justicia, {A0}–{UA}"),
+    (signo(d), "vínculos en promedio"),
+    (signo(dc), "contratados en promedio"),
+]))
+```
+
+El **Ministerio de Justicia** pasó de `{python} miles(a.total[A0])` vínculos en promedio en `{python} A0` a `{python} miles(a.total[UA])` en `{python} UA`: **`{python} spct(var, 0)`**. Es `{python} "la institución" if pos == 1 else f"la {pos}.ª institución"` del servicio civil del Ejecutivo que más personal sumó en ese período. Casi todo el aumento fue con **contratos**, que pasaron de `{python} miles(a.contratado[A0])` a `{python} miles(a.contratado[UA])`. En `{python} fecha_txt(ult.anho, ult.mes)` el ministerio pagaba `{python} miles(ult.total)` vínculos, `{python} pct(ult.contratado / ult.total * 100, 0)` de ellos contratados.
+
+```{python}
+#| label: fig-mj
+#| fig-cap: "Vínculos del Ministerio de Justicia por tipo, promedio de cada año"
+fig = go.Figure()
+fig.add_trace(go.Bar(x=a.index, y=a.permanente, name="Permanentes", marker_color=AZUL, hovertemplate="Permanentes: %{y:,.0f}<extra></extra>"))
+fig.add_trace(go.Bar(x=a.index, y=a.contratado, name="Contratados", marker_color=NARANJA, hovertemplate="Contratados: %{y:,.0f}<extra></extra>"))
+estilo(fig, alto=320).update_layout(barmode="stack", bargap=0.3)
+fig.update_xaxes(dtick=1); fig.update_yaxes(tickformat=",.0f")
+fig.show(config=CONFIG)
+```
+
+El Ministerio de Justicia tiene a su cargo las penitenciarías del país, y parte de su personal trabaja en ellas. Los registros no permiten separar al personal penitenciario del administrativo, pero el crecimiento coincide con el aumento de la población privada de libertad y la sobrepoblación de las cárceles que informaron las propias autoridades en los últimos años ([ABC Color, 2024](https://www.abc.com.py/nacionales/2024/05/28/sistema-penitenciario-nacional-cuenta-con-cerca-de-7000-presos-mas-de-su-capacidad/); [La Tribuna, 2026](https://www.latribuna.com.py/politica/2026/04/24/justicia-revela-que-poblacion-penitenciaria-aumento-en-3500-personas-2/)).
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA. [Descargar los datos](/datos/).
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_dato, barras
+social("El Ministerio de Justicia,\nuno de los que más creció", spct(var, 0), f"en vínculos entre {A0} y {UA}", (list(a.index), list(a.total)), tipo="barras")
+ig_dato(1, "El dato de la semana", f"Entre {A0} y {UA}, el Ministerio de Justicia creció", spct(var, 0),
+        f"en vínculos: {signo(d)}, casi todos contratos", "Vínculos promedio de cada año",
+        barras(list(a.index), list(a.total), [miles(x) for x in a.total]))
+```

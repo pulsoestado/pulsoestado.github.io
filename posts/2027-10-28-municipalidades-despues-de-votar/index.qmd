@@ -1,0 +1,81 @@
+---
+title: "Municipalidades, un año después de votar"
+description: "Qué pasó con el personal de las municipalidades en los meses posteriores a las elecciones municipales de octubre de 2026, comparado con el ciclo de 2021."
+date: 2027-10-28
+categories: [Municipalidades, Ciclo electoral, Contratados]
+image: social.png
+image-alt: "Vínculos municipales antes y después de las elecciones municipales de 2021 y 2026"
+resources: ["ig_*.png"]
+requiere:
+  datos: "2027-06"
+draft: true  # programada
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import plotly.graph_objects as go
+
+E = {2021: 10, 2026: 10}                 # elecciones municipales: 10 de octubre de 2021 y 4 de octubre de 2026
+v = leer("vinculos_mensual_oee.csv").merge(instituciones()[K_OEE + ["sector"]], on=K_OEE)
+v = v[v.sector == "Municipalidades"]
+A1, M = ultimo_mes()
+def mm(a, m, k):
+    t = a * 12 + m - 1 + k; return (t // 12, t % 12 + 1)
+def ciclo(a, m, desde=-6, hasta=12):
+    # panel: municipalidades con datos en el mes de la elección y en cada mes comparado
+    base = v[(v.anho == a) & (v.mes == m)].set_index(K_OEE)
+    filas = []
+    for k in range(desde, hasta + 1):
+        y, mo = mm(a, m, k)
+        if y * 100 + mo > A1 * 100 + M: break
+        x = v[(v.anho == y) & (v.mes == mo)].set_index(K_OEE)
+        com = base.index.intersection(x.index)
+        filas.append(dict(k=k, total=x.loc[com, "total"].sum() / base.loc[com, "total"].sum() * 100,
+                          contr=x.loc[com, "contratado"].sum() / base.loc[com, "contratado"].sum() * 100, n=len(com)))
+    return pd.DataFrame(filas).set_index("k")
+c21, c26 = ciclo(2021, 10), ciclo(2026, 10)
+K = min(c26.index.max(), 12)
+d21, d26 = c21.loc[K, "contr"] - 100, c26.loc[K, "contr"] - 100
+t21, t26 = c21.loc[K, "total"] - 100, c26.loc[K, "total"] - 100
+```
+
+::: {.en-breve}
+**En breve**
+
+- `{python} K` meses después de las elecciones municipales de octubre de 2026, los contratos de las municipalidades estaban `{python} spct(d26)` frente al mes de la elección, y el total de vínculos `{python} spct(t26)`.
+- En el ciclo anterior, `{python} K` meses después de las elecciones de octubre de 2021, los contratos estaban `{python} spct(d21)` y el total `{python} spct(t21)`.
+- La comparación usa las mismas municipalidades en cada par de meses.
+:::
+
+```{python}
+#| label: fig
+#| fig-cap: "Vínculos contratados de las municipalidades, índice mes de la elección = 100 (mismas municipalidades)"
+fig = go.Figure()
+for c, a, col in [(c21, 2021, "#9db9de"), (c26, 2026, NARANJA)]:
+    fig.add_trace(go.Scatter(x=c.index, y=c.contr, name=f"Elecciones de {a}", mode="lines+markers", line=dict(color=col, width=2.6),
+                             hovertemplate=f"{a}, mes %{{x}}: %{{y:.1f}}<extra></extra>"))
+fig.add_vline(x=0, line=dict(color=GRIS, width=1, dash="dot")); fig.add_hline(y=100, line=dict(color=GRIS, width=1, dash="dot"))
+estilo(fig, alto=340)
+fig.update_xaxes(title="Meses desde la elección", dtick=2)
+fig.show(config=CONFIG)
+```
+
+Después de cada elección asumen nuevas autoridades en buena parte de las municipalidades. Como siete de cada diez vínculos municipales son contratos ([municipalidades por dentro](../2026-12-18-municipalidades-por-dentro/)), el cambio de autoridades puede notarse en los registros. Estos datos muestran el saldo neto: no permiten saber cuántas personas salieron y cuántas entraron.
+
+::: {.fuente}
+**Fuentes:** elaboración de Pulso del Estado con datos de SINARH y SICCA. Fechas electorales: Tribunal Superior de Justicia Electoral. [Descargar los datos](/datos/).
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_portada, ig_dato, lineas
+social("Municipalidades, un año\ndespués de votar", spct(d26), f"contratos municipales {K} meses después de las elecciones de 2026")
+ig_portada("Ciclo electoral", "Municipalidades,\ndespués de\nvotar", f"Contratos: {spct(d26)} en {K} meses (2026)\nfrente a {spct(d21)} en el ciclo de 2021.")
+ig_dato(2, "Dos ciclos", f"{K} meses después de votar, los contratos municipales", spct(d26), f"(en 2021: {spct(d21)})", "Índice, mes de la elección = 100",
+        lineas(list(c26.index), {"2026": (list(c26.contr), NARANJA)}, ref=100))
+```

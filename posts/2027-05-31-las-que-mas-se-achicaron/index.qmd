@@ -1,0 +1,69 @@
+---
+title: "Las instituciones que más personal perdieron en el último año"
+description: "Con el mismo mes de dos años consecutivos, qué instituciones del Estado tienen hoy menos vínculos que hace un año."
+date: 2027-05-31
+categories: [El dato de la semana, Instituciones, Dotación]
+image: social.png
+image-alt: "Instituciones con mayor caída de vínculos en un año"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+
+A1, M = ultimo_mes()
+# Para no confundir carga tardía con bajas, uso el mes más reciente con casi todas las instituciones reportando
+v = vin_oee()
+n = v[v.total > 0].groupby(["anho", "mes"]).size()
+ref = n.loc[(A1 - 1, M)]
+cand = [(a, m) for (a, m) in n.index if (a * 100 + m) <= A1 * 100 + M and n.loc[(a, m)] >= ref * 0.97 and (a - 1, m) in n.index]
+AA, MM = cand[-1]
+x1 = v[(v.anho == AA) & (v.mes == MM)].set_index(K_OEE)
+x0 = v[(v.anho == AA - 1) & (v.mes == MM)].set_index(K_OEE)
+j = x1[["nombre_largo", "sector", "total", "contratado"]].join(x0[["total", "contratado"]], rsuffix="_0", how="inner")
+j = j[(j.total > 0) & (j.total_0 > 0)]
+j["dif"] = j.total - j.total_0; j["dc"] = j.contratado - j.contratado_0; j["var"] = (j.total / j.total_0 - 1) * 100
+baja = j.sort_values("dif").head(10)
+n_baja = int((j.dif < 0).sum())
+r1 = baja.iloc[0]
+```
+
+```{python}
+#| label: kpis
+#| output: asis
+print(kpis([(signo(r1.dif), f"vínculos en {r1.nombre_largo}"), (miles(n_baja), f"de {len(j)} instituciones tienen menos vínculos que un año antes")]))
+```
+
+Si se compara **`{python} fecha_txt(AA, MM)`** con el mismo mes del año anterior, `{python} n_baja` de las `{python} len(j)` instituciones que reportaron en ambos meses tienen menos vínculos. La caída más grande es la de **`{python} r1.nombre_largo`**: `{python} signo(r1.dif)` (`{python} spct(r1['var'])`), `{python} f"casi toda en contratos ({signo(r1.dc)})" if r1.dc <= r1.dif * 0.7 else (f"aunque sus contratos aumentaron ({signo(r1.dc)})" if r1.dc > 0 else f"de los cuales {signo(r1.dc)} fueron contratos")`.
+
+```{python}
+#| label: fig-baja
+#| fig-cap: "Las 10 instituciones con mayor caída de vínculos en un año (mismo mes)"
+o = baja.iloc[::-1]
+fig = barras_h(o.nombre_largo, o.dif, [f"{signo(d)} ({spct(p_)})" for d, p_ in zip(o.dif, o["var"])], colores=[ROJO] * len(o),
+               rango=[o.dif.min() * 1.6, 0])
+fig.update_xaxes(tickformat=",.0f"); fig.show(config=CONFIG)
+```
+
+Usamos `{python} fecha_txt(AA, MM)` y no el último mes con datos porque en los meses más recientes todavía faltan instituciones, y una institución que no cargó sus datos aparecería como si hubiera perdido todo su personal ([cuántas instituciones reportan](../2027-02-22-cuantas-instituciones-reportan/)). Una caída puede deberse a contratos que no se renovaron, a jubilaciones, a reorganizaciones o a funciones que pasaron a otra institución.
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA. [Descargar los datos](/datos/).
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_dato, barras_h as bh
+cort = lambda x: x.replace("Ministerio de", "Min. de").replace("Ministerio del", "Min. del").replace("Municipalidad de", "Munic. de")
+o = baja.head(7).iloc[::-1]
+social("Las que más personal\nperdieron en un año", signo(r1.dif) + " vínculos", f"en {cort(r1.nombre_largo)} ({fecha_txt(AA, MM)})", color=ROJO)
+ig_dato(1, "El dato de la semana", f"En un año, {cort(r1.nombre_largo)} perdió", miles(abs(r1.dif)), "vínculos, más que cualquier otra institución",
+        f"Cambio en vínculos, {fecha_txt(AA, MM)} frente a un año antes",
+        bh([cort(x) for x in o.nombre_largo], o.dif, [signo(d) for d in o.dif], colores=[ROJO] * len(o)), color=ROJO)
+```

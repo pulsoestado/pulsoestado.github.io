@@ -1,0 +1,61 @@
+---
+title: "Los contratos de la pandemia, años después"
+description: "En 2020 y 2021 el sector Salud sumó miles de contratos para enfrentar la emergencia. Cuántos siguen hoy."
+date: 2027-11-22
+categories: [El dato de la semana, Salud, Contratados]
+image: social.png
+image-alt: "Contratados del sector Salud por mes desde 2019"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import plotly.graph_objects as go
+
+v = leer("vinculos_mensual_sector.csv"); s = v[v.sector == "Salud"].copy()
+s["fecha"] = pd.to_datetime(dict(year=s.anho, month=s.mes, day=1)); s = s[s.anho >= 2019].set_index("fecha")
+pre = s.loc["2020-02-01", "contratado"]; pico21 = s.loc["2021-12-01", "contratado"]; u = s.iloc[-1]
+sum_pand = pico21 - pre; hoy = u.contratado - pre
+dp = u.permanente - s.loc["2020-02-01", "permanente"]
+```
+
+```{python}
+#| label: kpis
+#| output: asis
+print(kpis([(signo(sum_pand), "contratos en Salud entre febrero de 2020 y diciembre de 2021"), (signo(hoy), f"frente a febrero de 2020, en {fecha_txt(u.anho, u.mes)}"),
+            (signo(dp), "permanentes en el mismo período")]))
+```
+
+En febrero de 2020, antes de la pandemia, el sector Salud (Ministerio de Salud e IPS) pagaba `{python} miles(pre)` contratos. En diciembre de 2021 eran `{python} miles(pico21)`: **`{python} signo(sum_pand)`**. Lejos de volver al nivel previo, en `{python} fecha_txt(u.anho, u.mes)` los contratos eran `{python} miles(u.contratado)`, **`{python} signo(hoy)` frente a antes de la pandemia**. La planta permanente, en cambio, cambió `{python} signo(dp)`.
+
+```{python}
+#| label: fig
+#| fig-cap: "Vínculos del sector Salud por tipo, por mes"
+fig = go.Figure()
+fig.add_trace(go.Scatter(x=s.index, y=s.contratado, name="Contratados", mode="lines", line=dict(color=NARANJA, width=2.6), hovertemplate="Contratados: %{y:,.0f}<extra></extra>"))
+fig.add_trace(go.Scatter(x=s.index, y=s.permanente, name="Permanentes", mode="lines", line=dict(color=AZUL, width=2.6), hovertemplate="Permanentes: %{y:,.0f}<extra></extra>"))
+fig.add_vrect(x0="2020-03-01", x1="2022-03-01", fillcolor="rgba(128,128,128,.08)", line_width=0)
+estilo(fig, alto=320).update_yaxes(tickformat=",.0f", rangemode="tozero")
+fig.show(config=CONFIG)
+```
+
+Los datos sugieren que los contratos sumados en la emergencia no se revirtieron: el sistema de salud sigue apoyándose en personal contratado, que no tiene la estabilidad de un cargo permanente ([Salud: dos sistemas, dos plantas](../2027-04-01-salud-dos-sistemas/)).
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA. [Descargar los datos](/datos/).
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_dato, lineas
+y = s[s.index.month == 12]
+social("Los contratos de la\npandemia, años después", signo(hoy) + " contratos", f"en Salud frente a febrero de 2020 ({fecha_txt(u.anho, u.mes)})", (list(range(len(s))), list(s.contratado)))
+ig_dato(1, "El dato de la semana", "Frente a antes de la pandemia, Salud tiene", signo(hoy), "contratos más", "Contratados en Salud, diciembre de cada año (miles)",
+        lineas(list(y.anho), {"Contratados": (list(y.contratado / 1000), NARANJA)}, fmt=lambda x: coma(x, 1) + " mil"))
+```

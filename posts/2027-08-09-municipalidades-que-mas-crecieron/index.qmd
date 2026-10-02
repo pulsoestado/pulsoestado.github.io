@@ -1,0 +1,58 @@
+---
+title: "Las municipalidades que más crecieron"
+description: "Entre las municipalidades que reportan sus datos de forma regular, cuáles sumaron más personal desde 2017."
+date: 2027-08-09
+categories: [El dato de la semana, Municipalidades, Dotación]
+image: social.png
+image-alt: "Municipalidades con mayor aumento de vínculos desde 2017"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+
+UA = ultimo_anio_completo(); A0 = 2017
+a = vin_promedio_oee(A0).set_index(K_OEE); b = vin_promedio_oee(UA).set_index(K_OEE)
+mu = b[b.sector == "Municipalidades"][["nombre_largo", "nombre", "total", "contratado", "meses"]].join(a[["total", "contratado", "meses"]], rsuffix="_0", how="inner")
+mu = mu[(mu.meses >= 10) & (mu.meses_0 >= 10)].copy()
+mu["d"] = mu.total - mu.total_0; mu["dc"] = mu.contratado - mu.contratado_0; mu["var"] = (mu.total / mu.total_0 - 1) * 100
+top = mu.sort_values("d", ascending=False).head(10); r1 = top.iloc[0]
+n_sube = int((mu.d > 0).sum()); D = mu.d.sum(); DC = mu.dc.sum()
+```
+
+```{python}
+#| label: kpis
+#| output: asis
+print(kpis([(signo(r1.d), f"vínculos en {r1.nombre_largo}, {A0}–{UA}"), (f"{n_sube} de {len(mu)}", "municipalidades crecieron")]))
+```
+
+Entre las `{python} len(mu)` municipalidades que reportaron al menos 10 meses en `{python} A0` y en `{python} UA`, `{python} n_sube` tienen hoy más personal. En conjunto sumaron `{python} miles(D)` vínculos, `{python} pct(DC / D * 100, 0) if D > 0 else "—"` de ellos contratos. La que más creció es **`{python} r1.nombre_largo`**: de `{python} miles(r1.total_0)` a `{python} miles(r1.total)` vínculos en promedio (`{python} spct(r1['var'], 0)`).
+
+```{python}
+#| label: fig
+#| fig-cap: "Las 10 municipalidades con mayor aumento de vínculos, promedio anual"
+o = top.iloc[::-1]
+fig = barras_h(o.nombre, o.d, [f"{signo(x)} ({spct(v_, 0)})" for x, v_ in zip(o.d, o["var"])], colores=[VERDE_AGUA] * len(o), rango=[0, o.d.max() * 1.5])
+fig.show(config=CONFIG)
+```
+
+Varias de las que más crecieron están en el departamento **Central**. `{python} 'En conjunto, el aumento fue sobre todo con contratos, la forma de vinculación predominante en las municipalidades' if D > 0 and DC / D > 0.5 else 'Los contratos son la forma de vinculación predominante en las municipalidades'` ([municipalidades por dentro](../2026-12-18-municipalidades-por-dentro/)).
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA. Solo se comparan municipalidades con al menos 10 meses informados en ambos años. [Descargar los datos](/datos/).
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_dato, barras_h as bh
+o = top.head(7).iloc[::-1]
+social("Las municipalidades\nque más crecieron", signo(r1.d) + " vínculos", f"en {r1.nombre_largo}, {A0}–{UA}", color=VERDE_AGUA)
+ig_dato(1, "El dato de la semana", f"Desde {A0}, {r1.nombre_largo} sumó", signo(r1.d), "vínculos, más que cualquier otra",
+        f"Cambio en vínculos, {A0}–{UA}", bh(o.nombre, o.d, [signo(x) for x in o.d], colores=[VERDE_AGUA] * len(o)), color=VERDE_AGUA)
+```

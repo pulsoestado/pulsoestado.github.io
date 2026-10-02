@@ -1,0 +1,66 @@
+---
+title: "Dónde está la remuneración media más alta"
+description: "Entre las instituciones con al menos 500 vínculos, cuáles tienen la remuneración media por vínculo más alta y cuánto más que el promedio del Estado."
+date: 2027-04-05
+categories: [El dato de la semana, Remuneraciones, Instituciones]
+image: social.png
+image-alt: "Las instituciones con mayor remuneración media por vínculo"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+
+UA = ultimo_anio_completo()
+p = vin_promedio_oee(UA).merge(masa_oee_anual(UA)[K_OEE + ["masa", "Aguinaldo"]], on=K_OEE)
+p["rem"] = (p.masa - p.Aguinaldo) / 12 / p.total
+rem_est = (p.masa.sum() - p.Aguinaldo.sum()) / 12 / p.total.sum()
+g = p[p.total >= 500].sort_values("rem", ascending=False)
+top = g.head(12); r1 = top.iloc[0]
+bajo = g.iloc[-1]
+```
+
+```{python}
+#| label: kpis
+#| output: asis
+print(kpis([
+    (millones(r1.rem) + " M", f"de Gs por vínculo y por mes en {r1.nombre_largo}"),
+    (coma(r1.rem / rem_est, 1) + " veces", "el promedio del Estado"),
+]))
+```
+
+Entre las `{python} len(g)` instituciones con al menos 500 vínculos, la remuneración media más alta en `{python} UA` fue la del **`{python} r1.nombre_largo`**: `{python} millones(r1.rem)` millones de guaraníes por vínculo y por mes, sin aguinaldo, `{python} coma(r1.rem / rem_est, 1)` veces el promedio del Estado (`{python} millones(rem_est)` millones). La más baja del grupo es la de `{python} bajo.nombre_largo`: `{python} millones(bajo.rem)` millones.
+
+```{python}
+#| label: fig-top
+#| fig-cap: "Remuneración media mensual por vínculo, sin aguinaldo, instituciones con al menos 500 vínculos (millones de guaraníes)"
+o = top.sort_values("rem")
+fig = barras_h(o.nombre_largo, o.rem / 1e6, [millones(x) for x in o.rem], colores=[AZUL] * len(o), rango=[0, o.rem.max() / 1e6 * 1.2])
+fig.add_vline(x=rem_est / 1e6, line=dict(color=NARANJA, width=1.5, dash="dash"))
+fig.add_annotation(x=rem_est / 1e6, y=-0.6, text=f"Estado: {millones(rem_est)}", showarrow=False, xanchor="left", xshift=6,
+                   font=dict(color=NARANJA, size=12))
+fig.show(config=CONFIG)
+```
+
+La lista está encabezada por instituciones con personal especializado o con remuneraciones particulares: en Relaciones Exteriores pesa el personal del servicio exterior, que cobra en el extranjero; en el Banco Central, las empresas públicas y las entidades financieras, las escalas salariales propias. Como siempre, es un promedio por vínculo: no dice cuánto gana una persona en particular.
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA. Remuneración media = devengado en servicios personales sin aguinaldo / 12 / vínculos promedio del año. [Descargar los datos](/datos/).
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_dato, barras_h as bh
+o = top.head(8).sort_values("rem")
+cort = lambda x: x.replace("Ministerio de", "Min. de").replace("Dirección Nacional de", "Dir. Nac. de").replace(" del Paraguay", "")
+social("Dónde está la remuneración\nmedia más alta", millones(r1.rem) + " millones", f"por vínculo y por mes en {cort(r1.nombre_largo)} ({UA})")
+ig_dato(1, "El dato de la semana", f"En {cort(r1.nombre_largo)}, cada vínculo cuesta", millones(r1.rem) + " M",
+        f"de Gs por mes: {coma(r1.rem / rem_est, 1)} veces el promedio", "Millones de Gs por vínculo y por mes",
+        bh([cort(x) for x in o.nombre_largo], o.rem / 1e6, [millones(x) for x in o.rem], ref=rem_est / 1e6), color=AZUL)
+```

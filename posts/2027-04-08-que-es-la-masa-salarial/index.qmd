@@ -1,0 +1,113 @@
+---
+title: "Explicador: qué es la masa salarial y cómo se mide"
+description: "Servicios personales, objetos de gasto, devengado, aguinaldo y términos reales: qué significa cada palabra cuando hablamos de lo que el Estado paga en salarios."
+date: 2027-04-08
+categories: [Explicador, Masa salarial, Metodología]
+image: social.png
+image-alt: "La masa salarial del Estado paraguayo por subgrupo de gasto"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import plotly.graph_objects as go
+
+UA = ultimo_anio_completo(); A0 = 2017
+o = leer("masa_anual_objeto.csv")
+SUB = {11: "Remuneraciones básicas (111–114)", 12: "Remuneraciones temporales (12x)", 13: "Asignaciones complementarias (13x)",
+       14: "Personal contratado (14x)", 16: "Servicios en el exterior (16x)", 19: "Otros gastos del personal (19x)"}
+o["sub"] = (o.objeto_gasto // 10).map(SUB)
+u = o[o.anho == UA].groupby("sub").devengado.sum().sort_values()
+T = u.sum(); part = u / T * 100
+t = leer("masa_mensual_sector.csv").groupby("anho")[["presupuestado", "devengado"]].sum().loc[A0:UA]
+t["real"] = t.devengado * deflactor(UA).reindex(t.index)
+v = leer("masa_anual_sector.csv").query("anho == @UA")
+vinc = v.vinculos_promedio.sum()
+var_nom = (t.devengado[UA] / t.devengado[A0] - 1) * 100; var_real = (t.real[UA] / t.real[A0] - 1) * 100
+ipc = leer("bcp_salario_minimo.csv").set_index("anho").ipc
+infl = (ipc[UA] / ipc[A0] - 1) * 100
+ej = (t.devengado[UA] / t.presupuestado[UA]) * 100
+mm = leer("masa_mensual_sector.csv").query("anho == @UA").groupby("mes").devengado.sum()
+```
+
+Cuando en Pulso del Estado hablamos de **masa salarial** nos referimos a todo lo que el Estado paga a su personal en un período: sueldos, contratos, bonificaciones, aguinaldo y otros conceptos. En `{python} UA` fueron **`{python} billones(T)` billones de guaraníes**.
+
+## 1. Servicios personales: el grupo 100
+
+El Presupuesto General de la Nación clasifica cada gasto con un **objeto de gasto**, un código de tres cifras. Todo lo que se paga al personal está en el **grupo 100, servicios personales**. La primera y la segunda cifra indican el subgrupo:
+
+```{python}
+#| label: tbl-sub
+#| output: asis
+print(f"| Subgrupo | Qué incluye | {UA} (mil M Gs) | % |\n|---|---|--:|--:|")
+QUE = {"Remuneraciones básicas (111–114)": "Sueldo de la planta permanente (111), dietas (112), gastos de representación (113) y aguinaldo (114)",
+       "Personal contratado (14x)": "Contratos de personal técnico, de salud, docente, jornales y honorarios",
+       "Asignaciones complementarias (13x)": "Bonificaciones, subsidios y otros complementos del sueldo",
+       "Remuneraciones temporales (12x)": "Personal temporal y remuneraciones extraordinarias",
+       "Otros gastos del personal (19x)": "Otros pagos al personal",
+       "Servicios en el exterior (16x)": "Personal del servicio exterior"}
+for s_, x in u.iloc[::-1].items():
+    print(f"| {s_} | {QUE.get(s_, '')} | {milmillones(x)} | {pct(part[s_])} |")
+print(f"| **Total grupo 100** | | **{milmillones(T)}** | **100%** |")
+print(f"\n: Masa salarial por subgrupo del grupo 100, devengado de {UA}")
+```
+
+## 2. Presupuestado y devengado
+
+Los registros distinguen dos montos. El **presupuestado** es lo previsto; el **devengado** es lo que efectivamente se comprometió a pagar porque el trabajo ya se realizó. Usamos siempre el **devengado**, porque refleja lo que de verdad se gastó. En servicios personales los dos montos son muy parecidos: en `{python} UA`, lo devengado fue el `{python} pct(ej)` de lo presupuestado en los registros mensuales.
+
+## 3. Mes a mes: el salto de diciembre
+
+```{python}
+#| label: fig-mes
+#| fig-cap: "Masa salarial devengada por mes en el último año completo, en miles de millones de guaraníes"
+fig = go.Figure(go.Bar(x=[MES_C[m - 1] for m in mm.index], y=mm / 1e9, marker_color=[AZUL] * 11 + [NARANJA],
+                       hovertemplate="%{x}: <b>%{y:,.0f} mil millones</b><extra></extra>"))
+estilo(fig, alto=300, leyenda=False).update_layout(hovermode="closest")
+fig.update_yaxes(tickformat=",.0f")
+fig.show(config=CONFIG)
+```
+
+Cada mes el Estado devenga unos `{python} milmillones(mm.iloc[:11].mean())` mil millones de guaraníes. En diciembre la cifra es `{python} coma(mm.loc[12] / mm.iloc[:11].mean(), 1)` veces mayor por el **aguinaldo**. Por eso, al comparar un mes con otro, hay que fijarse si se está incluyendo diciembre, y al calcular la remuneración media mensual separamos el aguinaldo.
+
+## 4. Nominal y real
+
+```{python}
+#| label: fig-real
+#| fig-cap: "Masa salarial anual en billones de guaraníes: de cada año (nominal) y del último año completo (real)"
+fig = go.Figure()
+fig.add_trace(go.Bar(x=t.index, y=t.devengado / 1e12, name="Guaraníes de cada año", marker_color="#9db9de",
+                     hovertemplate="%{x}: %{y:.1f} billones<extra></extra>"))
+fig.add_trace(go.Scatter(x=t.index, y=t.real / 1e12, name=f"Guaraníes de {UA}", mode="lines+markers",
+                         line=dict(color=NARANJA, width=2.6), hovertemplate="%{x}: %{y:.1f} billones de " + str(UA) + "<extra></extra>"))
+estilo(fig, alto=320).update_xaxes(dtick=1)
+fig.show(config=CONFIG)
+```
+
+Entre `{python} A0` y `{python} UA` la masa salarial creció `{python} pct(var_nom, 0)` en guaraníes de cada año. Pero los precios subieron `{python} pct(infl, 0)` en el mismo período. Para saber cuánto creció de verdad hay que **descontar la inflación**: se convierte cada año a guaraníes de un mismo año con el índice de precios al consumidor del Banco Central. Así medido, el crecimiento fue de `{python} pct(var_real, 0)`.
+
+## 5. Masa salarial y vínculos
+
+Dividir la masa salarial por la cantidad de vínculos da una **remuneración media**: en `{python} UA`, unos `{python} millones(v.devengado_sin_aguinaldo.sum() / 12 / vinc, 2)` millones de guaraníes por vínculo y por mes, sin aguinaldo. Es un indicador útil para comparar instituciones y años, pero no es el sueldo de una persona: mezcla cargos muy distintos, y una persona con dos cargos aparece como dos vínculos ([vínculos, personas y cargos](../2026-11-27-vinculos-personas-cargos/)).
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH, SICCA (devengado por objeto de gasto) y del Banco Central del Paraguay (IPC). [Descargar los datos](/datos/).
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_portada, ig_dato, barras_h as bh
+social("Explicador: qué es la\nmasa salarial", billones(T) + " billones", f"de guaraníes en {UA} · grupo 100 del presupuesto",
+       (list(range(12)), list(mm)), tipo="barras")
+ig_portada("Explicador", "Qué es la\nmasa salarial", "Objetos de gasto, devengado,\naguinaldo y términos reales.", (list(range(12)), list(mm)), tipo="barras")
+ig_dato(2, "Por subgrupo", f"En {UA}, el Estado devengó", billones(T) + " billones", "de guaraníes en servicios personales",
+        "% de la masa salarial por subgrupo",
+        bh([x.split(" (")[0].replace("Asignaciones complementarias", "Asignaciones compl.") for x in part.index], part.values,
+           [pct(x) for x in part.values]), color=AZUL)
+```

@@ -1,0 +1,78 @@
+---
+title: "Diez años de datos: el Estado entonces y ahora"
+description: "El último mes con datos frente al mismo mes de 2017: cuántos vínculos más hay, en qué sectores y con qué tipo de contrato."
+date: 2027-12-13
+categories: [El dato de la semana, Dotación, Sectores]
+image: social.png
+image-alt: "Vínculos por sector en 2017 y en el último mes con datos"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import plotly.graph_objects as go
+
+A1, M = ultimo_mes(); A0 = 2017; N = A1 - A0
+v = leer("vinculos_mensual_sector.csv")
+a = v[(v.anho == A0) & (v.mes == M)].set_index("sector")
+b = v[(v.anho == A1) & (v.mes == M)].set_index("sector")
+d = pd.DataFrame({"a": a.total, "b": b.total}).fillna(0)
+d["dif"] = d.b - d.a; d["var"] = (d.b / d.a - 1) * 100
+d = d.sort_values("dif")
+Ta, Tb = a.total.sum(), b.total.sum()
+Ca, Cb = a.contratado.sum(), b.contratado.sum()
+Wa, Wb = a.mujeres.sum(), b.mujeres.sum()
+top = d.sort_values("dif", ascending=False)
+dc = (Cb - Ca) / (Tb - Ta) * 100 if Tb != Ta else 0
+```
+
+```{python}
+#| label: kpis
+#| output: asis
+print(kpis([(signo(Tb - Ta), f"vínculos entre {MESES[M - 1]} de {A0} y de {A1}"), (spct((Tb / Ta - 1) * 100, 0), "de crecimiento"),
+            (pct(dc, 0), "del aumento fue de contratados")]))
+```
+
+En `{python} fecha_txt(A1, M)` el Estado tenía `{python} miles(Tb)` vínculos; en el mismo mes de `{python} A0`, `{python} miles(Ta)`. En `{python} N` años sumó **`{python} miles(Tb - Ta)` vínculos**. El sector que más aportó fue **`{python} top.index[0]`** (`{python} signo(top.dif.iloc[0])`), seguido de `{python} top.index[1]` (`{python} signo(top.dif.iloc[1])`).
+
+```{python}
+#| label: fig
+#| fig-cap: "Cambio de vínculos por sector entre el mismo mes de 2017 y del último año con datos"
+fig = barras_h(d.index, d.dif, [f"{signo(x)} ({spct(p_, 0)})" for x, p_ in zip(d.dif, d["var"])],
+               colores=[AZUL if x >= 0 else ROJO for x in d.dif], rango=[min(0, d.dif.min()) * 1.5, d.dif.max() * 1.5])
+fig.update_xaxes(tickformat=",.0f"); fig.show(config=CONFIG)
+```
+
+## Entonces y ahora
+
+```{python}
+#| label: tbl
+#| output: asis
+print(ficha_html([("", f"**{fecha_txt(A0, M)}** · **{fecha_txt(A1, M)}**"),
+                  ("Vínculos", f"{miles(Ta)} · {miles(Tb)}"),
+                  ("Contratados", f"{miles(Ca)} ({pct(Ca / Ta * 100, 0)}) · {miles(Cb)} ({pct(Cb / Tb * 100, 0)})"),
+                  ("Mujeres", f"{miles(Wa)} ({pct(Wa / Ta * 100, 0)}) · {miles(Wb)} ({pct(Wb / Tb * 100, 0)})")]))
+```
+
+Los registros de `{python} A0` y de `{python} A1` no cubren exactamente las mismas instituciones: algunas se crearon en este período (como la DNIT o el INE) y otras se fusionaron. Por eso, parte del cambio en algunos sectores refleja reorganizaciones y no contrataciones nuevas ([quién creció y quién se achicó](../2027-01-28-quien-crecio-y-quien-se-achico/)). El jueves repasamos el año en doce gráficos.
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA. [Descargar los datos](/datos/).
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_dato, barras_h as bh
+cort = lambda x: x.replace("Servicio civil del Ejecutivo", "Servicio civil").replace("Entes autónomos y autárquicos", "Entes autónomos").replace("Gobiernos departamentales", "Gobernaciones")
+s = serie_mensual(); s = s[s.mes == M]
+social(f"{N} años de datos:\nel Estado entonces y ahora", signo(Tb - Ta), f"vínculos entre {MESES[M - 1]} de {A0} y de {A1}", (list(s.anho), list(s.total)))
+o = top.head(6).sort_values("dif")
+ig_dato(1, "El dato de la semana", f"Entre {A0} y {A1} el Estado sumó", miles(Tb - Ta), f"vínculos ({spct((Tb / Ta - 1) * 100, 0)})",
+        "Cambio por sector", bh([cort(x) for x in o.index], o.dif, [signo(x) for x in o.dif]))
+```

@@ -5,6 +5,7 @@ date: 2026-10-09
 categories: [Dotación, Contratados, SITUCAP]
 image: social.png
 image-alt: "Gráfico de la evolución de personas que cobran del Estado paraguayo, 2017-2024"
+draft: true  # programada
 ---
 
 ```{python}

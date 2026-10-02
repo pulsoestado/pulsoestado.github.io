@@ -1,0 +1,93 @@
+---
+title: "El aguinaldo: cuánto cuesta y cómo se reparte"
+description: "Cómo se distribuye el aguinaldo entre sectores e instituciones, cuánto representa por vínculo y por qué crece cada año."
+date: 2027-12-09
+categories: [Aguinaldo, Masa salarial, Sectores]
+image: social.png
+image-alt: "Aguinaldo por sector y por vínculo"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import plotly.graph_objects as go
+
+UA = ultimo_anio_completo(); A0 = 2017
+mm = leer("masa_mensual_sector.csv")
+ag = mm[(mm.componente == "Aguinaldo") & (mm.anho == UA)].groupby("sector").devengado.sum()
+m = leer("masa_anual_sector.csv").query("anho == @UA").set_index("sector")
+perm = leer("vinculos_mensual_sector.csv").query("anho == @UA").groupby(["mes", "sector"]).permanente.sum().groupby("sector").mean()
+d = pd.DataFrame({"ag": ag, "vin": m.vinculos_promedio, "perm": perm})
+d["por_vin"] = d.ag / d.vin; d["por_perm"] = d.ag / d.perm; d["part"] = d.ag / d.ag.sum() * 100
+d = d.sort_values("ag", ascending=False)
+T = d.ag.sum()
+mo = masa_oee_anual(UA).sort_values("Aguinaldo", ascending=False).head(10)
+h = mm[mm.componente == "Aguinaldo"].groupby("anho").devengado.sum().loc[A0:UA]
+real = h * deflactor(UA).reindex(h.index)
+pp = T / d.perm.sum()
+```
+
+::: {.en-breve}
+**En breve**
+
+- En `{python} UA` el Estado pagó `{python} milmillones(T)` mil millones de guaraníes de aguinaldo (objeto 114). **`{python} d.index[0]`** recibió el `{python} pct(d.part.iloc[0], 0)`; **`{python} d.index[1]`**, el `{python} pct(d.part.iloc[1], 0)`.
+- Por cada vínculo permanente, el aguinaldo fue de unos **`{python} millones(pp, 2)` millones de guaraníes**.
+- Descontada la inflación, el aguinaldo creció `{python} pct((real[UA] / real[A0] - 1) * 100, 0)` desde `{python} A0`.
+:::
+
+```{python}
+#| label: fig
+#| fig-cap: "Aguinaldo por sector, último año completo (miles de millones de guaraníes) y monto por vínculo permanente"
+o = d.sort_values("ag")
+fig = barras_h(o.index, o.ag / 1e9, [f"{miles(a / 1e9)} · {millones(p_, 1)} M por vínculo" for a, p_ in zip(o.ag, o.por_perm)], colores=[AMARILLO] * len(o),
+               rango=[0, o.ag.max() / 1e9 * 1.6])
+fig.show(config=CONFIG)
+```
+
+El monto por vínculo permanente varía según los sueldos de cada sector: es más alto donde el sueldo básico es más alto. En el objeto 114 se registra sobre todo el aguinaldo del personal permanente; en varios sectores, el aguinaldo de los contratados se paga dentro de los objetos de contratación, por eso aquí lo medimos por vínculo permanente.
+
+## Las instituciones que más pagan
+
+```{python}
+#| label: tbl
+#| output: asis
+print(f"| Institución | Aguinaldo {UA} (mil M Gs) |\n|---|--:|")
+for _, r in mo.iterrows():
+    print(f"| {r.nombre_largo} | {milmillones(r.Aguinaldo)} |")
+print(f"\n: Las 10 instituciones que más pagaron en aguinaldo, {UA}")
+```
+
+## Por qué crece
+
+```{python}
+#| label: fig-h
+#| fig-cap: "Aguinaldo en miles de millones de guaraníes del último año completo"
+fig = go.Figure(go.Bar(x=real.index, y=real / 1e9, marker_color=AMARILLO, text=[miles(x / 1e9) for x in real], textposition="outside", cliponaxis=False,
+                       textfont=dict(color=TINTA_GRAF), hovertemplate="%{x}: <b>%{y:,.0f}</b><extra></extra>"))
+estilo(fig, alto=300, leyenda=False).update_layout(hovermode="closest")
+fig.update_xaxes(dtick=1); fig.update_yaxes(range=[0, real.max() / 1e9 * 1.18])
+fig.show(config=CONFIG)
+```
+
+El aguinaldo sigue a los sueldos: crece cuando entra personal permanente nuevo y cuando hay reajustes. En los últimos años, su aumento en términos reales coincidió con reajustes salariales docentes y con la incorporación de nuevos agentes policiales ([aguinaldo 2027: cuánto costará](../2027-12-06-aguinaldo-2027/)).
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA (objeto 114). El aguinaldo de diciembre de 2021 fue corregido por un error de registro (ver la [metodología](/metodologia.qmd)). [Descargar los datos](/datos/).
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_portada, ig_dato, barras_h as bh
+cort = lambda x: x.replace("Servicio civil del Ejecutivo", "Servicio civil").replace("Entes autónomos y autárquicos", "Entes autónomos")
+social("El aguinaldo: cuánto\ncuesta y cómo se reparte", milmillones(T) + " mil millones", f"de guaraníes en {UA} · {millones(pp, 2)} M por vínculo permanente", color=AMARILLO)
+ig_portada("Aguinaldo", "Cómo se\nreparte el\naguinaldo", f"{milmillones(T)} mil millones de guaraníes\nen {UA}.", color=AMARILLO)
+o = d.head(6).sort_values("ag")
+ig_dato(2, "Por sector", f"{d.index[0]} recibe", pct(d.part.iloc[0], 0), "del aguinaldo del Estado", "Miles de millones de Gs",
+        bh([cort(x) for x in o.index], o.ag / 1e9, [miles(x / 1e9) for x in o.ag], colores=[AMARILLO] * len(o)), color=AMARILLO)
+```

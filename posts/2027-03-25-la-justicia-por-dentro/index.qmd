@@ -1,0 +1,115 @@
+---
+title: "La justicia por dentro"
+description: "La Corte Suprema, la Justicia Electoral, el Ministerio Público y la Defensa Pública suman casi treinta mil vínculos. Cuánto personal tiene cada institución del sistema de justicia, cuánto cuesta y cómo cambió."
+date: 2027-03-25
+categories: [Poder Judicial, Instituciones, Masa salarial]
+image: social.png
+image-alt: "Vínculos y remuneración media de las instituciones del Poder Judicial"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import plotly.graph_objects as go
+
+UA = ultimo_anio_completo(); A0 = 2017
+def pj(a):
+    p = vin_promedio_oee(a); return p[p.sector == "Poder Judicial"].set_index(K_OEE)
+j1, j0 = pj(UA), pj(A0)
+mo = masa_oee_anual(UA).set_index(K_OEE)
+j1 = j1.join(mo[["masa", "Aguinaldo", "Sueldo básico", "Gastos de representación", "Bonificaciones y asignaciones"]])
+j1["pc"] = j1.contratado / j1.total * 100; j1["pm"] = j1.mujeres / j1.total * 100
+j1["rem"] = (j1.masa - j1.Aguinaldo) / 12 / j1.total
+j1["v0"] = j0.total.reindex(j1.index); j1["c0"] = j0.contratado.reindex(j1.index)
+j1["var"] = (j1.total / j1.v0 - 1) * 100
+j1 = j1.sort_values("total", ascending=False)
+T = j1.total.sum(); M_ = j1.masa.sum()
+est = leer("masa_anual_sector.csv").query("anho == @UA")
+rem_est = (est.devengado_sin_aguinaldo.sum()) / 12 / est.vinculos_promedio.sum()
+rem_pj = (M_ - j1.Aguinaldo.sum()) / 12 / T
+part_v = T / est.vinculos_promedio.sum() * 100; part_m = M_ / est.devengado.sum() * 100
+n = lambda nom: j1[j1.nombre == nom].iloc[0]
+csj, je, mp, dp = n("Corte Suprema de Justicia"), n("Justicia Electoral"), n("Ministerio Público"), n("Ministerio de la Defensa Pública")
+corto = {"Corte Suprema de Justicia": "Corte Suprema", "Ministerio de la Defensa Pública": "Defensa Pública",
+         "Jurado de Enjuiciamiento de Magistrados": "Jurado de Enjuiciamiento", "Sindicatura General de Quiebras": "Sindicatura de Quiebras"}
+v = vin_oee(); s = v[v.sector == "Poder Judicial"].groupby(["anho", "mes", "nombre"]).contratado.sum().unstack()
+s.index = pd.to_datetime([f"{a}-{m:02d}-01" for a, m in s.index])
+s = s[s.index.year >= A0]
+```
+
+::: {.en-breve}
+**En breve**
+
+- Las `{python} len(j1)` instituciones del Poder Judicial y organismos auxiliares pagaron en promedio **`{python} miles(T)` vínculos** en `{python} UA`, el `{python} pct(part_v)` del Estado, y `{python} milmillones(M_)` mil millones de guaraníes en salarios (`{python} pct(part_m)` de la masa salarial).
+- La **Corte Suprema de Justicia** concentra `{python} pct(csj.total / T * 100, 0)` del personal; le siguen la **Justicia Electoral** (`{python} miles(je.total)`) y el **Ministerio Público** (`{python} miles(mp.total)`).
+- La remuneración media del sector, `{python} millones(rem_pj)` millones de guaraníes por mes, es `{python} pct(abs(rem_pj / rem_est - 1) * 100, 0)` `{python} "mayor" if rem_pj > rem_est else "menor"` que la del conjunto del Estado.
+- La Corte pasó de tener `{python} miles(csj.c0)` contratados en promedio en `{python} A0` a `{python} miles(csj.contratado)` en `{python} UA`.
+:::
+
+## La ficha
+
+```{python}
+#| label: tbl-ficha
+#| output: asis
+print(f"| Institución | Vínculos {UA} | Cambio desde {A0} | % contratados | % mujeres | Masa salarial (mil M Gs) | Remuneración media (M Gs/mes) |")
+print("|---|--:|--:|--:|--:|--:|--:|")
+for _, r in j1.iterrows():
+    print(f"| {r.nombre} | {miles(r.total)} | {spct(r['var'])} | {pct(r.pc, 0)} | {pct(r.pm, 0)} | {milmillones(r.masa)} | {millones(r.rem)} |")
+print(f"| **Total** | **{miles(T)}** | **{spct((T / j1.v0.sum() - 1) * 100)}** | | | **{milmillones(M_)}** | **{millones(rem_pj)}** |")
+print(f"\n: Instituciones del Poder Judicial y organismos auxiliares de justicia, promedio de {UA}. Remuneración media = masa salarial sin aguinaldo / 12 / vínculos")
+```
+
+Los vínculos del sistema de justicia cambiaron `{python} spct((T / j1.v0.sum() - 1) * 100)` desde `{python} A0`, menos que el promedio del Estado. El **Ministerio Público** (`{python} spct(mp['var'])`) y la **Defensa Pública** (`{python} spct(dp['var'])`) son los que más sumaron entre los grandes.
+
+## Lo que cuesta cada vínculo
+
+```{python}
+#| label: fig-rem
+#| fig-cap: "Remuneración media mensual por vínculo, sin aguinaldo, último año completo (millones de guaraníes)"
+o = j1.sort_values("rem")
+fig = barras_h([corto.get(x, x) for x in o.nombre], o.rem / 1e6, [millones(x) for x in o.rem], colores=[AZUL] * len(o),
+               rango=[0, o.rem.max() / 1e6 * 1.25])
+fig.add_vline(x=rem_est / 1e6, line=dict(color=NARANJA, width=1.5, dash="dash"))
+fig.add_annotation(x=rem_est / 1e6, y=len(o) - 0.4, text=f"Todo el Estado: {millones(rem_est)}", showarrow=False,
+                   xanchor="left", xshift=6, font=dict(color=NARANJA, size=12))
+fig.show(config=CONFIG)
+```
+
+Las diferencias reflejan la composición del personal: instituciones con muchos magistrados, fiscales o defensores tienen remuneraciones medias más altas que las que tienen mucho personal administrativo o temporal. Los **gastos de representación** de las autoridades judiciales sumaron `{python} milmillones(j1['Gastos de representación'].sum())` mil millones de guaraníes en `{python} UA`.
+
+## Contratos: el ciclo de la Justicia Electoral y el fin de los contratos en la Corte
+
+```{python}
+#| label: fig-contr
+#| fig-cap: "Vínculos contratados por mes: Corte Suprema y Justicia Electoral"
+fig = go.Figure()
+for nom, c in [("Justicia Electoral", NARANJA), ("Corte Suprema de Justicia", AZUL)]:
+    fig.add_trace(go.Scatter(x=s.index, y=s[nom], name=corto.get(nom, nom), mode="lines", line=dict(color=c, width=2.4),
+                             hovertemplate=f"{corto.get(nom, nom)}: %{{y:,.0f}}<extra></extra>"))
+estilo(fig, alto=340).update_yaxes(tickformat=",.0f", rangemode="tozero")
+fig.show(config=CONFIG)
+```
+
+La **Justicia Electoral** contrata personal en los meses previos a cada elección y lo reduce después: su planta de contratados sube y baja con el calendario electoral. La **Corte Suprema** tenía cada enero un pico de contratos que se reducía durante el año; desde 2023 prácticamente no tiene contratados. Lo contamos en el [dato de la semana del lunes 29](../2027-03-29-la-corte-sin-contratos/).
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA. [Descargar los datos](/datos/).
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_portada, ig_dato, barras_h as bh
+o = j1.sort_values("total")
+social("La justicia por dentro", miles(T) + " vínculos", f"en {len(j1)} instituciones · {milmillones(M_)} mil millones de Gs ({UA})",
+       (list(range(len(o))), list(o.total)), tipo="barras")
+ig_portada("Poder Judicial", "La justicia\npor dentro", f"{miles(T)} vínculos y {milmillones(M_)} mil millones\nde guaraníes en salarios.",
+           (list(range(len(o))), list(o.total)), tipo="barras")
+ig_dato(2, "Las instituciones", "La Corte Suprema de Justicia tiene", miles(csj.total), "vínculos, más del doble que la Justicia Electoral" if csj.total > 2 * je.total else "vínculos",
+        f"Vínculos promedio de {UA}", bh([corto.get(x, x) for x in o.nombre], o.total, [miles(x) for x in o.total]))
+```

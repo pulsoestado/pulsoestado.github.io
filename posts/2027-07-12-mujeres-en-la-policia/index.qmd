@@ -1,0 +1,59 @@
+---
+title: "Las mujeres en la Policía Nacional"
+description: "Cuántas mujeres hay en la Policía Nacional y cómo cambió su proporción con las últimas promociones de agentes."
+date: 2027-07-12
+categories: [El dato de la semana, Género, Fuerzas públicas]
+image: social.png
+image-alt: "Mujeres en la Policía Nacional por mes"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import plotly.graph_objects as go
+
+v = vin_oee()
+p = v[v.nombre == "Policía Nacional"].groupby(["anho", "mes"])[["total", "mujeres"]].sum().reset_index()
+p = p[p.anho >= 2017]; p["fecha"] = pd.to_datetime(dict(year=p.anho, month=p.mes, day=1)); p["pm"] = p.mujeres / p.total * 100
+u = p.iloc[-1]; a = p.iloc[0]
+dm = u.mujeres - a.mujeres; dt = u.total - a.total
+```
+
+```{python}
+#| label: kpis
+#| output: asis
+print(kpis([(miles(u.mujeres), f"mujeres en la Policía Nacional ({fecha_txt(u.anho, u.mes)})"), (pct(u.pm, 1), "del total"),
+            (pct(dm / dt * 100, 0), f"de los vínculos sumados desde {fecha_txt(a.anho, a.mes)}")]))
+```
+
+En `{python} fecha_txt(u.anho, u.mes)`, **`{python} miles(u.mujeres)` de los `{python} miles(u.total)` vínculos de la Policía Nacional eran de mujeres**: el `{python} pct(u.pm, 1)`. En `{python} fecha_txt(a.anho, a.mes)` eran `{python} miles(a.mujeres)`, el `{python} pct(a.pm, 1)`. De todos los vínculos que sumó la Policía en ese período, el `{python} pct(dm / dt * 100, 0)` fueron de mujeres.
+
+```{python}
+#| label: fig
+#| fig-cap: "Proporción de mujeres en los vínculos de la Policía Nacional, por mes"
+fig = go.Figure(go.Scatter(x=p.fecha, y=p.pm, mode="lines", line=dict(color=VIOLETA, width=2.8), line_shape="hv",
+                           hovertemplate="%{x|%b %Y}: <b>%{y:.1f}%</b><extra></extra>"))
+estilo(fig, alto=300, leyenda=False).update_yaxes(ticksuffix="%", range=[0, max(30, p.pm.max() * 1.2)])
+fig.show(config=CONFIG)
+```
+
+La proporción sube a saltos, con cada promoción de nuevos agentes ([las promociones de mayo](../2027-05-10-promociones-policiales/)). Aun así, la Policía sigue siendo una de las instituciones con menor presencia de mujeres del Estado, junto con el Ministerio de Defensa y las empresas públicas de energía y combustibles ([dónde trabajan las mujeres del Estado](../2027-02-25-donde-trabajan-las-mujeres/)).
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH (vínculos por mes y sexo). [Descargar los datos](/datos/).
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_dato, lineas
+y = p[p.mes == int(u.mes)]
+social("Las mujeres en la\nPolicía Nacional", pct(u.pm, 1), f"de los vínculos policiales ({fecha_txt(u.anho, u.mes)})", (list(range(len(p))), list(p.pm)), color=VIOLETA)
+ig_dato(1, "El dato de la semana", "En la Policía Nacional, las mujeres son", pct(u.pm, 1), f"de los vínculos: {miles(u.mujeres)}",
+        f"% de mujeres, {MESES[int(u.mes) - 1]} de cada año", lineas(list(y.anho), {"Mujeres": (list(y.pm), VIOLETA)}, fmt=lambda x: pct(x, 1)), color=VIOLETA)
+```

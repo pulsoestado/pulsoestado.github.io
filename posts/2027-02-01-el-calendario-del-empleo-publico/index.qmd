@@ -1,0 +1,76 @@
+---
+title: "El calendario del empleo público"
+description: "El Estado no tiene la misma cantidad de personal todo el año. Los contratos caen en enero y se recuperan hasta mitad de año; la planta permanente se mueve mucho menos."
+date: 2027-02-01
+categories: [El dato de la semana, Dotación, Contratados]
+image: social.png
+image-alt: "Patrón mensual de los vínculos permanentes y contratados"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import plotly.graph_objects as go
+
+UA = ultimo_anio_completo()
+s = serie_mensual(); s = s[s.anho.between(2017, UA)].copy()
+for c in ["permanente", "contratado"]:
+    s[c + "_i"] = s[c] / s.groupby("anho")[c].transform("mean") * 100
+pat = s.groupby("mes")[["permanente_i", "contratado_i"]].mean()
+amp_c = pat.contratado_i.max() - pat.contratado_i.min()
+amp_p = pat.permanente_i.max() - pat.permanente_i.min()
+min_c = int(pat.contratado_i.idxmin()); max_c = int(pat.contratado_i.idxmax())
+ult = s[s.anho == UA].set_index("mes")
+dif_c = ult.contratado.max() - ult.contratado.loc[1]
+```
+
+```{python}
+#| label: kpis
+#| output: asis
+print(kpis([
+    (coma(amp_c, 1) + " puntos", "de diferencia entre el mes más bajo y el más alto de los contratos"),
+    (coma(amp_p, 1) + " puntos", "en la planta permanente"),
+]))
+```
+
+Si a cada mes se lo compara con el promedio de su año, aparece un calendario que se repite desde `{python} 2017`. Los **contratos** tocan su punto más bajo en **`{python} MESES[min_c - 1]`**, cuando están `{python} coma(100 - pat.contratado_i.min(), 1)`% por debajo del promedio anual, y llegan al máximo en `{python} MESES[max_c - 1]`. La **planta permanente** casi no se mueve: su variación a lo largo del año es de `{python} coma(amp_p, 1)` puntos.
+
+```{python}
+#| label: fig-patron
+#| fig-cap: "Vínculos de cada mes como porcentaje del promedio de su año (promedio 2017 en adelante)"
+fig = go.Figure()
+fig.add_trace(go.Scatter(x=[MES_C[m - 1] for m in pat.index], y=pat.contratado_i, name="Contratados",
+                         mode="lines+markers", line=dict(color=NARANJA, width=2.8),
+                         hovertemplate="Contratados: %{y:.1f}<extra></extra>"))
+fig.add_trace(go.Scatter(x=[MES_C[m - 1] for m in pat.index], y=pat.permanente_i, name="Permanentes",
+                         mode="lines+markers", line=dict(color=AZUL, width=2.8),
+                         hovertemplate="Permanentes: %{y:.1f}<extra></extra>"))
+fig.add_hline(y=100, line=dict(color=GRIS, width=1, dash="dot"))
+estilo(fig, alto=340)
+fig.show(config=CONFIG)
+```
+
+La explicación más probable es administrativa: buena parte de los contratos rige por año calendario, termina en diciembre y se renueva en las primeras semanas o meses del año siguiente, a medida que las instituciones ejecutan su nuevo presupuesto. En `{python} UA`, entre enero y el mes de más contratos se sumaron `{python} miles(dif_c)` vínculos contratados.
+
+Este patrón es otra razón para comparar siempre un mes con el mismo mes del año anterior.
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA (vínculos pagados por mes, 2017 en adelante). [Descargar los datos](/datos/).
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_dato, lineas
+social("El calendario del\nempleo público", f"{MESES[min_c - 1].capitalize()}: el mes", "con menos contratos del año",
+       (list(pat.index), list(pat.contratado_i)))
+ig_dato(1, "El dato de la semana", "Cada año, los contratos caen en", MESES[min_c - 1], "y se recuperan hasta mitad de año",
+        "Vínculos de cada mes, % del promedio anual",
+        lineas(list(pat.index), {"Contratados": (list(pat.contratado_i), NARANJA), "Permanentes": (list(pat.permanente_i), AZUL)},
+               fmt=lambda x: coma(x, 0), ref=100))
+```

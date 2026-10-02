@@ -1,0 +1,112 @@
+---
+title: "¿Le ganaron los sueldos públicos a la inflación?"
+description: "Entre 2017 y 2025 los precios subieron 41%. La remuneración media pública subió 40%, el salario mínimo 42% y los salarios privados 41%. Ocho años después, el poder de compra está casi en el mismo lugar."
+date: 2026-12-04
+categories: [Salarios, Inflación, Público y privado]
+image: social.png
+image-alt: "Remuneración media pública, salario mínimo, salarios privados e inflación, índice 2017 = 100"
+draft: true  # programada
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import plotly.graph_objects as go
+
+A0, A1 = 2017, 2025
+b = leer("ipc_salarios_bcp.csv").set_index("anho").loc[A0:A1]
+m = leer("masa_anual_sector.csv")
+t = m[m.anho.between(A0, A1)].groupby("anho")[["devengado_sin_aguinaldo", "vinculos_promedio"]].sum()
+b["rem_publica"] = t.devengado_sin_aguinaldo / 12 / t.vinculos_promedio
+
+series = {"Precios (IPC)": "ipc", "Remuneración media pública": "rem_publica",
+          "Salario mínimo": "salario_minimo", "Salarios privados (ISS, junio)": "iss_junio"}
+idx = pd.DataFrame({k: b[c] / b.loc[A0, c] * 100 for k, c in series.items()})
+real = idx.drop(columns="Precios (IPC)").div(idx["Precios (IPC)"], axis=0) * 100
+var = (idx.loc[A1] - 100)
+var_r = (real.loc[A1] - 100)
+peor = real["Remuneración media pública"].idxmin()
+caida = (real.loc[peor, "Remuneración media pública"] / real.loc[2020, "Remuneración media pública"] - 1) * 100
+sm1 = b.loc[A1, "salario_minimo"]; rp1 = b.loc[A1, "rem_publica"]
+```
+
+::: {.en-breve}
+**En breve**
+
+- Entre `{python} A0` y `{python} A1` los precios subieron **`{python} pct(var['Precios (IPC)'])`**.
+- La **remuneración media pública** subió `{python} pct(var['Remuneración media pública'])`, el **salario mínimo** `{python} pct(var['Salario mínimo'])` y los **salarios privados** `{python} pct(var['Salarios privados (ISS, junio)'])`.
+- Descontada la inflación, ninguno se movió más de dos puntos: **el poder de compra de 2025 es casi el mismo que el de 2017**.
+- En el medio hubo un bache: en `{python} peor` el año de mayor inflación, la remuneración media pública real estaba `{python} pct(abs(caida))` por debajo de 2020.
+:::
+
+```{python}
+#| label: kpis
+#| output: asis
+print(kpis([
+    (spct(var["Precios (IPC)"]), f"inflación acumulada {A0}–{A1}"),
+    (spct(var_r["Remuneración media pública"]), "remuneración media pública, en términos reales"),
+    (spct(var_r["Salario mínimo"]), "salario mínimo, en términos reales"),
+    (spct(var_r["Salarios privados (ISS, junio)"]), "salarios privados (ISS), en términos reales"),
+]))
+```
+
+## Todos corrieron detrás de los precios
+
+```{python}
+#| label: fig-nominal
+#| fig-cap: "Precios y salarios, índice 2017 = 100 (valores nominales)"
+cols = {"Precios (IPC)": GRIS, "Remuneración media pública": NARANJA, "Salario mínimo": AZUL,
+        "Salarios privados (ISS, junio)": VERDE_AGUA}
+fig = go.Figure()
+for k, c in cols.items():
+    fig.add_trace(go.Scatter(x=idx.index, y=idx[k], name=k, mode="lines+markers",
+                             line=dict(color=c, width=3 if k.startswith("Remu") else 2,
+                                       dash="dot" if k.startswith("Precios") else "solid"),
+                             marker=dict(size=6), hovertemplate=f"{k}: <b>%{{y:.1f}}</b><extra></extra>"))
+estilo(fig, alto=400)
+fig.update_xaxes(dtick=1)
+fig.show(config=CONFIG)
+```
+
+Las cuatro líneas terminan casi en el mismo punto. La **remuneración media pública** es lo que cuesta en promedio cada vínculo del Estado por mes, sin aguinaldo: pasó de `{python} millones(b.loc[A0, 'rem_publica'], 2)` a `{python} millones(rp1, 2)` millones de guaraníes. El **salario mínimo** legal promedió `{python} millones(sm1, 2)` millones en `{python} A1`. El **Índice de Sueldos y Salarios** del Banco Central mide la evolución de los salarios en empresas privadas de la industria, el comercio, los servicios y otras ramas.
+
+## En términos reales: casi en el mismo lugar
+
+```{python}
+#| label: fig-real
+#| fig-cap: "Poder de compra: salarios descontada la inflación, índice 2017 = 100"
+fig = go.Figure()
+for k, c in cols.items():
+    if k.startswith("Precios"):
+        continue
+    fig.add_trace(go.Scatter(x=real.index, y=real[k], name=k, mode="lines+markers",
+                             line=dict(color=c, width=3 if k.startswith("Remu") else 2), marker=dict(size=6),
+                             hovertemplate=f"{k}: <b>%{{y:.1f}}</b><extra></extra>"))
+fig.add_hline(y=100, line=dict(color=GRIS, width=1, dash="dot"))
+estilo(fig, alto=380)
+fig.update_yaxes(range=[90, 110])
+fig.update_xaxes(dtick=1)
+fig.show(config=CONFIG)
+```
+
+Hasta 2020 la remuneración media pública creció más rápido que los precios. Con la inflación de 2021 y 2022 perdió todo lo ganado, y en `{python} peor` tocó su punto más bajo. Desde entonces se recuperó parcialmente. El salario mínimo, que se reajusta cada año, cayó menos y se mantuvo más estable. Los salarios privados siguieron un camino parecido al público.
+
+## Lo que el promedio no muestra
+
+Que el promedio esté donde estaba no significa que a todos les haya ido igual. Como mostramos en [¿Más gente o mejores sueldos?](../2026-10-30-mas-gente-o-mejores-sueldos/), en **Educación** la remuneración media real subió más de 30% por los reajustes docentes, mientras que en **Salud** bajó porque se sumaron muchos contratos con remuneraciones más bajas. El promedio público también cambia cuando cambia la composición del personal, aunque ningún sueldo individual se mueva.
+
+::: {.callout-note collapse="true"}
+## Qué mide cada serie
+
+- **IPC**: índice de precios al consumidor del Banco Central del Paraguay, promedio anual.
+- **Remuneración media pública**: devengado en servicios personales sin aguinaldo, dividido por los vínculos promedio y por 12 meses (SINARH y SICCA).
+- **Salario mínimo**: salario mínimo legal, promedio de los valores vigentes en cada año (BCP).
+- **Salarios privados**: Índice de Sueldos y Salarios del BCP, valor de junio de cada año (en 2025, junio es el último dato del anexo).
+:::
+
+::: {.fuente}
+**Fuentes:** elaboración de Pulso del Estado con datos de SINARH y SICCA y del Banco Central del Paraguay (Anexo Estadístico: IPC, salario mínimo legal e Índice de Sueldos y Salarios). [Descargar los datos](/datos/).
+:::

@@ -1,0 +1,73 @@
+---
+title: "Lo que va del año: vínculos y masa salarial"
+description: "A mitad de año, cómo vienen el empleo y la masa salarial del Estado en los meses con datos, frente a los mismos meses del año anterior."
+date: 2027-06-28
+categories: [El dato de la semana, Dotación, Masa salarial]
+image: social.png
+image-alt: "Vínculos y masa salarial acumulada del año frente al año anterior"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import plotly.graph_objects as go
+
+A1, M = ultimo_mes(); A0 = A1 - 1
+v = leer("vinculos_mensual_oee.csv"); mm = leer("masa_mensual_oee.csv")
+def ac(a):
+    x = v[(v.anho == a) & (v.mes <= M)].groupby(K_OEE).total.mean()
+    y = mm[(mm.anho == a) & (mm.mes <= M)].groupby(K_OEE).devengado.sum()
+    return pd.concat([x, y], axis=1)
+p0, p1 = ac(A0), ac(A1)
+com = p0.dropna().index.intersection(p1.dropna().index)
+a, b = p0.loc[com], p1.loc[com]
+vv = (b.total.sum() / a.total.sum() - 1) * 100
+vm = (b.devengado.sum() / a.devengado.sum() - 1) * 100
+ipcs = [ipc_interanual(A1, m) for m in range(1, M + 1)]
+ip = [i for i in ipcs if i is not None]
+real = ((1 + vm / 100) / (1 + sum(ip) / len(ip) / 100) - 1) * 100 if len(ip) == M else None
+s = serie_mensual(); s0 = s[(s.anho == A0) & (s.mes <= M)]; s1 = s[(s.anho == A1) & (s.mes <= M)]
+periodo = f"enero–{MESES[M - 1]}"
+```
+
+```{python}
+#| label: kpis
+#| output: asis
+t = [(spct(vv), f"vínculos promedio, {periodo} {A1} frente a {A0}"), (spct(vm), "masa salarial acumulada, nominal")]
+if real is not None: t.append((spct(real), "masa salarial, real"))
+print(kpis(t))
+```
+
+Entre enero y `{python} MESES[M - 1]` de `{python} A1`, con las mismas `{python} len(com)` instituciones que el año anterior, el Estado pagó en promedio un `{python} pct(abs(vv))` `{python} "más" if vv >= 0 else "menos"` de vínculos y su masa salarial acumulada `{python} "creció" if vm >= 0 else "bajó"` `{python} pct(abs(vm))`. `{python} f"Descontada la inflación, el aumento real fue de {spct(real)}." if real is not None else "La variación real se calculará cuando estén disponibles los datos de inflación de todos los meses."`
+
+```{python}
+#| label: fig
+#| fig-cap: "Vínculos pagados por mes en el año en curso y en el anterior (todo el Estado)"
+fig = go.Figure()
+fig.add_trace(go.Scatter(x=[MES_C[m - 1] for m in s0.mes], y=s0.total, name=str(A0), mode="lines+markers", line=dict(color="#9db9de", width=2.4),
+                         hovertemplate=f"{A0}: %{{y:,.0f}}<extra></extra>"))
+fig.add_trace(go.Scatter(x=[MES_C[m - 1] for m in s1.mes], y=s1.total, name=str(A1), mode="lines+markers", line=dict(color=AZUL, width=3),
+                         hovertemplate=f"{A1}: %{{y:,.0f}}<extra></extra>"))
+estilo(fig, alto=320).update_yaxes(tickformat=",.0f")
+fig.show(config=CONFIG)
+```
+
+El detalle de cada mes, por sector e institución, está en las ediciones del [SITUCAP](/situcap/).
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA. Inflación interanual: Banco Central del Paraguay. [Descargar los datos](/datos/).
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_dato, barras
+social(f"Lo que va de {A1}", f"{spct(vv)} vínculos", f"y {spct(vm)} en masa salarial ({periodo}, mismas instituciones)", (list(range(len(s1))), list(s1.total)))
+ig_dato(1, "El dato de la semana", f"En {periodo} de {A1}, los vínculos del Estado", spct(vv), f"y la masa salarial {spct(vm)}",
+        "Cambio frente al mismo período del año anterior", barras(["Vínculos", "Masa salarial"], [vv, vm], [spct(vv), spct(vm)], colores=[AZUL, NARANJA]))
+```

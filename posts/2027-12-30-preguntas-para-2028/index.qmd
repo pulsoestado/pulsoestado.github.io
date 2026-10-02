@@ -1,0 +1,68 @@
+---
+title: "Seis preguntas para 2028"
+description: "Lo que vamos a mirar el año que viene: el empleo en el año de las elecciones generales, el presupuesto 2028, los contratados, la cuota de discapacidad, la brecha de género y la nueva ley de la función pública."
+date: 2027-12-30
+categories: [Balance, Ciclo electoral, Agenda]
+image: social.png
+image-alt: "Seis preguntas sobre el empleo público para 2028"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+
+A1, M = ultimo_mes(); UA = ultimo_anio_completo()
+s = serie_mensual(); sj = s[s.mes == M].set_index("anho")
+pc = leer("pcd_mensual.csv"); pu = pc[(pc.anho == pc.anho.max())]; pu = pu[pu.mes == pu.mes.max()].iloc[0]
+g = leer("genero_brecha_anual.csv").set_index("anho")
+ms = leer("masa_anual_sector.csv").groupby("anho").devengado.sum()
+crec_e = [(sj.total[a] / sj.total[a - 1] - 1) * 100 for a in (2018, 2023) if a in sj.index and a - 1 in sj.index]
+```
+
+Cerramos el año con las preguntas que guiarán nuestro trabajo en 2028. Todas se pueden responder con datos públicos, y las iremos respondiendo a medida que lleguen.
+
+### 1. ¿Cuánto crecerá el Estado en el año de las elecciones generales?
+
+En `{python} fecha_txt(A1, M)` el Estado tenía `{python} miles(sj.total[A1])` vínculos, `{python} signo(sj.total[A1] - sj.total[A1 - 1])` en un año. En 2018 y en 2023, los dos últimos años de elecciones generales, la variación interanual en `{python} MESES[M - 1]` fue de `{python} " y ".join(spct(x) for x in crec_e)`. Seguiremos mes a mes si 2028 se parece a esos años ([el ciclo electoral: cambio de gobierno](../2027-10-14-ciclo-electoral-cambio-de-gobierno/)).
+
+### 2. ¿Qué dirá el presupuesto 2028?
+
+La masa salarial de `{python} UA` fue de `{python} billones(ms[UA])` billones de guaraníes. El Presupuesto General de la Nación para 2028 dirá cuánto se prevé gastar en servicios personales y cuánto margen queda para nuevos cargos y reajustes ([escenarios para 2028](../2027-09-23-masa-salarial-2028-escenarios/)).
+
+### 3. ¿Seguirá subiendo la proporción de contratados?
+
+Hoy el `{python} pct(sj.contratado[A1] / sj.total[A1] * 100, 0)` de los vínculos es de personal contratado ([el dato del año](../2027-12-27-el-dato-del-ano/)).
+
+### 4. ¿Avanzará la cuota de discapacidad?
+
+El `{python} pct(pu.pcd / pu.vinculos * 100, 2)` de los vínculos es de personas con discapacidad, frente a una cuota legal del 5% ([¿avanzó la cuota?](../2027-12-02-discapacidad-balance/)).
+
+### 5. ¿Se cerrará la brecha de género?
+
+En la misma institución y categoría, las mujeres ganan un `{python} pct(g.brecha_misma_categoria_pct.iloc[-1])` menos de sueldo básico que los hombres ([la brecha en un número](../2027-03-01-la-brecha-en-un-numero/)).
+
+### 6. ¿Qué cambiará con la nueva ley de la función pública?
+
+La ley de la función pública y la carrera del servicio civil, promulgada en 2025, prevé cambios en el ingreso por concurso, la evaluación del desempeño y las escalas salariales. Su aplicación es gradual; vamos a buscar sus efectos en los datos de SICCA y SINARH, como la cantidad de concursos y los cambios de categoría.
+
+¡Feliz año nuevo! Nos leemos en enero.
+
+::: {.fuente}
+**Fuentes:** elaboración de Pulso del Estado con datos de SINARH y SICCA. [Descargar los datos](/datos/).
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_portada, ig_dato, barras
+social("Seis preguntas\npara 2028", "6 preguntas", "elecciones, presupuesto, contratos, discapacidad, brecha y ley", color=AMARILLO)
+ig_portada("Agenda 2028", "Seis\npreguntas\npara 2028", "Lo que vamos a mirar\nel año que viene.", color=AMARILLO)
+x = [str(a) for a in sj.index]
+ig_dato(2, "Pregunta 1", f"En {fecha_txt(A1, M)} el Estado tenía", miles(sj.total[A1]), "vínculos. ¿Cuánto crecerá en 2028?", "Miles de vínculos, mismo mes de cada año",
+        barras(x, list(sj.total / 1000), [coma(v_ / 1000, 0) for v_ in sj.total], rot=45), color=VIOLETA)
+```

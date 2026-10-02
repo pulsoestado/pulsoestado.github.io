@@ -1,0 +1,111 @@
+---
+title: "Quién creció y quién se achicó desde 2017"
+description: "Tres instituciones explican buena parte del crecimiento del empleo público: el Ministerio de Salud, la Policía Nacional y el IPS. Del otro lado, la lista de las que tienen menos personal que hace casi una década."
+date: 2027-01-28
+categories: [Dotación, Instituciones]
+image: social.png
+image-alt: "Instituciones con mayor aumento y mayor disminución de vínculos desde 2017"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import plotly.graph_objects as go
+
+A0, UA = 2017, ultimo_anio_completo()
+cat_ = instituciones().set_index(K_OEE)[["nombre_largo", "sector"]]
+a = vin_promedio_oee(A0).set_index(K_OEE).total.rename("v0")
+b = vin_promedio_oee(UA).set_index(K_OEE).total.rename("v1")
+j = pd.concat([a, b], axis=1).join(cat_)
+ambos = j.dropna(subset=["v0", "v1"]).copy()
+ambos["dif"] = ambos.v1 - ambos.v0; ambos["var"] = (ambos.v1 / ambos.v0 - 1) * 100
+nuevas = j[j.v0.isna() & j.v1.notna()].sort_values("v1", ascending=False)
+viejas = j[j.v0.notna() & j.v1.isna()].sort_values("v0", ascending=False)
+neto = j.v1.sum() - j.v0.sum()
+sube = ambos.sort_values("dif", ascending=False)
+baja = ambos.sort_values("dif")
+tres = sube.head(3)
+parte3 = tres.dif.sum() / neto * 100
+n_sube = int((ambos.dif > 0).sum()); n_baja = int((ambos.dif < 0).sum())
+```
+
+::: {.en-breve}
+**En breve**
+
+- Entre `{python} A0` y `{python} UA` el promedio de vínculos del Estado creció en **`{python} miles(neto)`**.
+- Tres instituciones sumaron **`{python} miles(tres.dif.sum())`**, el equivalente al `{python} pct(parte3, 0)` de ese aumento neto: **`{python} tres.nombre_largo.iloc[0]`** (`{python} signo(tres.dif.iloc[0])`), **`{python} tres.nombre_largo.iloc[1]`** (`{python} signo(tres.dif.iloc[1])`) y **`{python} tres.nombre_largo.iloc[2]`** (`{python} signo(tres.dif.iloc[2])`).
+- De las `{python} len(ambos)` instituciones con datos en ambos años, `{python} n_sube` crecieron y `{python} n_baja` tienen hoy menos vínculos.
+- La mayor baja entre las que siguen reportando es la de **`{python} baja.nombre_largo.iloc[0]`** (`{python} signo(baja.dif.iloc[0])`).
+:::
+
+## Las que más crecieron
+
+```{python}
+#| label: fig-sube
+#| fig-cap: "Las 12 instituciones con mayor aumento de vínculos (promedio anual)"
+o = sube.head(12).iloc[::-1]
+fig = barras_h(o.nombre_largo, o.dif, [f"{signo(d)} ({spct(x, 0)})" for d, x in zip(o.dif, o["var"])],
+               colores=[AZUL] * len(o), rango=[0, o.dif.max() * 1.45])
+fig.update_xaxes(tickformat=",.0f"); fig.show(config=CONFIG)
+```
+
+El crecimiento está muy concentrado en la salud y la seguridad. El **Ministerio de Salud** y el **IPS** sumaron personal sobre todo durante la pandemia, entre 2020 y 2022, en su mayoría con contratos, y ese personal se quedó. La **Policía Nacional** creció de forma gradual hasta 2023 y después dio dos saltos, con las promociones de nuevos agentes de mayo de 2025 y de mayo de 2026.
+
+## Las que más se achicaron
+
+```{python}
+#| label: fig-baja
+#| fig-cap: "Las 12 instituciones con mayor disminución de vínculos (promedio anual)"
+o = baja.head(12).iloc[::-1]
+fig = barras_h(o.nombre_largo, o.dif, [f"{signo(d)} ({spct(x, 0)})" for d, x in zip(o.dif, o["var"])],
+               colores=[ROJO] * len(o), rango=[o.dif.min() * 1.5, 0])
+fig.update_xaxes(tickformat=",.0f"); fig.show(config=CONFIG)
+```
+
+Entre las que bajaron hay ministerios del servicio civil del Ejecutivo y empresas del Estado. Parte de estas bajas no es pérdida de empleo sino **reorganización**: cuando funciones de una institución pasan a otra nueva, el personal cambia de registro. El caso más visible es la **Dirección Nacional de Ingresos Tributarios**, que reunió a la recaudación de impuestos, antes dentro del Ministerio de Hacienda, y a la Dirección Nacional de Aduanas.
+
+## Instituciones nuevas y que dejaron de reportar
+
+```{python}
+#| label: tbl-nuevas
+#| output: asis
+print("| Nuevas desde " + str(A0) + f" | Vínculos {UA} |\n|---|--:|")
+for _, r in nuevas.head(8).iterrows():
+    print(f"| {r.nombre_largo} | {miles(r.v1)} |")
+print(f"\n: Instituciones con vínculos en {UA} y sin registros en {A0}")
+```
+
+Desde `{python} A0` aparecieron `{python} len(nuevas)` instituciones con vínculos que no figuraban ese año, con `{python} miles(nuevas.v1.sum())` vínculos en `{python} UA`, y `{python} len(viejas)` dejaron de aparecer (`{python} miles(viejas.v0.sum())` vínculos en `{python} A0`). Varias son el mismo organismo con otro nombre o con otra estructura, como las secretarías que pasaron a ser ministerios. Otras son municipalidades que empezaron a reportar a los sistemas centrales.
+
+::: {.callout-note collapse="true"}
+## Cómo se calculó
+
+- Promedio de vínculos de los 12 meses de `{python} A0` y de `{python} UA` para cada institución (SINARH y SICCA).
+- Una institución se compara solo si tiene datos en ambos años. Las que cambiaron de código por una reorganización aparecen como "nuevas" o como "dejaron de reportar".
+:::
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA. [Descargar los datos](/datos/).
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_portada, ig_dato, barras_h as bh
+cort = lambda x: (x.replace("Ministerio de Salud Pública y Bienestar Social", "Min. de Salud")
+                   .replace("Instituto de Previsión Social", "IPS").replace("Ministerio de", "Min. de")
+                   .replace("Compañía Paraguaya de Comunicaciones S.A.", "COPACO"))
+o = pd.concat([sube.head(4), baja.head(4)]).sort_values("dif")
+social("Quién creció y quién\nse achicó desde 2017", signo(tres.dif.sum()) + " vínculos",
+       "en Salud, Policía e IPS: el motor del empleo público")
+ig_portada("Instituciones", "Quién creció\ny quién\nse achicó", f"Entre {A0} y {UA}, tres instituciones\nsumaron {miles(tres.dif.sum())} vínculos.",
+           (list(range(8)), list(o.dif)), tipo="barras")
+ig_dato(2, "Desde " + str(A0), "Las que más sumaron y más perdieron", signo(neto), f"vínculos netos en todo el Estado",
+        f"Cambio en vínculos, {A0}–{UA}", bh([cort(x) for x in o.nombre_largo], o.dif, [signo(d) for d in o.dif],
+                                              colores=[AZUL if d >= 0 else ROJO for d in o.dif]))
+```

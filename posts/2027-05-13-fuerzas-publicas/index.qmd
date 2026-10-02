@@ -1,0 +1,117 @@
+---
+title: "Fuerzas públicas: policías y militares"
+description: "La Policía Nacional y el Ministerio de Defensa suman más de sesenta mil vínculos. La Policía creció mucho más rápido que Defensa desde 2017. Cuánto cuestan, cuánto pesan las bonificaciones y cuántas mujeres hay."
+date: 2027-05-13
+categories: [Fuerzas públicas, Dotación, Masa salarial]
+image: social.png
+image-alt: "Vínculos de la Policía Nacional y del Ministerio de Defensa desde 2017"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import plotly.graph_objects as go
+
+UA = ultimo_anio_completo(); A1, M = ultimo_mes(); A0 = 2017
+PN, MD = "Policía Nacional", "Ministerio de Defensa Nacional"
+v = vin_oee(); v = v[v.nombre.isin([PN, MD])]
+a = v.groupby(["anho", "nombre"])[["total", "mujeres"]].mean()
+u = v[(v.anho == A1) & (v.mes == M)].set_index("nombre")
+mo = leer("masa_anual_oee.csv").merge(instituciones()[K_OEE + ["nombre"]], on=K_OEE)
+mo = mo[mo.nombre.isin([PN, MD]) & mo.anho.between(A0, UA)]
+comp = mo[mo.anho == UA].pivot_table(index="nombre", columns="componente", values="devengado", aggfunc="sum").fillna(0)
+masa = comp.sum(axis=1)
+pb = comp["Bonificaciones y asignaciones"] / masa * 100
+sb = comp["Sueldo básico"] / masa * 100
+masa_t = mo.groupby(["anho", "nombre"]).devengado.sum().unstack()
+real = masa_t.mul(deflactor(UA).reindex(masa_t.index), axis=0)
+sinag = mo[mo.componente != "Aguinaldo"].groupby(["anho", "nombre"]).devengado.sum()
+rem = (sinag / 12 / a.total.reindex(sinag.index)).unstack() * deflactor(UA).reindex(range(A0, UA + 1)).values[:, None]
+f = {n: dict(v0=a.loc[(A0, n), "total"], v1=a.loc[(UA, n), "total"], vu=u.loc[n, "total"], pm=u.loc[n, "mujeres"] / u.loc[n, "total"] * 100,
+             pm0=a.loc[(A0, n), "mujeres"] / a.loc[(A0, n), "total"] * 100, masa=masa[n], pb=pb[n], sb=sb[n],
+             mr=(real.loc[UA, n] / real.loc[A0, n] - 1) * 100, rr=(rem.loc[UA, n] / rem.loc[A0, n] - 1) * 100, rem=rem.loc[UA, n])
+     for n in [PN, MD]}
+for n in f: f[n]["var"] = (f[n]["v1"] / f[n]["v0"] - 1) * 100
+est = leer("masa_anual_sector.csv").query("anho == @UA")
+part = (masa.sum()) / est.devengado.sum() * 100
+s = v.groupby(["anho", "mes", "nombre"]).total.sum().unstack().reset_index()
+s = s[s.anho >= A0]; s["fecha"] = pd.to_datetime(dict(year=s.anho, month=s.mes, day=1))
+```
+
+::: {.en-breve}
+**En breve**
+
+- En `{python} fecha_txt(A1, M)` la **Policía Nacional** pagaba **`{python} miles(f[PN]['vu'])` vínculos** y el **Ministerio de Defensa**, **`{python} miles(f[MD]['vu'])`**.
+- Entre `{python} A0` y `{python} UA`, la Policía creció **`{python} pct(f[PN]['var'], 0)`** y Defensa `{python} pct(f[MD]['var'], 0)`.
+- En `{python} UA` los dos costaron `{python} billones(masa.sum())` billones de guaraníes, el `{python} pct(part, 0)` de la masa salarial pública. Su masa salarial real creció `{python} pct(f[PN]['mr'], 0)` en la Policía y `{python} pct(f[MD]['mr'], 0)` en Defensa.
+- Las **bonificaciones y asignaciones** son el `{python} pct(f[PN]['pb'], 0)` de la masa de la Policía y el `{python} pct(f[MD]['pb'], 0)` de la de Defensa.
+- Las mujeres son el `{python} pct(f[PN]['pm'], 0)` de la Policía y el `{python} pct(f[MD]['pm'], 0)` de Defensa.
+:::
+
+## Dos ritmos
+
+```{python}
+#| label: fig-serie
+#| fig-cap: "Vínculos por mes: Policía Nacional y Ministerio de Defensa Nacional"
+fig = go.Figure()
+for n, c in [(PN, NAVY), (MD, VERDE_AGUA)]:
+    fig.add_trace(go.Scatter(x=s.fecha, y=s[n], name=n, mode="lines", line=dict(color=c, width=2.6),
+                             hovertemplate=n + ": %{y:,.0f}<extra></extra>"))
+estilo(fig, alto=360).update_yaxes(tickformat=",.0f", rangemode="tozero")
+fig.show(config=CONFIG)
+```
+
+La **Policía Nacional** creció de forma gradual hasta 2023 y luego dio saltos con cada promoción de nuevos agentes, en particular en mayo de 2025 y mayo de 2026 ([las promociones de mayo](../2027-05-10-promociones-policiales/)). El **Ministerio de Defensa**, que incluye a las Fuerzas Armadas, tiene un patrón estacional propio: sube cada año entre marzo y junio y baja en la segunda mitad del año.
+
+## Cuánto cuestan
+
+```{python}
+#| label: tbl-ficha
+#| output: asis
+print(f"| | Policía Nacional | Ministerio de Defensa |\n|---|--:|--:|")
+filas = [(f"Vínculos {A0}", "v0", miles), (f"Vínculos {UA}", "v1", miles), ("Cambio", "var", lambda x: spct(x, 0)),
+         (f"Masa salarial {UA} (mil M Gs)", "masa", milmillones), (f"Masa salarial real, {A0}–{UA}", "mr", lambda x: spct(x, 0)),
+         (f"Remuneración media {UA} (M Gs/mes)", "rem", millones), ("Remuneración media real, cambio", "rr", spct),
+         ("Sueldo básico, % de la masa", "sb", lambda x: pct(x, 0)), ("Bonificaciones y asignaciones, % de la masa", "pb", lambda x: pct(x, 0)),
+         (f"% mujeres {A0}", "pm0", lambda x: pct(x, 0)), (f"% mujeres {fecha_txt(A1, M)}", "pm", lambda x: pct(x, 0))]
+for et, k, fn in filas:
+    print(f"| {et} | {fn(f[PN][k])} | {fn(f[MD][k])} |")
+print("\n: Fuerzas públicas, promedios anuales. Remuneración media = masa sin aguinaldo / 12 / vínculos, en guaraníes del último año completo")
+```
+
+Una parte importante de la remuneración policial y militar no es sueldo básico: son **bonificaciones y asignaciones**, que en la Policía equivalen a `{python} pct(f[PN]['pb'], 0)` de la masa salarial. Por eso, cuando se discute un reajuste del sueldo básico, el efecto sobre lo que cobra cada agente depende también de cómo se ajustan esos complementos.
+
+## Más mujeres
+
+En la Policía, la proporción de mujeres pasó del `{python} pct(f[PN]['pm0'], 0)` en `{python} A0` al `{python} pct(f[PN]['pm'], 0)` en `{python} fecha_txt(A1, M)`: las últimas promociones incorporaron más mujeres que las anteriores. En Defensa la proporción casi no cambió.
+
+::: {.callout-note collapse="true"}
+## Notas
+
+- Fuerzas públicas = Policía Nacional (dentro del Ministerio del Interior) y Ministerio de Defensa Nacional (incluye a las Fuerzas Armadas), según la clasificación de Pulso del Estado.
+- Los registros incluyen al personal policial y militar con vínculos pagados en el mes.
+:::
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA y del Banco Central del Paraguay (IPC). [Descargar los datos](/datos/).
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_portada, ig_dato, barras
+x = list(range(len(s)))
+social("Fuerzas públicas:\npolicías y militares", miles(f[PN]['vu'] + f[MD]['vu']) + " vínculos", f"Policía {spct(f[PN]['var'], 0)} y Defensa {spct(f[MD]['var'], 0)} desde {A0}",
+       (x, list(s[PN])), color=NARANJA)
+ig_portada("Seguridad", "Fuerzas\npúblicas", f"{miles(f[PN]['vu'])} policías y {miles(f[MD]['vu'])} vínculos\nen Defensa.", (x, list(s[PN])))
+ig_dato(2, "Crecimiento", f"Entre {A0} y {UA}, la Policía Nacional creció", spct(f[PN]['var'], 0),
+        f"Defensa: {spct(f[MD]['var'], 0)}", "Vínculos promedio, miles",
+        barras([f"PN {A0}", f"PN {UA}", f"MDN {A0}", f"MDN {UA}"], [f[PN]["v0"] / 1e3, f[PN]["v1"] / 1e3, f[MD]["v0"] / 1e3, f[MD]["v1"] / 1e3],
+               [coma(x_ / 1e3, 1) for x_ in [f[PN]["v0"], f[PN]["v1"], f[MD]["v0"], f[MD]["v1"]]],
+               colores=["#8fa3b8", NAVY, "#9fe0c8", VERDE_AGUA]))
+```

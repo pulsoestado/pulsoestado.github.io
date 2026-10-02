@@ -1,22 +1,36 @@
 ---
 title: "SITUCAP"
-subtitle: "Situación del Capital Humano Público"
+subtitle: "Situación del Capital Humano Público · reporte mensual de dotación y masa salarial"
 toc: false
+listing:
+  id: ediciones
+  contents: ediciones
+  sort: "date desc"
+  type: table
+  fields: [date, title, description]
+  field-display-names:
+    date: "Publicación"
+    title: "Edición"
+    description: "Lo principal"
+  date-format: "D MMM YYYY"
+  sort-ui: false
+  filter-ui: false
+  feed: true
 ---
 
-**SITUCAP** es el reporte periódico de Pulso del Estado sobre la dotación de personal y la masa salarial del sector público paraguayo.
+**SITUCAP** es el reporte mensual de Pulso del Estado sobre la dotación de personal y la masa salarial del sector público paraguayo. Cada edición usa el último mes con datos disponibles y compara siempre contra el mismo mes del año anterior, con el mismo conjunto de instituciones.
 
-::: {.en-breve}
-**Próximamente: la primera edición.** Mientras tanto, podés leer la [Radiografía del empleo público](/posts/2026-10-02-radiografia-empleo-publico/), con datos a agosto de 2026.
+## Ediciones
+
+::: {#ediciones}
 :::
 
 ## Qué responde cada edición
 
-- **Dotación.** ¿Cuántas personas distintas cobran del Estado? ¿Cuántas ingresan y cuántas salen? ¿Cómo se reparten entre permanentes y contratados, por institución y por sector?
-- **Masa salarial.** ¿Cuánto crece, en términos nominales y reales (descontando la inflación)? ¿Qué parte del crecimiento se explica por **más personas** y qué parte por **mayores salarios**?
-- **Componentes.** Remuneraciones básicas, bonificaciones, gastos de representación, antigüedad, ascensos y otros conceptos.
-- **Comparaciones.** Salud, educación, fuerzas públicas y servicio civil; brechas de género; inclusión de personas con discapacidad.
+- **Dotación.** ¿Cuántos vínculos laborales paga el Estado? ¿Cuántos se sumaron en el último año y en qué sectores? ¿Cómo se reparten entre permanentes y contratados?
+- **Masa salarial.** ¿Cuánto se pagó en el mes y en lo que va del año? ¿Cuánto creció en términos reales, descontando la inflación?
+- **Composición.** Participación de mujeres y de contratados, remuneración media por vínculo.
 
 ## Fuentes
 
-Registros administrativos del Sistema Integrado Centralizado de la Carrera Administrativa (SICCA) y del Sistema Nacional de Recursos Humanos (SINARH), complementados con datos de presupuesto, del Banco Central del Paraguay (IPC) y del Instituto Nacional de Estadística. Ver la [metodología](/metodologia.qmd).
+Registros administrativos del Sistema Integrado de Administración de Recursos Humanos (SINARH) y del Sistema Integrado Centralizado de la Carrera Administrativa (SICCA), con la inflación publicada por el Banco Central del Paraguay. Ver la [metodología](/metodologia.qmd).

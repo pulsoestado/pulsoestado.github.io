@@ -1,0 +1,68 @@
+---
+title: "De cada 100 guaraníes en salarios, ¿a dónde va cada uno?"
+description: "Cómo se reparte la masa salarial del Estado entre sectores: cuántos guaraníes de cada 100 van a Educación, a Salud, a las Fuerzas públicas y al resto."
+date: 2027-05-17
+categories: [El dato de la semana, Masa salarial, Sectores]
+image: social.png
+image-alt: "Distribución de la masa salarial pública por sector"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import plotly.graph_objects as go
+
+UA = ultimo_anio_completo()
+m = leer("masa_anual_sector.csv")
+u = m[m.anho == UA].set_index("sector")
+d = (u.devengado / u.devengado.sum() * 100).sort_values(ascending=False)
+dv = (u.vinculos_promedio / u.vinculos_promedio.sum() * 100).reindex(d.index)
+a0 = m[m.anho == 2017].set_index("sector"); d0 = (a0.devengado / a0.devengado.sum() * 100).reindex(d.index)
+tres = d.iloc[:3].sum()
+```
+
+```{python}
+#| label: kpis
+#| output: asis
+print(kpis([(coma(d.iloc[0], 0) + " de cada 100", f"guaraníes en salarios van a {d.index[0]} ({UA})"),
+            (coma(tres, 0), f"van a {d.index[0]}, {d.index[1]} y {d.index[2]}")]))
+```
+
+De cada 100 guaraníes que el Estado pagó en salarios en `{python} UA`, **`{python} coma(d.iloc[0], 0)` fueron a `{python} d.index[0]`**, `{python} coma(d.iloc[1], 0)` a `{python} d.index[1]` y `{python} coma(d.iloc[2], 0)` a `{python} d.index[2]`. Entre los tres suman `{python} coma(tres, 0)`.
+
+```{python}
+#| label: fig-dist
+#| fig-cap: "Guaraníes de cada 100 de la masa salarial y vínculos de cada 100, por sector"
+o = d.iloc[::-1]
+fig = go.Figure()
+fig.add_trace(go.Bar(y=o.index, x=dv.reindex(o.index), name="Vínculos", orientation="h", marker_color="#c9d3df",
+                     hovertemplate="<b>%{y}</b><br>Vínculos: %{x:.1f} de cada 100<extra></extra>"))
+fig.add_trace(go.Bar(y=o.index, x=o, name="Masa salarial", orientation="h", marker_color=AZUL,
+                     text=[coma(x, 1) for x in o], textposition="outside", cliponaxis=False, textfont=dict(color=TINTA_GRAF),
+                     hovertemplate="<b>%{y}</b><br>Masa: %{x:.1f} de cada 100<extra></extra>"))
+estilo(fig, alto=480).update_layout(barmode="group", hovermode="closest", bargap=0.25)
+fig.update_xaxes(showgrid=True, gridcolor="rgba(128,128,128,.18)", range=[0, d.max() * 1.2]); fig.update_yaxes(showgrid=False)
+fig.show(config=CONFIG)
+```
+
+Comparar las dos barras muestra dónde cada vínculo cuesta más o menos que el promedio. **Salud** tiene una parte de los vínculos (`{python} coma(dv['Salud'], 1)` de cada 100) mayor que su parte de la masa (`{python} coma(d['Salud'], 1)`), porque muchos de sus vínculos son contratos con remuneraciones más bajas. En **Educación** pasa lo contrario. En 2017, Educación recibía `{python} coma(d0['Educación'], 1)` de cada 100 guaraníes.
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA. Clasificación sectorial de Pulso del Estado. [Descargar los datos](/datos/).
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_dato, barras_h as bh
+o = d.head(7).iloc[::-1]
+cort = lambda x: x.replace("Servicio civil del Ejecutivo", "Servicio civil").replace("Entes autónomos y autárquicos", "Entes autónomos")
+social("De cada 100 guaraníes\nen salarios…", coma(d.iloc[0], 0) + f" van a {d.index[0]}", f"{coma(d.iloc[1], 0)} a {d.index[1]} y {coma(d.iloc[2], 0)} a {d.index[2]} ({UA})")
+ig_dato(1, "El dato de la semana", "De cada 100 guaraníes en salarios,", coma(d.iloc[0], 0), f"van a {d.index[0]}", f"Guaraníes de cada 100, {UA}",
+        bh([cort(x) for x in o.index], o.values, [coma(x, 1) for x in o.values]))
+```

@@ -1,0 +1,98 @@
+---
+title: "Los indicadores de nómina que Paraguay podría publicar"
+description: "Una guía del BID propone ocho familias de indicadores para analizar la nómina pública. Con los datos abiertos de Paraguay se pueden calcular cinco, al menos en parte; las otras tres necesitan datos que hoy no se publican."
+date: 2027-05-27
+categories: [Metodología, Datos abiertos, Gestión pública]
+image: social.png
+image-alt: "Indicadores de nómina pública: cuáles se pueden calcular en Paraguay"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import numpy as np
+
+UA = ultimo_anio_completo(); A0 = 2017
+v = leer("vinculos_mensual_sector.csv")
+va = v[v.anho.between(A0, UA)].groupby(["anho", "mes"])[["total", "contratado"]].sum().groupby("anho").mean()
+crec = (va.total[UA] / va.total[UA - 1] - 1) * 100
+t = leer("masa_anual_sector.csv").groupby("anho")[["devengado", "devengado_sin_aguinaldo", "vinculos_promedio"]].sum()
+rem = t.devengado_sin_aguinaldo / 12 / t.vinculos_promedio
+ipc = leer("ipc_salarios_bcp.csv").set_index("anho").ipc
+infl = ipc[UA] / ipc[UA - 1]
+rem_r = (rem[UA] / rem[UA - 1] / infl - 1) * 100
+masa_r = (t.devengado[UA] / t.devengado[UA - 1] / infl - 1) * 100
+c = leer("categorias_oee.csv"); A = int(c[c.mes == 6].anho.max())
+u = c[(c.anho == A) & (c.mes == 6)].groupby(K_OEE + ["nivel_categoria"])[["cantidad", "devengado"]].sum().reset_index()
+u["s"] = u.devengado / u.cantidad; u = u.sort_values("s")
+cum = u.cantidad.cumsum() / u.cantidad.sum()
+p10 = u.s[cum >= 0.10].iloc[0]; p90 = u.s[cum >= 0.90].iloc[0]
+g = leer("genero_brecha_anual.csv").set_index("anho").loc[A]
+pc = va.contratado[UA] / va.total[UA] * 100
+```
+
+En noviembre de 2025 el Banco Interamericano de Desarrollo publicó *Creación de indicadores de nómina pública: guía metodológica* (Schuster, Naranjo Bautista y Lipinski, nota técnica IDB-TN-03246). Parte de una idea simple: en todos los países, la nómina pública tiene la misma estructura, una fila por cada pago a un funcionario en un mes. A partir de ahí propone **ocho familias de indicadores** que cualquier gobierno podría calcular y publicar.
+
+¿Cuántas puede calcular hoy alguien de afuera del Estado paraguayo con los datos abiertos de SINARH y SICCA? Hicimos la prueba.
+
+## Lo que ya se puede medir
+
+```{python}
+#| label: tbl-si
+#| output: asis
+filas = [
+    ("1. Crecimiento del empleo", "Sí", f"Vínculos promedio {UA}: {miles(va.total[UA])} ({spct(crec)} en un año). Por institución, tipo de vínculo y sexo."),
+    ("2. Salario medio", "En parte", f"Remuneración media por vínculo: {millones(rem[UA], 2)} millones de Gs por mes ({spct(rem_r)} real en un año). Sin datos por persona, es un promedio por vínculo."),
+    ("3. Gasto salarial", "Sí", f"Masa salarial {UA}: {billones(t.devengado[UA])} billones de Gs ({spct(masa_r)} real). Por componente e institución. Como % del PIB, con datos del BCP."),
+    ("4. Equidad salarial y compresión", "En parte", f"Con el sueldo básico por categoría: el 10% de los cargos mejor pagos cobra al menos {coma(p90 / p10, 1)} veces lo que cobra el 10% peor pago (junio de {A})."),
+    ("5. Igualdad de género", "En parte", f"Mujeres: {pct(g.pct_mujeres, 0)} de los cargos con sueldo básico; brecha dentro de la misma categoría: {pct(g.brecha_misma_categoria_pct)}. Sin datos de cargos directivos."),
+]
+print("| Ámbito de la guía | ¿Se puede? | Ejemplo con datos abiertos de Paraguay |\n|---|:-:|---|")
+for f in filas:
+    print("| " + " | ".join(f) + " |")
+```
+
+Estos cinco ámbitos son los que Pulso del Estado viene midiendo desde 2026: el [SITUCAP](/situcap/) sigue cada mes el empleo y la masa salarial; [¿Más gente o mejores sueldos?](../2026-10-30-mas-gente-o-mejores-sueldos/) separa el efecto de la cantidad y del sueldo, como recomienda la guía; [la brecha salarial de género](../2026-11-13-brecha-salarial-genero/) la mide dentro de la misma institución y categoría.
+
+## Lo que falta
+
+```{python}
+#| label: tbl-no
+#| output: asis
+filas = [
+    ("6. Rotación", "No", "Hace falta un identificador anónimo de cada persona para saber quién entra, quién sale y quién se muda de institución."),
+    ("7. Promoción y carrera", "No", "Hace falta seguir a cada persona en el tiempo para ver cambios de categoría."),
+    ("8. Proyecciones de jubilación", "No", "Hacen falta la edad y la antigüedad de cada persona, que los datos abiertos no incluyen."),
+    ("Pagos múltiples", "Solo dentro de cada institución", f"El resumen de personas y vínculos permite ver cuántas personas tienen más de un vínculo en una misma institución, pero no entre instituciones."),
+]
+print("| Ámbito | ¿Se puede? | Qué haría falta |\n|---|:-:|---|")
+for f in filas:
+    print("| " + " | ".join(f) + " |")
+```
+
+La guía también advierte sobre errores comunes que los datos paraguayos ilustran bien: confundir vínculos con personas, no tener en cuenta las **reorganizaciones** (como la creación de la Dirección Nacional de Ingresos Tributarios, que [cambia las cifras de varias instituciones](../2027-01-28-quien-crecio-y-quien-se-achico/)) y no controlar la **cobertura**: en cada corte de datos faltan instituciones que reportan con atraso.
+
+## Una agenda posible
+
+Publicar, con las protecciones de privacidad necesarias, un **identificador anónimo por persona**, su **año de nacimiento** y su **fecha de ingreso** permitiría calcular los ocho ámbitos completos, como en los análisis de nómina de Brasil, Colombia y Uruguay que cita la guía. Son datos que el Estado ya tiene en sus sistemas de nómina.
+
+::: {.fuente}
+**Fuentes:** Schuster, C., Naranjo Bautista, S. y Lipinski, R. (2025). *Creación de indicadores de nómina pública: guía metodológica*. Nota técnica IDB-TN-03246, Banco Interamericano de Desarrollo. Elaboración de Pulso del Estado con datos de SINARH, SICCA y del BCP. [Descargar los datos](/datos/).
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_portada, ig_dato, barras
+social("Los indicadores de nómina\nque Paraguay podría publicar", "5 de 8", "ámbitos de la guía del BID se pueden medir con datos abiertos", color=AMARILLO)
+ig_portada("Datos abiertos", "Indicadores\nde nómina\npública", "Cinco de ocho ya se pueden calcular\ncon datos abiertos. Faltan tres.", color=AMARILLO)
+ig_dato(2, "Lo que falta", "Con los datos abiertos de Paraguay no se pueden medir", "3 de 8",
+        "rotación, carrera y jubilaciones", "Ámbitos de la guía del BID",
+        barras(["Se pueden", "En parte", "No se pueden"], [2, 3, 3], ["2", "3", "3"], colores=[VERDE_AGUA, AMARILLO, ROJO], ylim=(0, 4)),
+        color=AMARILLO)
+```

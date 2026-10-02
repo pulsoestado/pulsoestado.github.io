@@ -1,0 +1,92 @@
+---
+title: "La masa salarial en 2028: tres escenarios"
+description: "Una proyección simple de la masa salarial para 2028, con tres combinaciones de crecimiento del personal, reajustes e inflación. Cuánto podría costar el Estado y qué decisiones mueven la cifra."
+date: 2027-09-23
+categories: [Masa salarial, Proyecciones, Presupuesto]
+image: social.png
+image-alt: "Masa salarial proyectada a 2028 en tres escenarios"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import numpy as np
+import plotly.graph_objects as go
+
+UA = ultimo_anio_completo(); A0 = 2017
+m = leer("masa_anual_sector.csv").groupby("anho")[["devengado", "vinculos_promedio"]].sum().loc[A0:UA]
+m["rem"] = m.devengado / m.vinculos_promedio
+ipc = leer("ipc_salarios_bcp.csv").set_index("anho").ipc
+n = UA - A0
+g_v = ((m.vinculos_promedio[UA] / m.vinculos_promedio[A0]) ** (1 / n) - 1) * 100       # crecimiento anual de vínculos
+g_r = ((m.rem[UA] / m.rem[A0]) ** (1 / n) - 1) * 100                                 # crecimiento anual nominal de la remuneración media
+g_p = ((ipc[UA] / ipc[A0]) ** (1 / n) - 1) * 100                                     # inflación anual promedio
+H = 2028 - UA
+ESC = {"Contención": (0.5, 0.0), "Tendencia": (g_v, g_r - g_p), "Expansión": (g_v * 1.6, g_r - g_p + 1.5)}
+# (crecimiento anual de vínculos %, aumento real anual de la remuneración media %); inflación = promedio del período
+res = {}
+for k, (gv, gr) in ESC.items():
+    f = ((1 + gv / 100) * (1 + gr / 100) * (1 + g_p / 100)) ** H
+    res[k] = dict(gv=gv, gr=gr, masa=m.devengado[UA] * f, f=f)
+base = res["Tendencia"]["masa"]
+anios = list(range(UA, 2029))
+```
+
+::: {.en-breve}
+**En breve**
+
+- En `{python} UA` la masa salarial fue de **`{python} billones(m.devengado[UA])` billones de guaraníes**.
+- Si se mantiene la tendencia de `{python} A0`–`{python} UA` (vínculos `{python} spct(g_v)` por año, remuneración media real `{python} spct(g_r - g_p)` e inflación de `{python} pct(g_p)`), en 2028 llegaría a unos **`{python} billones(base)` billones**.
+- En un escenario de **contención** (casi sin personal nuevo y sin aumento real) serían `{python} billones(res['Contención']['masa'])` billones; en uno de **expansión**, `{python} billones(res['Expansión']['masa'])` billones.
+- La diferencia entre los escenarios extremos es de `{python} milmillones(res['Expansión']['masa'] - res['Contención']['masa'])` mil millones de guaraníes por año.
+:::
+
+```{python}
+#| label: fig
+#| fig-cap: "Masa salarial observada y proyectada, billones de guaraníes de cada año"
+fig = go.Figure()
+fig.add_trace(go.Scatter(x=m.index, y=m.devengado / 1e12, name="Observada", mode="lines+markers", line=dict(color=NAVY, width=3),
+                         hovertemplate="%{x}: %{y:.1f} billones<extra></extra>"))
+for k, c in [("Contención", VERDE_AGUA), ("Tendencia", AZUL), ("Expansión", NARANJA)]:
+    r = res[k]; f1 = r["f"] ** (1 / H)
+    y = [m.devengado[UA] * f1 ** i / 1e12 for i in range(H + 1)]
+    fig.add_trace(go.Scatter(x=anios, y=y, name=k, mode="lines+markers", line=dict(color=c, width=2.4, dash="dash"),
+                             hovertemplate=k + " %{x}: %{y:.1f} billones<extra></extra>"))
+estilo(fig, alto=380).update_xaxes(dtick=1)
+fig.show(config=CONFIG)
+```
+
+```{python}
+#| label: tbl
+#| output: asis
+print("| Escenario | Vínculos (por año) | Remuneración media real (por año) | Masa salarial 2028 (billones de Gs) | Frente a " + str(UA) + " |\n|---|--:|--:|--:|--:|")
+for k, r in res.items():
+    print(f"| {k} | {spct(r['gv'])} | {spct(r['gr'])} | {billones(r['masa'])} | {spct((r['f'] - 1) * 100, 0)} |")
+print(f"\n: Supuestos y resultados. Inflación anual en los tres: {pct(g_p)}, el promedio de {A0}–{UA}")
+```
+
+## Qué mueve la cifra
+
+Los tres escenarios comparten la inflación; lo que cambia son dos decisiones de política: **cuánto personal se suma** y **cuánto suben los sueldos por encima de la inflación**. El escenario de tendencia repite lo que pasó en promedio desde `{python} A0`: el Estado sumó vínculos a un ritmo de `{python} pct(g_v)` por año y la remuneración media real casi no cambió ([¿Más gente o mejores sueldos?](../2026-10-30-mas-gente-o-mejores-sueldos/)).
+
+Es una proyección de orden de magnitud, no un pronóstico. No incluye decisiones ya tomadas para 2028 que todavía no están en los datos, como los reajustes que apruebe el Congreso en el [Presupuesto 2028](../2027-09-02-presupuesto-2028/), ni cambios en la composición del personal.
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH, SICCA e IPC del Banco Central del Paraguay. [Descargar los datos](/datos/).
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_portada, ig_dato, barras
+social("La masa salarial en 2028:\ntres escenarios", billones(base) + " billones", f"si se mantiene la tendencia · entre {billones(res['Contención']['masa'])} y {billones(res['Expansión']['masa'])}")
+ig_portada("Proyección", "La masa\nsalarial en\n2028", f"Entre {billones(res['Contención']['masa'])} y {billones(res['Expansión']['masa'])} billones de guaraníes,\nsegún dos decisiones de política.")
+ig_dato(2, "Tres escenarios", "Si se mantiene la tendencia, la masa salarial de 2028 sería de", billones(base) + " bill.", "de guaraníes",
+        "Billones de guaraníes en 2028", barras(list(res.keys()), [r["masa"] / 1e12 for r in res.values()], [billones(r["masa"]) for r in res.values()],
+                                                colores=[VERDE_AGUA, AZUL, NARANJA]))
+```

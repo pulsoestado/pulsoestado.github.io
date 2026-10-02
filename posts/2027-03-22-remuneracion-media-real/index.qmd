@@ -1,0 +1,70 @@
+---
+title: "La remuneración media pública, en términos reales"
+description: "Cuánto cuesta en promedio cada vínculo del Estado por mes, descontada la inflación, y cuántos salarios mínimos representa."
+date: 2027-03-22
+categories: [El dato de la semana, Remuneraciones, Inflación]
+image: social.png
+image-alt: "Remuneración media mensual real por vínculo público desde 2017"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import plotly.graph_objects as go
+
+UA = ultimo_anio_completo(); A0 = 2017
+t = leer("masa_anual_sector.csv").query("@A0 <= anho <= @UA").groupby("anho")[["devengado_sin_aguinaldo", "vinculos_promedio"]].sum()
+t["rem"] = t.devengado_sin_aguinaldo / 12 / t.vinculos_promedio
+t["real"] = t.rem * deflactor(UA).reindex(t.index)
+sm = leer("bcp_salario_minimo.csv").set_index("anho").salario_minimo
+t["veces"] = t.rem / sm.reindex(t.index)
+var_nom = (t.rem[UA] / t.rem[UA - 1] - 1) * 100
+var_real = (t.real[UA] / t.real[UA - 1] - 1) * 100
+var_8 = (t.real[UA] / t.real[A0] - 1) * 100
+pico = t.real.idxmax()
+```
+
+```{python}
+#| label: kpis
+#| output: asis
+print(kpis([
+    (millones(t.rem[UA], 2) + " M", f"de guaraníes por vínculo y por mes ({UA}, sin aguinaldo)"),
+    (spct(var_real), f"real frente a {UA - 1}"),
+    (coma(t.veces[UA], 2), "salarios mínimos"),
+]))
+```
+
+En `{python} UA` cada vínculo del Estado costó en promedio **`{python} millones(t.rem[UA], 2)` millones de guaraníes por mes**, sin contar el aguinaldo. Frente a `{python} UA - 1`, `{python} 'subió' if var_nom >= 0 else 'bajó'` `{python} pct(abs(var_nom))` en guaraníes corrientes, pero descontada la inflación `{python} 'subió' if var_real >= 0 else 'bajó'` **`{python} pct(abs(var_real))`**. Equivale a `{python} coma(t.veces[UA], 2)` salarios mínimos.
+
+```{python}
+#| label: fig-real
+#| fig-cap: "Remuneración media mensual por vínculo, sin aguinaldo, en millones de guaraníes del último año completo"
+fig = go.Figure(go.Scatter(x=t.index, y=t.real / 1e6, mode="lines+markers+text", line=dict(color=NARANJA, width=2.8),
+                           text=[coma(x / 1e6, 2) for x in t.real], textposition="top center",
+                           textfont=dict(color=TINTA_GRAF, size=12), hovertemplate="%{x}: <b>%{y:.2f} millones</b><extra></extra>"))
+estilo(fig, alto=320, leyenda=False).update_xaxes(dtick=1)
+fig.update_yaxes(range=[t.real.min() / 1e6 * 0.92, t.real.max() / 1e6 * 1.06])
+fig.show(config=CONFIG)
+```
+
+En `{python} UA - A0` años, la remuneración media real cambió `{python} spct(var_8)`: el punto más alto fue `{python} int(pico)`. Es un promedio que se mueve por dos razones: cuando cambian los sueldos y cuando cambia la composición del personal. Si entran muchos vínculos con remuneraciones bajas, como los contratos de Salud durante la pandemia, el promedio baja aunque ningún sueldo individual caiga.
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH, SICCA y del Banco Central del Paraguay (IPC promedio anual y salario mínimo legal). [Descargar los datos](/datos/).
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_dato, lineas
+social("La remuneración media\npública, en términos reales", millones(t.rem[UA], 2) + " millones",
+       f"de Gs por vínculo y por mes ({UA}) · {spct(var_real)} real", (list(t.index), list(t.real)))
+ig_dato(1, "El dato de la semana", f"En {UA}, cada vínculo público costó en promedio", millones(t.rem[UA], 2) + " M",
+        f"de guaraníes por mes ({spct(var_real)} real)", f"Millones de guaraníes de {UA}, sin aguinaldo",
+        lineas(list(t.index), {"Remuneración media": (list(t.real / 1e6), NARANJA)}, fmt=lambda x: coma(x, 2)))
+```

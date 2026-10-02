@@ -1,0 +1,87 @@
+---
+title: "El Estado en el territorio"
+description: "Cuánto personal tienen las municipalidades y las gobernaciones de cada departamento, y cuánto representa por cada mil habitantes."
+date: 2027-07-29
+categories: [Municipalidades, Gobernaciones, Territorio]
+image: social.png
+image-alt: "Vínculos municipales y departamentales por cada mil habitantes, por departamento"
+resources: ["ig_*.png"]
+requiere:
+  archivo: "data/manual/poblacion_departamentos_2022.csv"
+draft: true  # programada
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import plotly.graph_objects as go
+
+UA = ultimo_anio_completo()
+p = vin_promedio_oee(UA)
+pob = pd.read_csv(raiz / "data/manual/poblacion_departamentos_2022.csv").set_index("codigo_departamento")
+mu = p[p.sector == "Municipalidades"].groupby("codigo_entidad").agg(muni=("total", "sum"), n=("total", "size"), contr=("contratado", "sum"))
+go_ = p[p.sector == "Gobiernos departamentales"].groupby("codigo_entidad").total.sum().rename("gob")
+d = mu.join(go_).join(pob).fillna({"gob": 0})
+d["local"] = d.muni + d.gob; d["x1000"] = d.local / d.poblacion_2022 * 1000; d["pc"] = d.contr / d.muni * 100
+d = d.sort_values("x1000")
+tot_pob = pob[pob.index > 0].poblacion_2022.sum()
+X = d.local.sum() / tot_pob * 1000
+mx, mn = d.iloc[-1], d.iloc[0]
+cen = d.loc[11]
+ma = masa_oee_anual(UA); ma = ma[ma.sector.isin(["Municipalidades", "Gobiernos departamentales"])]
+masa_local = ma.masa.sum()
+```
+
+::: {.en-breve}
+**En breve**
+
+- En `{python} UA`, las municipalidades con datos y las 17 gobernaciones pagaron en promedio **`{python} miles(d.local.sum())` vínculos**: unos **`{python} coma(X, 1)` por cada mil habitantes** fuera de Asunción.
+- La relación más alta está en **`{python} mx.departamento`** (`{python} coma(mx.x1000, 1)` por mil) y la más baja en **`{python} mn.departamento`** (`{python} coma(mn.x1000, 1)`).
+- **Central**, con casi un tercio de la población del país, tiene `{python} miles(cen.local)` vínculos locales: `{python} coma(cen.x1000, 1)` por mil habitantes.
+- El Estado local cuesta `{python} milmillones(masa_local)` mil millones de guaraníes en salarios por año, una parte chica de la masa salarial pública.
+:::
+
+```{python}
+#| label: fig
+#| fig-cap: "Vínculos de municipalidades y gobernación por cada mil habitantes, por departamento"
+fig = barras_h(d.departamento, d.x1000, [f"{coma(x, 1)} · {miles(l)}" for x, l in zip(d.x1000, d.local)], colores=[VERDE_AGUA] * len(d),
+               rango=[0, d.x1000.max() * 1.3])
+fig.add_vline(x=X, line=dict(color=NARANJA, width=1.5, dash="dash"))
+fig.show(config=CONFIG)
+```
+
+Los departamentos con menos habitantes tienden a tener más personal local por persona: una municipalidad o una gobernación necesita una estructura mínima aunque atienda a poca gente. Los más poblados, como Central y Alto Paraná, tienen las plantillas más grandes en números absolutos, pero menos personal por habitante.
+
+```{python}
+#| label: tbl
+#| output: asis
+print(f"| Departamento | Población 2022 | Municipalidades con datos | Vínculos municipales | % contratados | Vínculos de la gobernación | Por mil habitantes |\n|---|--:|--:|--:|--:|--:|--:|")
+for k, r in d.sort_values("poblacion_2022", ascending=False).iterrows():
+    print(f"| {r.departamento} | {miles(r.poblacion_2022)} | {int(r.n)} | {miles(r.muni)} | {pct(r.pc, 0)} | {miles(r.gob)} | {coma(r.x1000, 1)} |")
+print(f"\n: Personal de municipalidades y gobernaciones por departamento, promedio de {UA}")
+```
+
+## Lo que falta en este mapa
+
+- **Asunción** no está: su municipalidad no reporta a SINARH ni a SICCA, y la capital no tiene gobernación.
+- No todas las municipalidades reportan todos los meses; las cifras son el promedio de los meses informados.
+- El personal del **Estado nacional** que trabaja en cada departamento (docentes, personal de salud, policías) no se puede ubicar con estos datos, porque los registros no indican el lugar de trabajo. Es, por lejos, la mayor parte del empleo público en el interior del país.
+
+::: {.fuente}
+**Fuentes:** elaboración de Pulso del Estado con datos de SINARH y SICCA. Población: INE, Censo Nacional de Población y Viviendas 2022, resultados finales. [Descargar los datos](/datos/).
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_portada, ig_dato, barras_h as bh
+social("El Estado en\nel territorio", coma(X, 1) + " por mil", "vínculos municipales y departamentales por cada mil habitantes", color=VERDE_AGUA)
+ig_portada("Territorio", "El Estado en\nel territorio", f"{miles(d.local.sum())} vínculos en municipalidades\ny gobernaciones.", color=VERDE_AGUA)
+o = pd.concat([d.head(4), d.tail(4)])
+ig_dato(2, "Por departamento", f"En {mx.departamento} hay", coma(mx.x1000, 1), "vínculos locales por cada mil habitantes",
+        "Por cada mil habitantes, los 4 más altos y los 4 más bajos", bh(o.departamento, o.x1000, [coma(x, 1) for x in o.x1000],
+                                                                         colores=[VERDE_AGUA] * len(o), ref=X), color=VERDE_AGUA)
+```

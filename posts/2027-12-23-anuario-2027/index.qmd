@@ -1,0 +1,183 @@
+---
+title: "Anuario 2027: el empleo público en 12 gráficos"
+description: "El cierre del año de Pulso del Estado: dotación, contratos, mujeres, masa salarial, remuneraciones, aguinaldo y discapacidad, en doce gráficos con los últimos datos."
+date: 2027-12-23
+categories: [Anuario, Dotación, Masa salarial]
+image: social.png
+image-alt: "Doce gráficos sobre el empleo público en Paraguay"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import plotly.graph_objects as go
+
+A1, M = ultimo_mes(); UA = ultimo_anio_completo(); A0 = 2017
+s = serie_mensual(); sj = s[s.mes == M].set_index("anho")
+v = leer("vinculos_mensual_sector.csv"); vu = v[(v.anho == A1) & (v.mes == M)].groupby("sector").total.sum().sort_values()
+ms = leer("masa_anual_sector.csv"); D = deflactor(UA)
+mt = ms.groupby("anho").agg(masa=("devengado", "sum"), sa=("devengado_sin_aguinaldo", "sum"), vin=("vinculos_promedio", "sum")).loc[A0:UA]
+mt["real"] = mt.masa * D.reindex(mt.index); mt["rem"] = mt.sa / 12 / mt.vin * D.reindex(mt.index)
+mu = ms[ms.anho == UA].set_index("sector").devengado.sort_values()
+mm = leer("masa_mensual_sector.csv"); comp = mm[mm.anho == UA].groupby("componente").devengado.sum().sort_values()
+ag = mm[mm.componente == "Aguinaldo"].groupby("anho").devengado.sum().loc[A0:UA] * D.reindex(range(A0, UA + 1))
+g = leer("genero_brecha_anual.csv").set_index("anho").loc[2018:]
+pc = leer("pcd_mensual.csv"); pc = pc[pc.mes == 6].set_index("anho"); pc["p"] = pc.pcd / pc.vinculos * 100
+top = vin_promedio_oee(UA).sort_values("total").tail(10)
+CORTO = {"Servicio civil del Ejecutivo": "Servicio civil", "Entes autónomos y autárquicos": "Entes autónomos", "Gobiernos departamentales": "Gobernaciones"}
+
+def linea(x, y, color, fmt=",.0f", suf="", cero=False):
+    fig = go.Figure(go.Scatter(x=x, y=y, mode="lines+markers", line=dict(color=color, width=2.8), hovertemplate="%{x}: <b>%{y:" + fmt + "}" + suf + "</b><extra></extra>"))
+    estilo(fig, alto=280, leyenda=False).update_xaxes(dtick=1); fig.update_yaxes(tickformat=fmt, ticksuffix=suf)
+    if cero: fig.update_yaxes(rangemode="tozero")
+    return fig
+
+def columnas(x, y, color, txt):
+    fig = go.Figure(go.Bar(x=x, y=y, marker_color=color, text=txt, textposition="outside", cliponaxis=False, textfont=dict(color=TINTA_GRAF),
+                           hovertemplate="%{x}: <b>%{y:,.0f}</b><extra></extra>"))
+    estilo(fig, alto=280, leyenda=False).update_layout(hovermode="closest"); fig.update_xaxes(dtick=1); fig.update_yaxes(range=[0, max(y) * 1.2])
+    return fig
+```
+
+Doce gráficos para cerrar el año, con los últimos datos disponibles: `{python} fecha_txt(A1, M)` para la dotación y `{python} UA` (último año completo) para la masa salarial. Cada uno enlaza al artículo donde lo analizamos en detalle.
+
+## 1. Cuántos vínculos tiene el Estado
+
+```{python}
+#| label: fig-1
+#| fig-cap: "Vínculos del Estado, mismo mes de cada año"
+linea(sj.index, sj.total, AZUL).show(config=CONFIG)
+```
+
+En `{python} fecha_txt(A1, M)`, **`{python} miles(sj.total[A1])` vínculos**, `{python} signo(sj.total[A1] - sj.total[A1 - 1])` en un año ([el empleo público en 10 gráficos](../2027-01-07-empleo-publico-en-10-graficos/)).
+
+## 2. Dónde trabajan
+
+```{python}
+#| label: fig-2
+#| fig-cap: "Vínculos por sector, último mes con datos"
+barras_h([CORTO.get(k, k) for k in vu.index], vu, [miles(x) for x in vu], colores=[AZUL] * len(vu), rango=[0, vu.max() * 1.25]).show(config=CONFIG)
+```
+
+**`{python} vu.index[-1]`** y **`{python} vu.index[-2]`** reúnen el `{python} pct((vu.iloc[-1] + vu.iloc[-2]) / vu.sum() * 100, 0)` de los vínculos ([cómo se organiza el Estado](../2027-02-04-como-se-organiza-el-estado/)).
+
+## 3. Los contratados
+
+```{python}
+#| label: fig-3
+#| fig-cap: "Proporción de vínculos contratados, mismo mes de cada año"
+linea(sj.index, sj.contratado / sj.total * 100, NARANJA, ".1f", "%").show(config=CONFIG)
+```
+
+El `{python} pct(sj.contratado[A1] / sj.total[A1] * 100, 0)` de los vínculos es de personal contratado ([contratados](../2027-06-03-contratados/)).
+
+## 4. Las mujeres
+
+```{python}
+#| label: fig-4
+#| fig-cap: "Proporción de vínculos de mujeres, mismo mes de cada año"
+linea(sj.index, sj.mujeres / sj.total * 100, VIOLETA, ".1f", "%").show(config=CONFIG)
+```
+
+Las mujeres ocupan el `{python} pct(sj.mujeres[A1] / sj.total[A1] * 100, 0)` de los vínculos ([mujeres en el Estado](../2027-02-15-mujeres-en-el-estado/)).
+
+## 5. La brecha en la misma categoría
+
+```{python}
+#| label: fig-5
+#| fig-cap: "Diferencia de sueldo básico entre mujeres y hombres en la misma institución y categoría (junio)"
+columnas(g.index, g.brecha_misma_categoria_pct, VIOLETA, [pct(x) for x in g.brecha_misma_categoria_pct]).show(config=CONFIG)
+```
+
+En la misma categoría, las mujeres ganan un `{python} pct(g.brecha_misma_categoria_pct.iloc[-1])` menos ([la brecha en un número](../2027-03-01-la-brecha-en-un-numero/)).
+
+## 6. La masa salarial
+
+```{python}
+#| label: fig-6
+#| fig-cap: "Masa salarial anual, billones de guaraníes del último año completo"
+columnas(mt.index, mt.real / 1e12, AMARILLO, [coma(x / 1e12, 1) for x in mt.real]).show(config=CONFIG)
+```
+
+En `{python} UA`, **`{python} billones(mt.masa[UA])` billones de guaraníes**: `{python} spct((mt.real[UA] / mt.real[A0] - 1) * 100, 0)` en términos reales desde `{python} A0` ([qué es la masa salarial](../2027-04-08-que-es-la-masa-salarial/)).
+
+## 7. Por sector
+
+```{python}
+#| label: fig-7
+#| fig-cap: "Masa salarial por sector, último año completo (miles de millones de guaraníes)"
+barras_h([CORTO.get(k, k) for k in mu.index], mu / 1e9, [miles(x / 1e9) for x in mu], colores=[AMARILLO] * len(mu), rango=[0, mu.max() / 1e9 * 1.25]).show(config=CONFIG)
+```
+
+## 8. Por componente
+
+```{python}
+#| label: fig-8
+#| fig-cap: "Masa salarial por componente, último año completo (miles de millones de guaraníes)"
+barras_h(comp.index, comp / 1e9, [f"{miles(x / 1e9)} ({pct(x / comp.sum() * 100, 0)})" for x in comp], colores=[AMARILLO] * len(comp), rango=[0, comp.max() / 1e9 * 1.35]).show(config=CONFIG)
+```
+
+El sueldo básico es el `{python} pct(comp.get("Sueldo básico", 0) / comp.sum() * 100, 0)` de la masa salarial ([de cada 100 guaraníes](../2027-05-17-de-cada-100-guaranies/)).
+
+## 9. La remuneración media
+
+```{python}
+#| label: fig-9
+#| fig-cap: "Remuneración media mensual por vínculo sin aguinaldo, millones de guaraníes del último año completo"
+linea(mt.index, mt.rem / 1e6, VERDE_AGUA, ".2f").show(config=CONFIG)
+```
+
+**`{python} millones(mt.rem[UA], 2)` millones de guaraníes** por mes en `{python} UA` ([la remuneración media en términos reales](../2027-03-22-remuneracion-media-real/)).
+
+## 10. El aguinaldo
+
+```{python}
+#| label: fig-10
+#| fig-cap: "Aguinaldo, miles de millones de guaraníes del último año completo"
+columnas(ag.index, ag / 1e9, AMARILLO, [miles(x / 1e9) for x in ag]).show(config=CONFIG)
+```
+
+([El aguinaldo: cuánto cuesta y cómo se reparte](../2027-12-09-el-aguinaldo-como-se-reparte/).)
+
+## 11. Las instituciones más grandes
+
+```{python}
+#| label: fig-11
+#| fig-cap: "Las 10 instituciones con más vínculos, promedio del último año completo"
+barras_h(top.nombre_largo, top.total, [miles(x) for x in top.total], colores=[AZUL] * len(top), rango=[0, top.total.max() * 1.25]).show(config=CONFIG)
+```
+
+([Las 20 instituciones más grandes](../2027-01-14-las-20-instituciones-mas-grandes/).)
+
+## 12. Personas con discapacidad
+
+```{python}
+#| label: fig-12
+#| fig-cap: "Proporción de vínculos de personas con discapacidad, junio de cada año (la cuota legal es del 5%)"
+f = linea(pc.index, pc.p, VERDE_AGUA, ".2f", "%"); f.add_hline(y=5, line=dict(color=ROJO, width=1.5, dash="dash")); f.update_yaxes(range=[0, 5.6]); f.show(config=CONFIG)
+```
+
+Lejos de la cuota del 5% ([¿avanzó la cuota?](../2027-12-02-discapacidad-balance/)).
+
+Gracias por leernos este año. El lunes, el dato del año; el jueves, las preguntas que nos dejamos para 2028.
+
+::: {.fuente}
+**Fuentes:** elaboración de Pulso del Estado con datos de SINARH y SICCA. Inflación: Banco Central del Paraguay. [Descargar los datos](/datos/).
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_portada, ig_dato, lineas, barras
+social("Anuario 2027: el empleo\npúblico en 12 gráficos", miles(sj.total[A1]) + " vínculos", f"{billones(mt.masa[UA])} billones de Gs en salarios ({UA})", (list(sj.index), list(sj.total)))
+ig_portada("Anuario 2027", "El empleo\npúblico en\n12 gráficos", f"{miles(sj.total[A1])} vínculos y {billones(mt.masa[UA])} billones\nde guaraníes en salarios.", (list(sj.index), list(sj.total)))
+ig_dato(2, "La dotación", f"En {fecha_txt(A1, M)} el Estado tenía", miles(sj.total[A1]), "vínculos", "Miles de vínculos, mismo mes de cada año",
+        lineas(list(sj.index), {"Miles": (list(sj.total / 1000), AZUL)}, fmt=lambda x: coma(x, 0)))
+ig_dato(3, "La masa salarial", f"En {UA} pagó en salarios", billones(mt.masa[UA]) + " billones", "de guaraníes", "Billones de Gs del último año",
+        barras([str(x) for x in mt.index], list(mt.real / 1e12), [coma(x / 1e12, 1) for x in mt.real], rot=45), color=AMARILLO)
+```

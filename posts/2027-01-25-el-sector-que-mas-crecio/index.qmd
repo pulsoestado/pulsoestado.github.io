@@ -1,0 +1,72 @@
+---
+title: "El sector que más creció en el último año"
+description: "Con las mismas instituciones y los mismos meses, qué sector del Estado sumó más vínculos en el último año y cuál perdió."
+date: 2027-01-25
+categories: [El dato de la semana, Sectores, Dotación]
+image: social.png
+image-alt: "Cambio de vínculos por sector en el último año"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+
+A1, M = ultimo_mes(); A0 = A1 - 1
+v = vin_oee()
+v = v[v.mes <= M]
+p = v[v.anho.isin([A0, A1])].groupby(["anho"] + K_OEE + ["sector"]).total.mean().unstack("anho").dropna()
+p = p[(p[A0] > 0) & (p[A1] > 0)]
+s = p.groupby("sector")[[A0, A1]].sum()
+s["dif"] = s[A1] - s[A0]; s["var"] = (s[A1] / s[A0] - 1) * 100
+s = s.sort_values("dif")
+top = s.index[-1]; peor = s.index[0]
+tot = (p[A1].sum() / p[A0].sum() - 1) * 100
+parte_top = s.loc[top, "dif"] / s.dif[s.dif > 0].sum() * 100
+periodo = f"enero–{MESES[M - 1]}" if M > 1 else "enero"
+```
+
+```{python}
+#| label: kpis
+#| output: asis
+print(kpis([
+    (signo(s.loc[top, "dif"]), f"vínculos en {top} ({spct(s.loc[top, 'var'])})"),
+    (spct(tot), f"todo el Estado, {periodo} {A1} frente a {A0}"),
+]))
+```
+
+Si se compara el promedio de vínculos de `{python} periodo` de `{python} A1` con el mismo período de `{python} A0`, en las mismas `{python} len(p)` instituciones, **`{python} top`** fue el sector que más creció: sumó `{python} miles(s.loc[top, 'dif'])` vínculos, el `{python} pct(parte_top, 0)` de todos los aumentos. En el otro extremo, **`{python} peor`** `{python} "perdió " + miles(abs(s.loc[peor, 'dif'])) + " vínculos" if s.loc[peor, 'dif'] < 0 else "fue el que menos creció"`.
+
+```{python}
+#| label: fig-sectores
+#| fig-cap: "Cambio en el promedio de vínculos por sector, mismas instituciones y mismos meses"
+lim = abs(s.dif).max()
+fig = barras_h(s.index, s.dif, [f"{signo(d)} ({spct(x)})" for d, x in zip(s.dif, s["var"])],
+               rango=[-lim * 1.1 if s.dif.min() < 0 else -lim * 0.05, lim * 1.5])
+fig.update_xaxes(tickformat=",.0f")
+fig.show(config=CONFIG)
+```
+
+Comparar los mismos meses de los dos años evita que el bache de enero o la carga tardía de algunas instituciones distorsionen el resultado. El detalle por institución está en el [SITUCAP](/situcap/) de cada mes.
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA (vínculos pagados por mes). Clasificación sectorial de Pulso del Estado. [Descargar los datos](/datos/).
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_dato, barras_h as bh
+corto = lambda x: x.replace("Servicio civil del Ejecutivo", "Servicio civil").replace("Entes autónomos y autárquicos", "Entes autónomos").replace("Gobiernos departamentales", "Gobernaciones")
+o = s.reindex(s.dif.abs().sort_values().index[-7:]).sort_values("dif")
+social(f"El sector que más\ncreció: {corto(top)}", signo(s.loc[top, "dif"]) + " vínculos",
+       f"{periodo} {A1} frente a {A0} · mismas instituciones")
+ig_dato(1, "El dato de la semana", f"En el último año, {corto(top)} sumó", signo(s.loc[top, "dif"]),
+        "vínculos, más que cualquier otro sector", f"Cambio por sector, {periodo} {A1} frente a {A0}",
+        bh([corto(x) for x in o.index], o.dif, [signo(d) for d in o.dif],
+           colores=[AZUL if d >= 0 else ROJO for d in o.dif]))
+```

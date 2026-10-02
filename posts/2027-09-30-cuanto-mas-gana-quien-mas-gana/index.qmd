@@ -1,0 +1,110 @@
+---
+title: "¿Cuánto más gana quien más gana?"
+description: "Dentro de cada institución, cuántas veces más es el sueldo básico de los cargos mejor pagos que el de los peor pagos. Las escalas más comprimidas y las más abiertas del Estado."
+date: 2027-09-30
+categories: [Remuneraciones, Categorías, Instituciones]
+image: social.png
+image-alt: "Relación entre el sueldo básico del 10% mejor pago y el del 10% peor pago, por institución"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import numpy as np
+import plotly.graph_objects as go
+
+c = leer("categorias_oee.csv"); c = c[c.mes == 6]; A = int(c.anho.max())
+
+def pctl(s, w, q):
+    o = np.argsort(s); s, w = np.asarray(s)[o], np.asarray(w)[o]
+    cw = np.cumsum(w) / w.sum()
+    return s[np.searchsorted(cw, q)]
+
+def disp(g):
+    g = g.groupby("nivel_categoria")[["cantidad", "devengado"]].sum(); g = g[g.cantidad > 0]
+    s = g.devengado / g.cantidad
+    return pd.Series({"cargos": g.cantidad.sum(), "p10": pctl(s, g.cantidad, 0.10), "p50": pctl(s, g.cantidad, 0.50),
+                      "p90": pctl(s, g.cantidad, 0.90), "ncat": len(g)})
+
+u = c[c.anho == A]
+r = u.groupby(K_OEE).apply(disp, include_groups=False)
+r = r[(r.cargos >= 300) & (r.p10 > 0) & (r.ncat >= 4)].join(instituciones().set_index(K_OEE)[["nombre_largo", "sector"]])
+r["ratio"] = r.p90 / r.p10
+tot = disp(u.assign(nivel_categoria=u.nivel_categoria.astype(str) + "_" + u.codigo_oee.astype(str) + "_" + u.codigo_entidad.astype(str) + "_" + u.codigo_nivel.astype(str)))
+R = tot.p90 / tot.p10
+abiertas = r.sort_values("ratio", ascending=False).head(10); cerradas = r.sort_values("ratio").head(10)
+med = r.ratio.median()
+serie = {}
+for a in range(2018, A + 1):
+    x = c[c.anho == a]
+    t = disp(x.assign(nivel_categoria=x.nivel_categoria.astype(str) + "_" + x.codigo_oee.astype(str) + "_" + x.codigo_entidad.astype(str) + "_" + x.codigo_nivel.astype(str)))
+    serie[a] = t.p90 / t.p10
+serie = pd.Series(serie)
+```
+
+::: {.en-breve}
+**En breve**
+
+- En junio de `{python} A`, en el conjunto del Estado, el 10% de los cargos mejor pagos tenía un sueldo básico de al menos **`{python} coma(R, 1)` veces** el del 10% peor pago.
+- En la institución típica (la mediana de las `{python} len(r)` con al menos 300 cargos y cuatro categorías), la relación es de `{python} coma(med, 1)`.
+- La escala más abierta es la de **`{python} abiertas.nombre_largo.iloc[0]`** (`{python} coma(abiertas.ratio.iloc[0], 1)` veces); la más comprimida, la de **`{python} cerradas.nombre_largo.iloc[0]`** (`{python} coma(cerradas.ratio.iloc[0], 1)`).
+:::
+
+## Qué mide este indicador
+
+El cociente entre el percentil 90 y el percentil 10 es uno de los indicadores de **compresión salarial** que propone la [guía del BID sobre nómina pública](../2027-05-27-indicadores-de-nomina/). Una relación cercana a 1 indica una escala muy pareja; una relación alta, grandes diferencias entre los cargos de arriba y los de abajo. Ninguno de los dos extremos es bueno en sí mismo: una escala demasiado plana da pocos incentivos para asumir más responsabilidad; una demasiado abierta puede ser difícil de justificar.
+
+## Las escalas más abiertas y las más cerradas
+
+```{python}
+#| label: tbl
+#| output: asis
+print("| Más abiertas | P90/P10 | Más comprimidas | P90/P10 |\n|---|--:|---|--:|")
+for (_, a_), (_, b_) in zip(abiertas.iterrows(), cerradas.iterrows()):
+    print(f"| {a_.nombre_largo} | {coma(a_.ratio, 1)} | {b_.nombre_largo} | {coma(b_.ratio, 1)} |")
+print(f"\n: Instituciones con al menos 300 cargos con sueldo básico y cuatro categorías o más, junio de {A}")
+```
+
+En la **Policía Nacional** y el **Ministerio de Defensa**, la relación es muy alta porque tienen miles de cargos en categorías con sueldos básicos muy bajos, menores a medio millón de guaraníes, junto con una escala jerárquica amplia. En el otro extremo, en algunas instituciones casi todos los cargos están en pocas categorías con sueldos parecidos.
+
+```{python}
+#| label: fig-sector
+#| fig-cap: "Relación P90/P10 del sueldo básico por institución (cada punto es una institución con al menos 300 cargos)"
+fig = go.Figure(go.Box(x=r.ratio, y=r.sector, orientation="h", boxpoints="all", jitter=0.3, pointpos=0, marker=dict(color=AZUL, size=6),
+                       line=dict(color="#9db9de"), fillcolor="rgba(42,120,214,.08)", customdata=r.nombre_largo,
+                       hovertemplate="<b>%{customdata}</b>: %{x:.1f}<extra></extra>"))
+estilo(fig, alto=460, leyenda=False).update_layout(hovermode="closest")
+fig.update_xaxes(type="log", title="P90/P10 (escala logarítmica)")
+fig.show(config=CONFIG)
+```
+
+## En el tiempo
+
+En el conjunto del Estado, la relación P90/P10 pasó de `{python} coma(serie.iloc[0], 1)` en 2018 a `{python} coma(serie.iloc[-1], 1)` en `{python} A`. `{python} "La escala se comprimió: los cargos peor pagos mejoraron más que los mejor pagos." if serie.iloc[-1] < serie.iloc[0] * 0.95 else ("La escala se abrió: los cargos mejor pagos crecieron más que los de abajo." if serie.iloc[-1] > serie.iloc[0] * 1.05 else "La estructura casi no cambió.")`
+
+::: {.callout-note collapse="true"}
+## Cómo se calculó
+
+- Sueldo básico medio de cada categoría en cada institución (objeto 111, junio), ponderado por la cantidad de cargos.
+- Los percentiles se calculan sobre cargos, no sobre personas. No incluye bonificaciones ni otros complementos, que suelen ampliar las diferencias.
+- Los cargos de jornada parcial con sueldos muy bajos pueden aumentar la relación en algunas instituciones.
+:::
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA. [Descargar los datos](/datos/).
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_portada, ig_dato, barras
+social("¿Cuánto más gana\nquien más gana?", coma(R, 1) + " veces", f"el sueldo básico del 10% mejor pago frente al 10% peor pago (junio de {A})")
+ig_portada("Remuneraciones", "¿Cuánto más\ngana quien\nmás gana?", f"El 10% mejor pago cobra {coma(R, 1)} veces\nlo que cobra el 10% peor pago.")
+ig_dato(2, "En el tiempo", "La relación entre el 10% mejor y el 10% peor pago es de", coma(R, 1), f"veces (junio de {A})", "P90/P10 del sueldo básico, junio de cada año",
+        barras(list(serie.index), list(serie.values), [coma(x, 1) for x in serie.values]))
+```

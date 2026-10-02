@@ -1,0 +1,61 @@
+---
+title: "El salario mínimo vigente y la remuneración pública"
+description: "Con el reajuste de mitad de año, cuánto es el salario mínimo legal y cómo se compara con la remuneración media de cada sector del Estado."
+date: 2027-07-05
+categories: [El dato de la semana, Salario mínimo, Remuneraciones]
+image: social.png
+image-alt: "Remuneración media por sector en salarios mínimos"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+
+tr = leer("bcp_salario_minimo_tramos.csv")
+vig = tr.iloc[-1]; ant = tr.iloc[-2]
+aum = (vig.salario_minimo / ant.salario_minimo - 1) * 100
+UA = ultimo_anio_completo()
+m = leer("masa_anual_sector.csv").query("anho == @UA").set_index("sector")
+rem = m.devengado_sin_aguinaldo / 12 / m.vinculos_promedio
+veces = (rem / vig.salario_minimo).sort_values()
+rem_t = m.devengado_sin_aguinaldo.sum() / 12 / m.vinculos_promedio.sum()
+```
+
+```{python}
+#| label: kpis
+#| output: asis
+print(kpis([(millones(vig.salario_minimo, 2) + " M", f"de guaraníes: salario mínimo vigente ({vig.periodo.lower()} de {int(vig.anho)})"),
+            (spct(aum), "frente al valor anterior"), (coma(rem_t / vig.salario_minimo, 2), "salarios mínimos: remuneración media pública")]))
+```
+
+El salario mínimo legal vigente es de **`{python} miles(vig.salario_minimo)` guaraníes** por mes, `{python} pct(aum)` más que el valor anterior (`{python} miles(ant.salario_minimo)`). Con la remuneración media de `{python} UA`, cada vínculo público cuesta en promedio **`{python} coma(rem_t / vig.salario_minimo, 2)` salarios mínimos** por mes, sin aguinaldo. El sector con la remuneración media más baja en relación con el mínimo es **`{python} veces.index[0]`** (`{python} coma(veces.iloc[0], 2)`).
+
+```{python}
+#| label: fig
+#| fig-cap: "Remuneración media mensual por vínculo, en salarios mínimos vigentes"
+fig = barras_h(veces.index, veces.values, [coma(x, 2) for x in veces.values], colores=[AZUL] * len(veces), rango=[0, veces.max() * 1.2])
+fig.add_vline(x=1, line=dict(color=ROJO, width=1.5, dash="dash"))
+fig.show(config=CONFIG)
+```
+
+La comparación usa la remuneración del último año completo y el salario mínimo de hoy, así que exagera un poco la distancia: los sueldos públicos de este año también se ajustaron. En las municipalidades la remuneración media registrada es menor que el mínimo, pero allí los registros de pagos están incompletos ([municipalidades por dentro](../2026-12-18-municipalidades-por-dentro/)).
+
+::: {.fuente}
+**Fuente:** Banco Central del Paraguay (salario mínimo legal). Elaboración de Pulso del Estado con datos de SINARH y SICCA. [Descargar los datos](/datos/).
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_dato, barras_h as bh
+cort = lambda x: x.replace("Servicio civil del Ejecutivo", "Servicio civil").replace("Entes autónomos y autárquicos", "Entes autónomos").replace("Gobiernos departamentales", "Gobernaciones")
+social("El salario mínimo vigente", miles(vig.salario_minimo) + " Gs", f"{spct(aum)} · la remuneración media pública es {coma(rem_t / vig.salario_minimo, 2)} mínimos", color=AZUL)
+o = veces.tail(8)
+ig_dato(1, "El dato de la semana", "El salario mínimo vigente es de", millones(vig.salario_minimo, 2) + " M", f"de guaraníes ({spct(aum)})",
+        "Remuneración media por sector, en salarios mínimos", bh([cort(x) for x in o.index], o.values, [coma(x, 1) for x in o.values], ref=1), color=AZUL)
+```

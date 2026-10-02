@@ -1,0 +1,116 @@
+---
+title: "El Estado por sectores: educación, salud, seguridad y el resto"
+description: "Tres sectores concentran dos de cada tres vínculos públicos y el 70% de la masa salarial. Una ficha de los 12 sectores del Estado: cuánta gente, cuánto cuestan, cuántos contratos, cuántas mujeres y cómo cambiaron desde 2017."
+date: 2026-11-20
+categories: [Sectores, Dotación, Masa salarial]
+image: social.png
+image-alt: "Vínculos del sector público por sector, índice 2017 = 100"
+draft: true  # programada
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import plotly.graph_objects as go
+
+A0, A1 = 2017, 2025
+v = leer("vinculos_mensual_sector.csv")
+m = leer("masa_anual_sector.csv")
+va = v[v.anho.between(A0, A1)].groupby(["anho", "sector"])[["total", "contratado", "mujeres"]].mean().reset_index()
+f = va[va.anho == A1].set_index("sector")
+f["pc"] = f.contratado / f.total * 100
+f["pm"] = f.mujeres / f.total * 100
+f["part_v"] = f.total / f.total.sum() * 100
+mm = m[m.anho == A1].set_index("sector")
+f["part_m"] = mm.devengado / mm.devengado.sum() * 100
+f["rem"] = mm.devengado / mm.vinculos_promedio / 13
+v0 = va[va.anho == A0].set_index("sector").total
+f["var_v"] = (f.total / v0 - 1) * 100
+f = f.sort_values("total", ascending=False)
+tres = ["Educación", "Salud", "Fuerzas públicas"]
+part_v3, part_m3 = f.loc[tres, "part_v"].sum(), f.loc[tres, "part_m"].sum()
+E, S, F, C = f.loc["Educación"], f.loc["Salud"], f.loc["Fuerzas públicas"], f.loc["Servicio civil del Ejecutivo"]
+rem_tot = mm.devengado.sum() / mm.vinculos_promedio.sum() / 13
+```
+
+::: {.en-breve}
+**En breve**
+
+- **Educación, Salud y Fuerzas públicas** reúnen el `{python} pct(part_v3, 0)` de los vínculos y el `{python} pct(part_m3, 0)` de la masa salarial de `{python} A1`.
+- Desde `{python} A0`, **Salud creció `{python} pct(S.var_v, 0)`** y **Fuerzas públicas `{python} pct(F.var_v, 0)`**. **Educación quedó igual** (`{python} spct(E.var_v)`).
+- Los contratos van del `{python} pct(f.pc.min(), 0)` en `{python} f.pc.idxmin()` al `{python} pct(f.pc.max(), 0)` en `{python} f.pc.idxmax()`.
+- Las mujeres son mayoría en Educación (`{python} pct(E.pm, 0)`) y Salud (`{python} pct(S.pm, 0)`), y minoría en Fuerzas públicas (`{python} pct(F.pm, 0)`).
+:::
+
+```{python}
+#| label: kpis
+#| output: asis
+print(kpis([
+    (pct(part_v3, 0), f"de los vínculos están en Educación, Salud y Fuerzas públicas ({A1})"),
+    (pct(part_m3, 0), "de la masa salarial va a esos tres sectores"),
+    (spct(S.var_v, 0), f"vínculos en Salud desde {A0}"),
+    (spct(E.var_v), f"vínculos en Educación desde {A0}"),
+]))
+```
+
+Para comparar sectores agrupamos las instituciones según su función: **Educación** (Ministerio de Educación y universidades nacionales), **Salud** (Ministerio de Salud e IPS), **Fuerzas públicas** (Policía Nacional y Ministerio de Defensa), el **servicio civil del Poder Ejecutivo** (el resto de ministerios y secretarías) y los demás niveles del Estado. La clasificación completa está en la [metodología](/metodologia.qmd).
+
+## La ficha de cada sector
+
+```{python}
+#| label: tbl-ficha
+#| output: asis
+print(f"| Sector | Vínculos {A1} | % del total | % de la masa | Remuneración media (millones Gs/mes) | % contratados | % mujeres | Vínculos vs {A0} |")
+print("|---|--:|--:|--:|--:|--:|--:|--:|")
+for s_, r in f.iterrows():
+    print(f"| {s_} | {miles(r.total)} | {pct(r.part_v)} | {pct(r.part_m)} | {millones(r.rem)} | {pct(r.pc, 0)} | {pct(r.pm, 0)} | {spct(r.var_v)} |")
+print(f"| **Total** | **{miles(f.total.sum())}** | **100%** | **100%** | **{millones(rem_tot)}** | "
+      f"**{pct(f.contratado.sum() / f.total.sum() * 100, 0)}** | **{pct(f.mujeres.sum() / f.total.sum() * 100, 0)}** | "
+      f"**{spct((f.total.sum() / v0.sum() - 1) * 100)}** |")
+print(f"\n: Ficha de los sectores del Estado, promedio {A1}. Remuneración media = masa salarial anual / vínculos promedio / 13")
+```
+
+## Quién creció y quién no
+
+```{python}
+#| label: fig-indice
+#| fig-cap: "Vínculos por sector, índice 2017 = 100 (promedio de cada año)"
+idx = va.pivot(index="anho", columns="sector", values="total")
+idx = idx / idx.loc[A0] * 100
+series = [("Salud", NARANJA), ("Fuerzas públicas", NAVY), ("Municipalidades", VERDE_AGUA),
+          ("Servicio civil del Ejecutivo", AMARILLO), ("Educación", AZUL)]
+fig = go.Figure()
+for s_, col in series:
+    fig.add_trace(go.Scatter(x=idx.index, y=idx[s_], name=s_, mode="lines+markers", line=dict(color=col, width=2.4),
+                             marker=dict(size=7), hovertemplate=f"{s_}: <b>%{{y:.0f}}</b><extra></extra>"))
+fig.add_hline(y=100, line=dict(color=GRIS, width=1, dash="dot"))
+estilo(fig, alto=420)
+fig.update_xaxes(dtick=1)
+fig.show(config=CONFIG)
+```
+
+**Salud** es el sector que más cambió: su personal creció más de la mitad, con un salto durante la pandemia que nunca se revirtió. **Fuerzas públicas** creció de forma más gradual hasta 2024 y dio un salto en 2025, con el ingreso de nuevas promociones policiales. **Educación**, el sector más grande, terminó `{python} A1` con prácticamente la misma cantidad de vínculos que en `{python} A0`. El **servicio civil del Ejecutivo**, que reúne al resto de los ministerios y secretarías, tiene hoy menos vínculos que entonces (`{python} spct(C.var_v)`).
+
+## Cuánto cuesta cada vínculo
+
+```{python}
+#| label: fig-rem
+#| fig-cap: "Remuneración media mensual por vínculo en 2025, en millones de guaraníes (incluye aguinaldo prorrateado)"
+o = f.sort_values("rem")
+fig = barras_h(o.index, o.rem / 1e6, [millones(x) for x in o.rem], colores=[AZUL] * len(o),
+               hover="<b>%{y}</b>: %{text} millones por mes<extra></extra>")
+fig.add_vline(x=rem_tot / 1e6, line=dict(color=NARANJA, width=1.5, dash="dash"))
+fig.add_annotation(x=rem_tot / 1e6, y=len(o) - 0.5, text=f"Promedio: {millones(rem_tot)}", showarrow=False,
+                   xanchor="left", xshift=6, font=dict(color=NARANJA, size=12))
+fig.update_xaxes(range=[0, o.rem.max() / 1e6 * 1.2], ticksuffix=" M")
+fig.show(config=CONFIG)
+```
+
+La remuneración media por vínculo va de unos `{python} millones(f.rem.min())` millones de guaraníes por mes en `{python} f.rem.idxmin()` a `{python} millones(f.rem.max())` millones en `{python} f.rem.idxmax()`. Son promedios que mezclan cargos, jornadas y niveles de responsabilidad muy diferentes, así que no indican cuánto gana una persona en particular, pero sí cuánto cuesta en promedio cada vínculo de cada sector.
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA (vínculos por mes y devengado en servicios personales). Clasificación sectorial de Pulso del Estado, versión 1. [Descargar los datos](/datos/).
+:::

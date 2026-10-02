@@ -1,0 +1,81 @@
+---
+title: "Explicador: cómo se decide la masa salarial"
+description: "Del proyecto de presupuesto al pago de cada mes: quién decide cuánto personal tiene el Estado y cuánto le paga, y en qué momento del año se puede seguir cada paso."
+date: 2027-08-12
+categories: [Explicador, Presupuesto, Masa salarial]
+image: social.png
+image-alt: "El ciclo presupuestario de la masa salarial"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import plotly.graph_objects as go
+
+UA = ultimo_anio_completo()
+m = leer("masa_mensual_sector.csv")
+u = m[m.anho == UA].groupby("mes")[["presupuestado", "devengado"]].sum()
+ac = u.cumsum() / u.devengado.sum() * 100
+T = u.devengado.sum()
+crec = leer("masa_anual_sector.csv").groupby("anho").devengado.sum().loc[2017:UA]
+cr = (crec.pct_change() * 100).dropna()
+```
+
+Cada guaraní que el Estado paga en salarios pasa por el mismo recorrido: se **prevé** en el Presupuesto General de la Nación, se **aprueba** en el Congreso y se **ejecuta** mes a mes. En `{python} UA` ese recorrido terminó en `{python} billones(T)` billones de guaraníes de masa salarial.
+
+## El calendario
+
+| Cuándo | Qué pasa | Qué se puede mirar |
+|---|---|---|
+| Primer semestre | Cada institución prepara su anteproyecto, incluidos los cargos que pide crear y los reajustes que propone. | Los pedidos de cada institución, cuando se publican. |
+| Hasta el 1 de septiembre | El Poder Ejecutivo presenta al Congreso el proyecto de Presupuesto General de la Nación, como fija la Constitución. | El proyecto y su Anexo de Personal: cargos, categorías y sueldos. |
+| Septiembre a diciembre | El Congreso estudia el proyecto, primero en una comisión bicameral y luego en cada cámara, y lo modifica. | Las ampliaciones de cargos y de remuneraciones que agrega el Congreso. |
+| Antes del 1 de enero | Se promulga la ley de presupuesto. Si no se aprueba a tiempo, sigue vigente el presupuesto del año anterior. | El presupuesto aprobado. |
+| Enero a diciembre | Las instituciones pagan cada mes; el presupuesto puede modificarse durante el año. | Lo devengado cada mes en SINARH y SICCA, que es lo que mide Pulso del Estado. |
+
+## El año, mes a mes
+
+```{python}
+#| label: fig
+#| fig-cap: "Masa salarial devengada acumulada en el último año completo, % del total del año"
+fig = go.Figure(go.Scatter(x=[MES_C[i - 1] for i in ac.index], y=ac.devengado, mode="lines+markers", line=dict(color=AZUL, width=2.8),
+                           hovertemplate="%{x}: <b>%{y:.0f}%</b> del año<extra></extra>"))
+fig.add_shape(type="line", x0=0, y0=100 / 13, x1=11, y1=100 * 12 / 13, line=dict(color=GRIS, width=1, dash="dot"))
+estilo(fig, alto=320, leyenda=False).update_yaxes(ticksuffix="%", range=[0, 105])
+fig.show(config=CONFIG)
+```
+
+La masa salarial se ejecuta de forma casi pareja: cada mes se devenga más o menos una treceava parte del total del año, y en diciembre se suma el aguinaldo. A diferencia de las inversiones, que pueden acelerarse o frenarse, los salarios son un gasto **rígido**: una vez creado un cargo permanente, se paga todos los meses, todos los años.
+
+## Por qué la masa salarial casi nunca baja
+
+```{python}
+#| label: fig-crec
+#| fig-cap: "Crecimiento anual de la masa salarial, en guaraníes de cada año"
+fig = go.Figure(go.Bar(x=cr.index, y=cr.values, marker_color=AZUL, text=[pct(x) for x in cr.values], textposition="outside",
+                       cliponaxis=False, textfont=dict(color=TINTA_GRAF), hovertemplate="%{x}: <b>%{y:.1f}%</b><extra></extra>"))
+estilo(fig, alto=300, leyenda=False).update_layout(hovermode="closest")
+fig.update_xaxes(dtick=1); fig.update_yaxes(ticksuffix="%", range=[0, cr.max() * 1.25])
+fig.show(config=CONFIG)
+```
+
+En guaraníes de cada año, la masa salarial creció todos los años desde 2017. Hay tres motores: **nuevos cargos y contratos**, **reajustes** salariales generales o para grupos específicos (docentes, personal de salud, policías y militares) y el **crecimiento vegetativo** de algunos complementos que aumentan solos con el tiempo, como los ligados a la antigüedad en ciertas carreras. Por eso, el momento clave para discutir el gasto en personal no es la ejecución sino la aprobación del presupuesto, entre septiembre y diciembre. Este año lo seguiremos en [qué mirar del Presupuesto 2028](../2027-08-30-que-mirar-del-presupuesto-2028/).
+
+::: {.fuente}
+**Fuentes:** Constitución Nacional, artículos 216 y 217. Elaboración de Pulso del Estado con datos de SINARH y SICCA (devengado del grupo 100). [Descargar los datos](/datos/).
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_portada, ig_dato, barras
+social("Explicador: cómo se\ndecide la masa salarial", "1 de septiembre", "el Poder Ejecutivo presenta el presupuesto del año siguiente")
+ig_portada("Explicador", "Cómo se\ndecide la\nmasa salarial", "Del proyecto de presupuesto\nal pago de cada mes.")
+ig_dato(2, "Un gasto rígido", "En guaraníes de cada año, la masa salarial creció", f"{len(cr)} de {len(cr)}" if (cr > 0).all() else f"{(cr > 0).sum()} de {len(cr)}",
+        "años desde 2017", "Crecimiento anual, %", barras(list(cr.index), list(cr.values), [pct(x, 0) for x in cr.values]))
+```

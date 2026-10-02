@@ -1,0 +1,94 @@
+---
+title: "Paraguay y Argentina: dos caminos desde 2023"
+description: "Desde fines de 2023, la dotación del Estado nacional argentino cayó más de 20%. En el mismo período, los vínculos del Estado paraguayo siguieron creciendo. Qué muestran los datos de los dos países y qué no se puede comparar."
+date: 2027-04-22
+categories: [Comparación internacional, Dotación]
+image: social.png
+image-alt: "Índice de empleo público nacional en Paraguay y Argentina, noviembre de 2023 = 100"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import plotly.graph_objects as go
+
+ar = leer("indec_dotacion_apn.csv"); ar["fecha"] = pd.to_datetime(ar.fecha)
+B = pd.Timestamp("2023-11-01")
+py = leer("vinculos_mensual_sector.csv")
+py_nac = py[~py.sector.isin(["Municipalidades", "Gobiernos departamentales"])].groupby(["anho", "mes"]).total.sum().reset_index()
+py_nac["fecha"] = pd.to_datetime(dict(year=py_nac.anho, month=py_nac.mes, day=1))
+# Fecha común más reciente
+fin = min(ar.fecha.max(), py_nac.fecha.max())
+a = ar[ar.fecha.between(pd.Timestamp("2022-07-01"), fin)].set_index("fecha")
+p = py_nac[py_nac.fecha.between(pd.Timestamp("2022-07-01"), fin)].set_index("fecha")
+ia = a.total / a.total.loc[B] * 100; ip = p.total / p.total.loc[B] * 100
+va = ia.loc[fin] - 100; vp = ip.loc[fin] - 100
+da = a.total.loc[fin] - a.total.loc[B]; dp = p.total.loc[fin] - p.total.loc[B]
+# mismo mes del año: compara fin con el mismo mes de 2023 en Paraguay para neutralizar estacionalidad
+f23 = pd.Timestamp(2023, fin.month, 1)
+vp_mm = (p.total.loc[fin] / p.total.loc[f23] - 1) * 100 if f23 in p.index else None
+va_mm = (a.total.loc[fin] / a.total.loc[f23] - 1) * 100 if f23 in a.index else None
+apn = (a.apn.loc[fin] / a.apn.loc[B] - 1) * 100; emp = (a.empresas.loc[fin] / a.empresas.loc[B] - 1) * 100
+fin_txt = fecha_txt(fin.year, fin.month)
+```
+
+::: {.en-breve}
+**En breve**
+
+- Entre noviembre de 2023 y `{python} fin_txt`, la dotación del Estado nacional argentino pasó de `{python} miles(a.total.loc[B])` a `{python} miles(a.total.loc[fin])` personas: **`{python} spct(va)`** (`{python} signo(da)`).
+- En el mismo período, los vínculos del Estado nacional paraguayo (sin municipalidades ni gobernaciones) pasaron de `{python} miles(p.total.loc[B])` a `{python} miles(p.total.loc[fin])`: **`{python} spct(vp)`**.
+- En Argentina bajaron tanto la administración pública nacional (`{python} spct(apn)`) como las empresas y sociedades del Estado (`{python} spct(emp)`).
+- Las dos series miden cosas parecidas, pero no iguales: sirven para comparar **tendencias**, no tamaños.
+:::
+
+```{python}
+#| label: fig-ind
+#| fig-cap: "Empleo público nacional, índice noviembre de 2023 = 100"
+fig = go.Figure()
+fig.add_trace(go.Scatter(x=ip.index, y=ip, name="Paraguay: vínculos del Estado nacional", mode="lines",
+                         line=dict(color=AZUL, width=2.8), hovertemplate="Paraguay: %{y:.1f}<extra></extra>"))
+fig.add_trace(go.Scatter(x=ia.index, y=ia, name="Argentina: dotación del Estado nacional", mode="lines",
+                         line=dict(color=NARANJA, width=2.8), hovertemplate="Argentina: %{y:.1f}<extra></extra>"))
+fig.add_hline(y=100, line=dict(color=GRIS, width=1, dash="dot"))
+fig.add_vline(x=B, line=dict(color=GRIS, width=1, dash="dash"))
+estilo(fig, alto=380)
+fig.show(config=CONFIG)
+```
+
+## Dos políticas distintas
+
+En Argentina, el gobierno que asumió en diciembre de 2023 se propuso reducir el tamaño del Estado nacional: no renovó contratos, cerró o fusionó organismos y ofreció retiros voluntarios. La serie del INDEC muestra el resultado: la dotación cae casi todos los meses desde entonces.
+
+En Paraguay, el gobierno que asumió en agosto de 2023 no tuvo una política de reducción del empleo público. Los vínculos del Estado nacional siguieron creciendo, sobre todo en Salud y en la Policía Nacional. `{python} f"Comparado con el mismo mes de 2023, para evitar el efecto de la caída de cada enero, el aumento paraguayo fue de {spct(vp_mm)} y el cambio argentino, de {spct(va_mm)}." if vp_mm is not None and va_mm is not None else ""`
+
+## Qué no se puede comparar
+
+- **Unidades distintas.** El INDEC cuenta **personas** con cargo en el Estado nacional. En Paraguay contamos **vínculos** pagados en el mes: una persona con dos cargos cuenta dos veces.
+- **Cobertura distinta.** La serie argentina incluye a la administración pública nacional y a las empresas y sociedades del Estado, pero no a las provincias ni a los municipios, que en Argentina emplean a la mayoría del personal público. La serie paraguaya incluye a los tres poderes del Estado, entes autónomos, empresas, universidades y entidades financieras, pero no a las municipalidades ni a las gobernaciones.
+- **Datos imputados.** Desde fines de 2023 parte de la serie argentina está estimada: cuando un organismo no informa, el INDEC repite su último dato.
+
+Por eso el gráfico compara índices, no cantidades: muestra hacia dónde se movió cada Estado, no cuál es más grande.
+
+::: {.fuente}
+**Fuentes:** INDEC y Jefatura de Gabinete de Ministros de Argentina, *Dotación de personal de la Administración Pública Nacional* (serie del cuadro 1, julio 2022 a julio 2026). Elaboración de Pulso del Estado con datos de SINARH y SICCA para Paraguay. [Descargar los datos](/datos/).
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_portada, ig_dato, lineas, barras
+social("Paraguay y Argentina:\ndos caminos desde 2023", f"{spct(va, 0)} y {spct(vp, 0)}",
+       f"empleo público nacional, noviembre 2023–{fin_txt}")
+x = list(range(len(ia)))
+ig_portada("Comparación", "Paraguay y\nArgentina: dos\ncaminos", f"Argentina: {spct(va, 0)} en su dotación nacional.\nParaguay: {spct(vp, 0)} en sus vínculos.",
+           (x, list(ia)))
+ig_dato(2, "Desde noviembre de 2023", "El empleo público nacional argentino cambió", spct(va, 0),
+        f"y los vínculos del Estado nacional paraguayo, {spct(vp, 0)}", f"Índice noviembre 2023 = 100, a {fin_txt}",
+        barras(["Argentina", "Paraguay"], [ia.loc[fin], ip.loc[fin]], [coma(ia.loc[fin], 0), coma(ip.loc[fin], 0)],
+               colores=[NARANJA, AZUL], ylim=(0, 125)))
+```

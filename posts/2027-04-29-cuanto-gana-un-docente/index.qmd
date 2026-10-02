@@ -1,0 +1,102 @@
+---
+title: "¿Cuánto gana un docente?"
+description: "Cuánto es el sueldo básico medio de quienes cobran en el Ministerio de Educación, cuánto subió desde 2017 descontada la inflación y qué muestran (y qué no) los registros, en la semana del Día del Maestro."
+date: 2027-04-29
+categories: [Educación, Remuneraciones, Categorías]
+image: social.png
+image-alt: "Sueldo básico medio mensual en el Ministerio de Educación, nominal y real"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import plotly.graph_objects as go
+
+MEC = (12, 7, 1); A0 = 2017
+c = leer("categorias_oee.csv")
+c = c[(c.codigo_nivel == 12) & (c.codigo_entidad == 7) & (c.codigo_oee == 1) & (c.mes == 6)]
+A = int(c.anho.max())
+a = c.groupby("anho")[["cantidad", "devengado"]].sum().loc[A0:]
+v = leer("vinculos_mensual_oee.csv")
+v = v[(v.codigo_nivel == 12) & (v.codigo_entidad == 7) & (v.codigo_oee == 1) & (v.mes == 6)].set_index("anho").loc[A0:]
+a["vinc"] = v.total
+a["por_vinculo"] = a.devengado / a.vinc            # sueldo básico de junio por vínculo
+a["por_cargo"] = a.devengado / a.cantidad
+a["cargos_x"] = a.cantidad / a.vinc
+ipc = leer("bcp_salario_minimo.csv").set_index("anho")
+base = ipc.ipc.loc[ipc.index[ipc.index <= A].max()]
+a["real"] = a.por_vinculo * base / ipc.ipc.reindex(a.index)
+var_n = (a.por_vinculo[A] / a.por_vinculo[A0] - 1) * 100; var_r = (a.real[A] / a.real[A0] - 1) * 100
+sm = leer("bcp_salario_minimo_tramos.csv"); sm_act = sm.salario_minimo.iloc[-1]
+k = c[c.anho == A].groupby("nivel_categoria")[["cantidad", "devengado"]].sum().sort_values("cantidad", ascending=False)
+k["s"] = k.devengado / k.cantidad; k["p"] = k.cantidad / k.cantidad.sum() * 100
+dos = k.head(2); p2 = dos.p.sum()
+s_sex = c[c.anho == A].groupby("sexo")[["cantidad", "devengado"]].sum(); s_sex["s"] = s_sex.devengado / s_sex.cantidad
+```
+
+::: {.en-breve}
+**En breve**
+
+- En junio de `{python} A`, el **sueldo básico medio** de los vínculos del Ministerio de Educación y Ciencias fue de **`{python} millones(a.por_vinculo[A], 2)` millones de guaraníes**, `{python} coma(a.por_vinculo[A] / sm_act, 1)` veces el salario mínimo vigente.
+- Desde `{python} A0` subió **`{python} pct(var_n, 0)`** en guaraníes corrientes y **`{python} pct(var_r, 0)` descontada la inflación**.
+- Cada vínculo del ministerio tiene en promedio `{python} coma(a.cargos_x[A], 2)` cargos: muchos docentes suman más de un turno o cargo, y el sueldo crece con ellos.
+- Dos categorías salariales reúnen el `{python} pct(p2, 0)` de los cargos.
+:::
+
+## El sueldo básico, año a año
+
+```{python}
+#| label: fig-sb
+#| fig-cap: "Sueldo básico medio mensual por vínculo en el Ministerio de Educación y Ciencias, junio de cada año (millones de guaraníes)"
+fig = go.Figure()
+fig.add_trace(go.Bar(x=a.index, y=a.por_vinculo / 1e6, name="Guaraníes de cada año", marker_color="#9db9de",
+                     hovertemplate="%{x}: %{y:.2f} millones<extra></extra>"))
+fig.add_trace(go.Scatter(x=a.index, y=a.real / 1e6, name=f"Guaraníes de {A}", mode="lines+markers", line=dict(color=AZUL, width=2.8),
+                         hovertemplate="%{x}: %{y:.2f} millones de " + str(A) + "<extra></extra>"))
+estilo(fig, alto=340).update_xaxes(dtick=1)
+fig.show(config=CONFIG)
+```
+
+La serie muestra dos etapas de aumentos fuertes, en 2018–2019 y desde 2022, que coinciden con los reajustes del salario docente. A diferencia de otros sectores, donde la remuneración media apenas siguió a la inflación ([¿Le ganaron los sueldos públicos a la inflación?](../2026-12-04-sueldos-vs-inflacion/)), en Educación el sueldo básico real creció de forma sostenida.
+
+## Cargos, turnos y categorías
+
+El sueldo de un docente no es una sola cifra. En el presupuesto, el personal del ministerio ocupa **cargos** con una **categoría salarial**, y una misma persona puede tener más de un cargo, por ejemplo, si enseña en dos turnos. En junio de `{python} A` había `{python} miles(a.cantidad[A])` cargos con sueldo básico para `{python} miles(a.vinc[A])` vínculos.
+
+```{python}
+#| label: tbl-cat
+#| output: asis
+print("| Categoría | Cargos | % de los cargos | Sueldo básico medio por cargo (M Gs) |\n|---|--:|--:|--:|")
+for cat_, r in k.head(6).iterrows():
+    print(f"| {cat_} | {miles(r.cantidad)} | {pct(r.p)} | {millones(r.s, 2)} |")
+print(f"\n: Las seis categorías con más cargos en el Ministerio de Educación y Ciencias, junio de {A}")
+```
+
+Las dos categorías más numerosas, **`{python} dos.index[0]`** y **`{python} dos.index[1]`**, reúnen el `{python} pct(p2, 0)` de los cargos y corresponden, por su tamaño, a la carrera docente. El sueldo básico por cargo de las mujeres (`{python} millones(s_sex.loc['FEMENINO', 's'], 2)` millones) y el de los hombres (`{python} millones(s_sex.loc['MASCULINO', 's'], 2)` millones) son muy parecidos.
+
+## Lo que esta cifra no incluye
+
+- **Bonificaciones y otros complementos.** El sueldo básico es la mayor parte de lo que cobra un docente, pero no todo: el ministerio paga además bonificaciones y asignaciones que se registran en otros objetos de gasto.
+- **El sector privado subvencionado.** Muchos docentes de escuelas privadas subvencionadas cobran del Ministerio de Educación y aparecen en estos registros.
+- **Docentes universitarios**, que dependen de cada universidad nacional ([universidades nacionales por dentro](../2027-03-11-universidades-nacionales/)).
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA (sueldo básico, objeto 111, por categoría y sexo; vínculos pagados en junio de cada año) y del Banco Central del Paraguay (IPC y salario mínimo). [Descargar los datos](/datos/).
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_portada, ig_dato, barras
+social("¿Cuánto gana un docente?", millones(a.por_vinculo[A], 2) + " millones", f"de Gs de sueldo básico medio en el MEC · {spct(var_r, 0)} real desde {A0}",
+       (list(a.index), list(a.real)), color=AZUL)
+ig_portada("Día del Maestro", "¿Cuánto\ngana un\ndocente?", f"Sueldo básico medio en el MEC:\n{millones(a.por_vinculo[A], 2)} millones de guaraníes.", (list(a.index), list(a.real)), color=AZUL)
+ig_dato(2, "Sueldo básico real", f"Desde {A0}, el sueldo básico medio del MEC subió", spct(var_r, 0),
+        "descontada la inflación", f"Millones de guaraníes de {A} por mes (junio)",
+        barras(list(a.index), list(a.real / 1e6), [coma(x / 1e6, 1) for x in a.real]), color=AZUL)
+```

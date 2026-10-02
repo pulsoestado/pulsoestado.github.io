@@ -1,0 +1,93 @@
+---
+title: "Una persona, varios cargos"
+description: "En el Estado no es lo mismo una persona, un vínculo y un cargo. En Educación y en las universidades, muchas personas suman varios cargos. Lo que muestran los registros y lo que todavía no se puede medir."
+date: 2027-06-24
+categories: [Dotación, Metodología, Educación]
+image: social.png
+image-alt: "Cargos por vínculo permanente por sector"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import plotly.graph_objects as go
+
+c = leer("categorias_oee.csv"); c = c[c.mes == 6]; A = int(c.anho.max())
+cg = c[c.anho == A].groupby(K_OEE).cantidad.sum().rename("cargos")
+v = leer("vinculos_mensual_oee.csv"); v = v[(v.anho == A) & (v.mes == 6)].set_index(K_OEE)
+j = pd.concat([cg, v.permanente], axis=1).dropna().join(instituciones().set_index(K_OEE)[["nombre_largo", "sector"]])
+j = j[j.permanente > 0]
+R = j.cargos.sum() / j.permanente.sum()
+s = j.groupby("sector")[["cargos", "permanente"]].sum(); s["r"] = s.cargos / s.permanente
+s = s[s.permanente >= 1000].sort_values("r")
+g = j[j.permanente >= 500].assign(r=lambda d: d.cargos / d.permanente).sort_values("r", ascending=False)
+extra = (j.cargos - j.permanente).clip(lower=0).sum()
+r = leer("personas_vinculos_oee.csv")
+pa = int(r[(r.mes == 6) & (r.personas > 0)].anho.max())
+rr = r[(r.anho == pa) & (r.mes == 6)]
+P, V = rr.personas.sum(), rr.vinculos.sum()
+doble = V - P
+```
+
+::: {.en-breve}
+**En breve**
+
+- En junio de `{python} A`, los vínculos permanentes del Estado tenían en promedio **`{python} coma(R, 2)` cargos** cada uno: unos `{python} miles(extra)` cargos "de más".
+- Casi todos esos cargos adicionales están en **Educación**: en el Ministerio de Educación y en las universidades, un docente puede tener varios cargos, turnos o cátedras.
+- Dentro de una misma institución, `{python} miles(doble)` personas tenían dos vínculos a la vez (uno permanente y otro contratado) en junio de `{python} pa`: el `{python} pct(doble / P * 100, 1)`.
+- Lo que no se puede medir con los datos abiertos es cuántas personas cobran en **más de una institución**.
+:::
+
+## Persona, vínculo y cargo
+
+Son tres cosas distintas que suelen confundirse ([vínculos, personas y cargos](../2026-11-27-vinculos-personas-cargos/)):
+
+- La **persona** es quien cobra.
+- El **vínculo** es su relación con una institución en un mes: permanente o contratado. Una persona con un cargo permanente y un contrato en la misma institución tiene dos vínculos.
+- El **cargo** es la posición presupuestada, con su categoría y su sueldo. Un vínculo permanente puede tener más de un cargo, por ejemplo, un docente que enseña en dos turnos.
+
+## Dónde hay más cargos por persona
+
+```{python}
+#| label: fig-sector
+#| fig-cap: "Cargos con sueldo básico por cada vínculo permanente, por sector (junio)"
+fig = barras_h(s.index, s.r, [coma(x, 2) for x in s.r], colores=[AZUL if x > 1.02 else "#c9d3df" for x in s.r], rango=[0, s.r.max() * 1.2])
+fig.add_vline(x=1, line=dict(color=GRIS, width=1, dash="dot"))
+fig.show(config=CONFIG)
+```
+
+```{python}
+#| label: tbl
+#| output: asis
+print("| Institución | Vínculos permanentes | Cargos | Cargos por vínculo |\n|---|--:|--:|--:|")
+for _, x in g.head(8).iterrows():
+    print(f"| {x.nombre_largo} | {miles(x.permanente)} | {miles(x.cargos)} | {coma(x.r, 2)} |")
+print(f"\n: Instituciones con al menos 500 vínculos permanentes y más cargos por vínculo, junio de {A}")
+```
+
+En la mayoría de las instituciones hay un cargo por vínculo. Las excepciones son las que tienen personal docente: las **universidades nacionales**, donde un profesor puede tener varias cátedras, y el **Ministerio de Educación**. En algunos sectores, como las municipalidades, la relación es menor a uno porque parte de los vínculos permanentes no tiene un cargo con sueldo básico registrado en el mes.
+
+## Lo que falta para medir el multiempleo
+
+La pregunta que más interesa, cuántas personas cobran en dos o más instituciones a la vez, por ejemplo, un médico del Ministerio de Salud que también trabaja en el IPS o un docente que enseña en una escuela pública y en una universidad, no se puede responder con los datos abiertos: hace falta un **identificador anónimo por persona** que sea el mismo en todas las instituciones. La [guía del BID](../2027-05-27-indicadores-de-nomina/) lo incluye entre sus indicadores básicos de auditoría de nómina.
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA (cargos con sueldo básico por categoría y vínculos por mes) y el resumen de personas y vínculos por institución. [Descargar los datos](/datos/).
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_portada, ig_dato, barras_h as bh
+cort = lambda x: x.replace("Servicio civil del Ejecutivo", "Servicio civil").replace("Entes autónomos y autárquicos", "Entes autónomos")
+social("Una persona,\nvarios cargos", coma(s.loc["Educación", "r"], 2) + " cargos", "por vínculo permanente en Educación", color=AZUL)
+ig_portada("Metodología", "Una persona,\nvarios cargos", "Persona, vínculo y cargo no son lo mismo.\nEn Educación, la diferencia es grande.", color=AZUL)
+o = s.tail(6)
+ig_dato(2, "Cargos por vínculo", "En Educación, cada vínculo permanente tiene", coma(s.loc["Educación", "r"], 2), "cargos en promedio",
+        "Cargos por vínculo permanente, por sector", bh([cort(x) for x in o.index], o.r, [coma(x, 2) for x in o.r], ref=1), color=AZUL)
+```

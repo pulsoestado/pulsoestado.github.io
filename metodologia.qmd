@@ -7,10 +7,14 @@ subtitle: "Qué miden nuestros datos y cómo los procesamos"
 
 | Fuente | Contenido | Uso en Pulso del Estado |
 |---|---|---|
-| SICCA / SINARH: funcionarios | Personas por institución (OEE), mes, vínculo y sexo | Dotación de personal |
-| SICCA / SINARH: nivel y categoría | Cantidad, monto presupuestado y devengado por categoría salarial | Estructura salarial y brechas |
-| SICCA / SINARH: presupuesto | Presupuestado y devengado por objeto de gasto | Masa salarial y sus componentes |
-| BCP | Índice de precios al consumidor (IPC) | Valores en términos reales |
+| SINARH / SICCA: funcionarios | Vínculos por institución (OEE), mes, vínculo y sexo | Dotación de personal |
+| SICCA: funcionarios con discapacidad | Vínculos por institución, mes, vínculo, sexo y discapacidad certificada | Inclusión laboral (cuota del 5%) |
+| SINARH / SICCA: nivel y categoría | Cargos, sueldo básico presupuestado y devengado por categoría salarial y sexo | Estructura salarial y brechas de género |
+| SINARH / SICCA: presupuesto | Presupuestado y devengado mensual por objeto de gasto | Masa salarial y sus componentes |
+| BCP, Anexo Estadístico | IPC promedio anual, salario mínimo legal e Índice de Sueldos y Salarios | Valores reales y comparación con salarios privados |
+| BCP, informe mensual de inflación | Inflación interanual del mes | Variaciones reales del SITUCAP |
+
+El SINARH (Sistema Integrado de Administración de Recursos Humanos) registra al personal de la Administración Central; el SICCA (Sistema Integrado Centralizado de la Carrera Administrativa) al de la Administración Descentralizada, las municipalidades y las sociedades anónimas del Estado.
 
 ## Definiciones clave
 
@@ -31,6 +35,37 @@ subtitle: "Qué miden nuestros datos y cómo los procesamos"
 - **Vínculos, personas y cargos no son lo mismo.** Un *vínculo* es una relación laboral pagada en el mes; una *persona* puede tener más de uno; un *cargo presupuestado* es la autorización de gasto en el Presupuesto General de la Nación, que puede estar ocupado o no.
 - En el resumen de **personas distintas**, 2025 es un año parcial (enero a mayo en la versión actual de los datos). En el registro de **vínculos** (DW SICCA-SINARH) los datos llegan hasta agosto de 2026.
 - La cobertura de algunas instituciones, como las fuerzas públicas, puede diferir entre fuentes; se indica en cada nota cuando corresponde.
+
+**Masa salarial.** Monto devengado en servicios personales (grupo 100 del clasificador presupuestario): sueldos, dietas, gastos de representación, aguinaldo, remuneraciones temporales, bonificaciones y asignaciones, personal contratado, servicio exterior y otros gastos del personal.
+
+**Términos reales.** Los valores anuales se expresan en guaraníes de 2025 con el IPC promedio anual del Banco Central del Paraguay. Las variaciones mensuales del SITUCAP se descuentan con la inflación interanual del mes.
+
+**Remuneración media por vínculo.** Masa salarial dividida por los vínculos promedio del período. Es un costo medio, no el sueldo de una persona: mezcla cargos, jornadas y tipos de vínculo.
+
+## Clasificación sectorial (versión 1)
+
+| Sector | Instituciones |
+|---|---|
+| Educación | Ministerio de Educación y Ciencias y universidades nacionales |
+| Salud | Ministerio de Salud Pública y Bienestar Social e Instituto de Previsión Social |
+| Fuerzas públicas | Policía Nacional y Ministerio de Defensa Nacional |
+| Servicio civil del Ejecutivo | Resto del Poder Ejecutivo: ministerios, Presidencia, Vicepresidencia y secretarías |
+| Poder Legislativo | Congreso y organismos del Poder Legislativo |
+| Poder Judicial | Corte Suprema, Ministerio Público, Justicia Electoral y organismos auxiliares |
+| Municipalidades | Municipalidades que reportan a SICCA |
+| Gobiernos departamentales | Gobernaciones |
+| Entes autónomos y autárquicos | Entes autónomos y autárquicos |
+| Empresas públicas | Empresas públicas |
+| SA del Estado | Sociedades anónimas con participación accionaria del Estado |
+| Otros organismos | Contraloría, Banco Central, entidades financieras oficiales, cajas de jubilación y otros organismos del Estado |
+
+La clasificación se aplica con el script `scripts/clasificacion_sectores.py` y puede revisarse en futuras versiones.
+
+## Correcciones a los datos
+
+- **Aguinaldo de diciembre de 2021.** En el registro de presupuesto figura en 6,0 billones de guaraníes, unas cinco veces lo normal (1,2 billones en 2020 y 2022). Para cada institución se reemplazó por el promedio de sus aguinaldos de 2020 y 2022. Lo mismo ocurre con el aguinaldo del personal del servicio exterior (objeto 163: 82 mil millones de guaraníes en diciembre de 2021, frente a 15 mil millones en 2020 y 2022), que se corrigió de la misma manera.
+- **Sueldo básico de junio de 2017.** Presenta valores atípicos en el archivo de nivel y categoría; los análisis de brecha de género comienzan en 2018.
+- **Municipalidad de Asunción.** No figura en los registros de SINARH y SICCA, por lo que los totales municipales la excluyen.
 
 ## Reproducibilidad
 

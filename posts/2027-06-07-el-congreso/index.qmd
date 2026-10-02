@@ -1,0 +1,64 @@
+---
+title: "Cuánto personal tiene el Congreso"
+description: "La Cámara de Senadores, la Cámara de Diputados y el Congreso Nacional suman más de cuatro mil vínculos. Cuántos son contratos y cuánto cuesta cada uno."
+date: 2027-06-07
+categories: [El dato de la semana, Poder Legislativo, Instituciones]
+image: social.png
+image-alt: "Vínculos del Poder Legislativo por cámara"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import plotly.graph_objects as go
+
+UA = ultimo_anio_completo(); A1, M = ultimo_mes()
+p = vin_promedio_oee(UA); p = p[p.sector == "Poder Legislativo"].set_index("nombre")
+m = masa_oee_anual(UA).set_index("nombre")
+p = p.join(m[["masa", "Aguinaldo", "Dietas"]])
+p["pc"] = p.contratado / p.total * 100; p["rem"] = (p.masa - p.Aguinaldo) / 12 / p.total
+T = p.total.sum(); MS = p.masa.sum()
+est = leer("masa_anual_sector.csv").query("anho == @UA")
+rem_est = est.devengado_sin_aguinaldo.sum() / 12 / est.vinculos_promedio.sum()
+rem_l = (MS - p.Aguinaldo.sum()) / 12 / T
+v = vin_oee(); s = v[v.sector == "Poder Legislativo"].groupby("anho").total.mean().loc[2017:UA]
+```
+
+```{python}
+#| label: kpis
+#| output: asis
+print(kpis([(miles(T), f"vínculos en el Poder Legislativo ({UA})"), (milmillones(MS) + " mil M", "de guaraníes en salarios"),
+            (coma(rem_l / rem_est, 1) + " veces", "la remuneración media del Estado")]))
+```
+
+En `{python} UA` las tres instituciones del Poder Legislativo pagaron en promedio **`{python} miles(T)` vínculos** y `{python} milmillones(MS)` mil millones de guaraníes en salarios, incluidas las dietas de senadores y diputados (`{python} milmillones(p.Dietas.sum())` mil millones). La remuneración media por vínculo fue de `{python} millones(rem_l)` millones de guaraníes por mes, `{python} coma(rem_l / rem_est, 1)` veces la del conjunto del Estado.
+
+```{python}
+#| label: tbl
+#| output: asis
+print(f"| Institución | Vínculos | % contratados | Masa salarial (mil M Gs) | Remuneración media (M Gs/mes) |\n|---|--:|--:|--:|--:|")
+for n, r in p.sort_values("total", ascending=False).iterrows():
+    print(f"| {n} | {miles(r.total)} | {pct(r.pc, 0)} | {milmillones(r.masa)} | {millones(r.rem)} |")
+print(f"\n: Poder Legislativo, promedio de {UA}")
+```
+
+La **Cámara de Diputados**, con 80 miembros, es la de más personal; la **Cámara de Senadores**, con 45, tiene la remuneración media más alta. El **Congreso Nacional** agrupa los servicios comunes de las dos cámaras. Desde 2017, el personal del Poder Legislativo cambió `{python} spct((s.iloc[-1] / s.iloc[0] - 1) * 100)`.
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH. Remuneración media = masa salarial sin aguinaldo / 12 / vínculos. [Descargar los datos](/datos/).
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_dato, barras
+o = p.sort_values("total")
+social("Cuánto personal\ntiene el Congreso", miles(T) + " vínculos", f"y {milmillones(MS)} mil millones de Gs en salarios ({UA})")
+ig_dato(1, "El dato de la semana", "El Poder Legislativo paga", miles(T), f"vínculos y {milmillones(MS)} mil M de Gs al año",
+        f"Vínculos promedio de {UA}", barras([x.replace("Cámara de ", "") for x in o.index], o.total, [miles(x) for x in o.total]))
+```

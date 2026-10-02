@@ -1,0 +1,60 @@
+---
+title: "La UNA en números"
+description: "La Universidad Nacional de Asunción es la institución pública de educación superior más grande del país. Cuánto personal tiene, cuánto cuesta y cómo cambió."
+date: 2027-11-08
+categories: [El dato de la semana, Universidades, Educación]
+image: social.png
+image-alt: "Vínculos de la Universidad Nacional de Asunción por mes"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import plotly.graph_objects as go
+
+N = "Universidad Nacional de Asunción"
+v = vin_oee(); u = v[v.nombre == N].groupby(["anho", "mes"])[["total", "contratado", "mujeres"]].sum().reset_index()
+u = u[u.anho >= 2017]; u["fecha"] = pd.to_datetime(dict(year=u.anho, month=u.mes, day=1))
+x = u.iloc[-1]
+UA = ultimo_anio_completo(); mo = masa_oee_anual(UA); r = mo[mo.nombre == N].iloc[0]
+tm = mo.masa.sum()
+y = u.groupby("anho").total.mean()
+```
+
+```{python}
+#| label: kpis
+#| output: asis
+print(kpis([(miles(x.total), f"vínculos en {fecha_txt(x.anho, x.mes)}"), (milmillones(r.masa) + " mil M", f"de guaraníes en salarios ({UA})"),
+            (pct(r.masa / tm * 100, 1), "de la masa salarial pública")]))
+```
+
+La **Universidad Nacional de Asunción** pagó `{python} miles(x.total)` vínculos en `{python} fecha_txt(x.anho, x.mes)`, más de dos tercios de todo el personal de las universidades nacionales. El `{python} pct(x.contratado / x.total * 100, 0)` son contratos y el `{python} pct(x.mujeres / x.total * 100, 0)`, mujeres. Su presupuesto incluye las facultades, el Hospital de Clínicas y otros centros de la universidad. En `{python} UA` su masa salarial fue de `{python} milmillones(r.masa)` mil millones de guaraníes.
+
+```{python}
+#| label: fig
+#| fig-cap: "Vínculos de la Universidad Nacional de Asunción por mes"
+fig = go.Figure(go.Scatter(x=u.fecha, y=u.total, mode="lines", line=dict(color=VERDE_AGUA, width=2.6), hovertemplate="%{x|%b %Y}: <b>%{y:,.0f}</b><extra></extra>"))
+estilo(fig, alto=300, leyenda=False).update_yaxes(tickformat=",.0f")
+fig.show(config=CONFIG)
+```
+
+Desde 2017, el promedio anual de vínculos de la UNA cambió `{python} spct((y.loc[UA] / y.loc[2017] - 1) * 100)`. Como el Ministerio de Educación, tiene una caída cada enero y se recupera con el inicio del año académico. El panorama de las diez universidades nacionales está en [universidades nacionales por dentro](../2027-03-11-universidades-nacionales/).
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH. [Descargar los datos](/datos/).
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_dato, lineas
+a = u[u.mes == int(x.mes)]
+social("La UNA en números", miles(x.total) + " vínculos", f"en {fecha_txt(x.anho, x.mes)} · {milmillones(r.masa)} mil M de Gs en salarios ({UA})", (list(range(len(u))), list(u.total)), color=VERDE_AGUA)
+ig_dato(1, "El dato de la semana", "La Universidad Nacional de Asunción tiene", miles(x.total), f"vínculos ({fecha_txt(x.anho, x.mes)})",
+        f"Vínculos de cada {MESES[int(x.mes) - 1]}", lineas(list(a.anho), {"UNA": (list(a.total), VERDE_AGUA)}, fmt=miles), color=VERDE_AGUA)
+```

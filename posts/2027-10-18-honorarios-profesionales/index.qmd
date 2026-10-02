@@ -1,0 +1,62 @@
+---
+title: "Honorarios profesionales: quién los paga"
+description: "Los honorarios profesionales son la forma de contratar servicios de profesionales independientes. Cuánto suman y qué instituciones los usan más."
+date: 2027-10-18
+categories: [El dato de la semana, Contratados, Masa salarial]
+image: social.png
+image-alt: "Instituciones que más pagan en honorarios profesionales"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+
+UA = ultimo_anio_completo()
+o = leer("masa_anual_objeto.csv")
+h = o[(o.objeto_gasto == 145) & o.anho.between(2017, UA)].groupby("anho").devengado.sum()
+real = h * deflactor(UA).reindex(h.index)
+oo = leer("masa_anual_oee_objeto.csv").merge(instituciones()[K_OEE + ["nombre_largo", "sector"]], on=K_OEE)
+oo = oo[(oo.objeto_gasto == 145) & (oo.anho == UA)]
+top = oo.sort_values("devengado", ascending=False).head(10)
+n = int((oo.devengado > 0).sum())
+part10 = top.devengado.sum() / h[UA] * 100
+```
+
+```{python}
+#| label: kpis
+#| output: asis
+print(kpis([(milmillones(h[UA]) + " mil M", f"de guaraníes en honorarios profesionales ({UA})"), (str(n), "instituciones los pagan"),
+            (spct((real[UA] / real[2017] - 1) * 100, 0), "real desde 2017")]))
+```
+
+Los **honorarios profesionales** (objeto 145) pagan servicios de profesionales contratados para tareas específicas: consultores, asesores, técnicos. En `{python} UA` sumaron **`{python} milmillones(h[UA])` mil millones de guaraníes** en `{python} n` instituciones. Las diez que más pagan concentran el `{python} pct(part10, 0)`; encabeza la lista **`{python} top.nombre_largo.iloc[0]`** (`{python} milmillones(top.devengado.iloc[0])` mil millones).
+
+```{python}
+#| label: fig
+#| fig-cap: "Las 10 instituciones que más pagan en honorarios profesionales, miles de millones de guaraníes"
+s = top.sort_values("devengado")
+fig = barras_h(s.nombre_largo, s.devengado / 1e9, [coma(x / 1e9, 1) for x in s.devengado], colores=[NARANJA] * len(s), rango=[0, s.devengado.max() / 1e9 * 1.2])
+fig.show(config=CONFIG)
+```
+
+Es un objeto chico dentro de la masa salarial, pero conviene seguirlo porque paga servicios específicos que no corresponden a un cargo permanente. Descontada la inflación, el total cambió `{python} spct((real[UA] / real[2017] - 1) * 100, 0)` desde 2017.
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA (devengado del objeto 145). [Descargar los datos](/datos/).
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_dato, barras_h as bh
+cort = lambda x: x.replace("Ministerio de", "Min. de").replace("Ministerio del", "Min. del").replace("Universidad Nacional de Asunción", "UNA")
+s = top.head(6).sort_values("devengado")
+social("Honorarios profesionales:\nquién los paga", milmillones(h[UA]) + " mil millones", f"de guaraníes en {UA}, en {n} instituciones")
+ig_dato(1, "El dato de la semana", f"En {UA}, los honorarios profesionales sumaron", milmillones(h[UA]) + " mil M", "de guaraníes",
+        "Miles de millones de Gs", bh([cort(x) for x in s.nombre_largo], s.devengado / 1e9, [coma(x / 1e9, 1) for x in s.devengado], colores=[NARANJA] * len(s)))
+```

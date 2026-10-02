@@ -1,0 +1,109 @@
+---
+title: "Educación al empezar las clases"
+description: "El Ministerio de Educación y las universidades nacionales reúnen casi un tercio del empleo público. Cuánto personal tienen, cómo cambia entre el receso y el inicio de clases y cuánto subió su remuneración real."
+date: 2027-02-11
+categories: [Educación, Dotación, Remuneraciones]
+image: social.png
+image-alt: "Remuneración media real del Ministerio de Educación y Ciencias desde 2017"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import plotly.graph_objects as go
+
+UA = ultimo_anio_completo(); A1, M = ultimo_mes(); A0 = 2017
+v = vin_oee(); v = v[v.sector == "Educación"]
+v["grupo"] = v.nombre.where(v.nombre == "Ministerio de Educación y Ciencias", "Universidades nacionales")
+g = v.groupby(["anho", "mes", "grupo"])[["total", "mujeres", "contratado"]].sum().reset_index()
+u = g[(g.anho == A1) & (g.mes == M)].set_index("grupo")
+tot_estado = serie_mensual().set_index(["anho", "mes"]).total.loc[(A1, M)]
+part = u.total.sum() / tot_estado * 100
+mec = g[g.grupo == "Ministerio de Educación y Ciencias"].set_index(["anho", "mes"]).total
+dic, ene = mec.loc[(UA, 12)], mec.loc[(UA + 1, 1)] if (UA + 1, 1) in mec.index else None
+mar = mec.loc[(UA + 1, 3)] if (UA + 1, 3) in mec.index else None
+# Remuneración media real (sin aguinaldo) por grupo
+mo = leer("masa_anual_oee.csv").merge(instituciones()[K_OEE + ["nombre", "sector"]], on=K_OEE)
+mo = mo[(mo.sector == "Educación") & (mo.componente != "Aguinaldo") & mo.anho.between(A0, UA)]
+mo["grupo"] = mo.nombre.where(mo.nombre == "Ministerio de Educación y Ciencias", "Universidades nacionales")
+ma = mo.groupby(["anho", "grupo"]).devengado.sum()
+va = g[g.anho.between(A0, UA)].groupby(["anho", "grupo"]).total.mean()
+rem = (ma / 12 / va * deflactor(UA).reindex(ma.index.get_level_values(0)).values).unstack()
+var_mec = (rem.loc[UA, "Ministerio de Educación y Ciencias"] / rem.loc[A0, "Ministerio de Educación y Ciencias"] - 1) * 100
+var_uni = (rem.loc[UA, "Universidades nacionales"] / rem.loc[A0, "Universidades nacionales"] - 1) * 100
+vmec = (va.unstack().loc[UA, "Ministerio de Educación y Ciencias"] / va.unstack().loc[A0, "Ministerio de Educación y Ciencias"] - 1) * 100
+pm = u.mujeres.sum() / u.total.sum() * 100
+sm = leer("bcp_salario_minimo.csv").set_index("anho")
+sm_r = (sm.salario_minimo.loc[UA] / sm.salario_minimo.loc[A0]) / (sm.ipc.loc[UA] / sm.ipc.loc[A0]) * 100 - 100
+```
+
+::: {.en-breve}
+**En breve**
+
+- En `{python} fecha_txt(A1, M)` el sector Educación pagó **`{python} miles(u.total.sum())` vínculos**, el `{python} pct(part, 0)` del Estado: `{python} miles(u.loc['Ministerio de Educación y Ciencias', 'total'])` en el Ministerio de Educación y `{python} miles(u.loc['Universidades nacionales', 'total'])` en las universidades nacionales.
+- El `{python} pct(pm, 0)` son mujeres.
+- Entre `{python} A0` y `{python} UA`, la cantidad de vínculos del Ministerio de Educación casi no cambió (`{python} spct(vmec)`), pero su **remuneración media real subió `{python} pct(var_mec, 0)`**. En las universidades el aumento fue de `{python} pct(var_uni, 0)`.
+:::
+
+## Del receso a las aulas
+
+```{python}
+#| label: fig-mes
+#| fig-cap: "Vínculos del Ministerio de Educación y Ciencias por mes, últimos tres años"
+fig = go.Figure()
+cols = {UA - 1: "#c9d3df", UA: "#9db9de", UA + 1: AZUL}
+for a, c in cols.items():
+    d = mec.loc[a] if a in mec.index.get_level_values(0) else None
+    if d is None: continue
+    fig.add_trace(go.Scatter(x=[MES_C[m - 1] for m in d.index], y=d.values, name=str(a), mode="lines+markers",
+                             line=dict(color=c, width=2.8 if a == max(cols) else 2),
+                             hovertemplate=f"{a}: %{{y:,.0f}}<extra></extra>"))
+estilo(fig, alto=340).update_yaxes(tickformat=",.0f")
+fig.show(config=CONFIG)
+```
+
+Cada año el Ministerio de Educación tiene su punto más bajo en enero, cuando parte de los docentes deja de cobrar durante el receso escolar. `{python} f"En enero de {UA + 1} pagó {miles(ene)} vínculos, {miles(dic - ene)} menos que en diciembre de {UA}." if ene is not None else ""` `{python} f"En marzo, con las clases ya iniciadas, volvió a {miles(mar)}." if mar is not None else ""` Por eso, cuando se lee una cifra del personal docente, importa el mes al que corresponde.
+
+## Más sueldo, la misma cantidad de personal
+
+```{python}
+#| label: fig-rem
+#| fig-cap: "Remuneración media mensual por vínculo, sin aguinaldo, en millones de guaraníes del último año completo"
+fig = go.Figure()
+for gru, c in [("Ministerio de Educación y Ciencias", AZUL), ("Universidades nacionales", VERDE_AGUA)]:
+    fig.add_trace(go.Scatter(x=rem.index, y=rem[gru] / 1e6, name=gru, mode="lines+markers", line=dict(color=c, width=2.6),
+                             hovertemplate=gru + ": %{y:.2f} millones<extra></extra>"))
+estilo(fig, alto=340).update_xaxes(dtick=1)
+fig.show(config=CONFIG)
+```
+
+Descontada la inflación, lo que cuesta en promedio cada vínculo del Ministerio de Educación pasó de `{python} millones(rem.loc[A0, 'Ministerio de Educación y Ciencias'], 2)` a `{python} millones(rem.loc[UA, 'Ministerio de Educación y Ciencias'], 2)` millones de guaraníes por mes: **`{python} spct(var_mec, 0)`**. En el mismo período el salario mínimo real cambió `{python} spct(sm_r)`. Es el resultado de los reajustes salariales docentes de los últimos años, que en Educación se aplicaron sobre una planta casi constante. En [¿Más gente o mejores sueldos?](../2026-10-30-mas-gente-o-mejores-sueldos/) mostramos que es el modelo opuesto al de Salud, que sumó personal con remuneraciones más bajas.
+
+::: {.callout-note collapse="true"}
+## Notas
+
+- Sector Educación = Ministerio de Educación y Ciencias y universidades nacionales (clasificación de Pulso del Estado).
+- Remuneración media = devengado en servicios personales sin aguinaldo / 12 / vínculos promedio del año, en guaraníes del último año completo (IPC del BCP).
+:::
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH, SICCA y del Banco Central del Paraguay. [Descargar los datos](/datos/).
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_portada, ig_dato, lineas
+r = rem["Ministerio de Educación y Ciencias"] / 1e6
+social("Educación al empezar\nlas clases", spct(var_mec, 0), f"remuneración media real del MEC, {A0}–{UA}", (list(r.index), list(r)), color=AZUL)
+ig_portada("Educación", "Educación al\nempezar las\nclases", f"{miles(u.total.sum())} vínculos: el {pct(part, 0)}\ndel empleo público.", (list(r.index), list(r)), color=AZUL)
+ig_dato(2, "Remuneración real", f"Entre {A0} y {UA}, la remuneración media real del MEC", spct(var_mec, 0),
+        f"con casi el mismo personal ({spct(vmec)})", f"Millones de guaraníes de {UA} por mes, sin aguinaldo",
+        lineas(list(rem.index), {"MEC": (list(r), AZUL), "Universidades": (list(rem['Universidades nacionales'] / 1e6), VERDE_AGUA)},
+               fmt=lambda x: coma(x, 1)), color=AZUL)
+```

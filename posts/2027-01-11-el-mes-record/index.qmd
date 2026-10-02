@@ -1,0 +1,79 @@
+---
+title: "El mes récord"
+description: "¿Cuál fue el mes en que el Estado paraguayo pagó más vínculos? La serie mensual desde 2017 muestra cuándo se alcanzó el máximo y cuánto creció desde entonces."
+date: 2027-01-11
+categories: [El dato de la semana, Dotación]
+image: social.png
+image-alt: "Vínculos pagados por mes desde 2017, con el máximo de la serie marcado"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import plotly.graph_objects as go
+
+s = serie_mensual()
+s = s[s.anho >= 2017].reset_index(drop=True)
+i = s.total.idxmax(); r = s.loc[i]
+p0 = s.iloc[0]
+UA, UM = int(s.anho.iloc[-1]), int(s.mes.iloc[-1])
+var = (r.total / p0.total - 1) * 100
+# récords anteriores: meses que superaron a todos los previos
+s["max_prev"] = s.total.cummax().shift()
+records = s[s.total > s.max_prev]
+n_rec = int((records.anho >= r.anho - 1).sum())
+ult = s.iloc[-1]
+dist = ult.total - r.total
+mismo_mes_ant = s[(s.anho == r.anho - 1) & (s.mes == r.mes)]
+dif_ant = r.total - mismo_mes_ant.total.iloc[0] if len(mismo_mes_ant) else None
+```
+
+```{python}
+#| label: kpis
+#| output: asis
+print(kpis([
+    (miles(r.total), f"vínculos en {fecha_txt(r.anho, r.mes)}, el máximo de la serie"),
+    (spct(var), f"frente a {fecha_txt(p0.anho, p0.mes)}"),
+]))
+```
+
+El mes en que el Estado pagó más vínculos desde que empieza nuestra serie fue **`{python} fecha_txt(r.anho, r.mes)`**, con **`{python} miles(r.total)`**. `{python} f"Son {miles(dif_ant)} más que en el mismo mes del año anterior." if dif_ant is not None else ""` En `{python} fecha_txt(UA, UM)`, el último mes con datos, el total fue de `{python} miles(ult.total)` (`{python} signo(dist)` frente al récord).
+
+```{python}
+#| label: fig-serie
+#| fig-cap: "Vínculos pagados por mes, todo el Estado"
+fig = go.Figure()
+fig.add_trace(go.Scatter(x=s.fecha, y=s.total, mode="lines", line=dict(color=AZUL, width=2.4),
+                         hovertemplate="%{x|%b %Y}: <b>%{y:,.0f}</b><extra></extra>"))
+fig.add_trace(go.Scatter(x=[r.fecha], y=[r.total], mode="markers+text", marker=dict(color=NARANJA, size=12),
+                         text=[f"Récord: {miles(r.total)}"], textposition="top left",
+                         textfont=dict(color=NARANJA, size=13), hoverinfo="skip"))
+estilo(fig, alto=380, leyenda=False)
+fig.update_yaxes(tickformat=",.0f")
+fig.show(config=CONFIG)
+```
+
+La línea tiene un patrón que se repite: cae cada enero y sube durante el año. Por eso los récords suelen aparecer en la segunda mitad del año o, como en los últimos años, cuando ingresan grandes grupos de personal nuevo, como las promociones policiales de mayo. Desde `{python} int(r.anho) - 1`, la serie marcó un nuevo máximo `{python} n_rec` veces.
+
+Los últimos meses de la serie son **preliminares**: algunas instituciones cargan sus datos con atraso, y el total de esos meses suele subir con las actualizaciones.
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA (vínculos pagados por mes). [Descargar los datos](/datos/).
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_dato, lineas
+t = s[s.mes == r.mes]
+social("El mes récord del\nempleo público", miles(r.total), f"vínculos en {fecha_txt(r.anho, r.mes)}",
+       (list(range(len(s))), list(s.total)))
+ig_dato(1, "El dato de la semana", f"En {fecha_txt(r.anho, r.mes)} el Estado pagó", miles(r.total),
+        "vínculos: el máximo desde 2017", f"Vínculos de cada {MESES[int(r.mes) - 1]}, en miles",
+        lineas(list(t.anho), {"Vínculos": (list(t.total / 1000), AZUL)}, fmt=lambda x: coma(x, 0) + " mil"))
+```

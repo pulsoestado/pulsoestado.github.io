@@ -1,0 +1,73 @@
+---
+title: "Gastos de representación: cuánto y dónde"
+description: "Los gastos de representación son un complemento que cobran las autoridades. Cuánto suman en un año y qué instituciones pagan más."
+date: 2027-03-15
+categories: [El dato de la semana, Masa salarial, Remuneraciones]
+image: social.png
+image-alt: "Gastos de representación por institución"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import plotly.graph_objects as go
+
+UA = ultimo_anio_completo()
+m = masa_oee_anual(UA)
+g = m[m["Gastos de representación"] > 0].copy()
+tot = g["Gastos de representación"].sum(); masa = m.masa.sum()
+top = g.sort_values("Gastos de representación", ascending=False).head(12)
+part_top = top["Gastos de representación"].sum() / tot * 100
+n = len(g)
+a = leer("masa_anual_sector.csv")
+hist = leer("masa_mensual_sector.csv")
+hist = hist[(hist.componente == "Gastos de representación") & hist.anho.between(2017, UA)].groupby("anho").devengado.sum()
+real = hist * deflactor(UA).reindex(hist.index)
+var = (real[UA] / real[2017] - 1) * 100
+sec = g.groupby("sector")["Gastos de representación"].sum().sort_values(ascending=False)
+```
+
+```{python}
+#| label: kpis
+#| output: asis
+print(kpis([
+    (milmillones(tot) + " mil M", f"de guaraníes en gastos de representación ({UA})"),
+    (pct(tot / masa * 100), "de la masa salarial"),
+    (miles(n), "instituciones los pagan"),
+]))
+```
+
+Los **gastos de representación** (objeto de gasto 113) son un monto que se suma al sueldo de las autoridades: ministros, legisladores, magistrados, intendentes, directores. En `{python} UA` el Estado pagó **`{python} milmillones(tot)` mil millones de guaraníes** por este concepto en `{python} n` instituciones. Las 12 que más pagan concentran el `{python} pct(part_top, 0)`.
+
+```{python}
+#| label: fig-top
+#| fig-cap: "Las 12 instituciones que más pagan en gastos de representación, en miles de millones de guaraníes"
+o = top.sort_values("Gastos de representación")
+fig = barras_h(o.nombre_largo, o["Gastos de representación"] / 1e9, [coma(x / 1e9) for x in o["Gastos de representación"]],
+               colores=[AMARILLO] * len(o), rango=[0, o["Gastos de representación"].max() / 1e9 * 1.2])
+fig.show(config=CONFIG)
+```
+
+Por sector, el que más paga es **`{python} sec.index[0]`** (`{python} milmillones(sec.iloc[0])` mil millones), seguido por **`{python} sec.index[1]`** (`{python} milmillones(sec.iloc[1])`). Las **municipalidades**, con sus intendentes y concejales, pagan además dietas, que se registran en otro objeto de gasto ([municipalidades por dentro](../2026-12-18-municipalidades-por-dentro/)). Descontada la inflación, el total cambió `{python} spct(var)` desde 2017.
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA (devengado en el objeto de gasto 113). [Descargar los datos](/datos/).
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_dato, barras_h as bh
+o = top.head(8).sort_values("Gastos de representación")
+cort = lambda x: x.replace("Ministerio de", "Min. de").replace("Municipalidad de", "Munic. de").replace("Ministerio Público", "Ministerio Público")
+social("Gastos de representación:\ncuánto y dónde", milmillones(tot) + " mil millones", f"de guaraníes en {UA}, en {n} instituciones", color=AMARILLO)
+ig_dato(1, "El dato de la semana", f"En {UA}, los gastos de representación sumaron", milmillones(tot) + " mil M",
+        "de guaraníes", "Las que más pagan, miles de millones de Gs",
+        bh([cort(x) for x in o.nombre_largo], o["Gastos de representación"] / 1e9, [coma(x / 1e9) for x in o["Gastos de representación"]],
+           colores=[AMARILLO] * len(o)), color=AMARILLO)
+```

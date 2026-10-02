@@ -1,0 +1,94 @@
+---
+title: "El salario mínimo desde 1980"
+description: "Más de cuatro décadas del salario mínimo legal en Paraguay, en guaraníes de hoy: cuándo creció, cuándo perdió poder de compra y cómo se compara con la remuneración media pública."
+date: 2027-07-01
+categories: [Salario mínimo, Inflación, Salarios]
+image: social.png
+image-alt: "Salario mínimo legal real desde 1980"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import plotly.graph_objects as go
+
+sm = leer("bcp_salario_minimo.csv").set_index("anho")
+tr = leer("bcp_salario_minimo_tramos.csv")
+AU = int(sm.index.max())
+r = sm.salario_minimo_real_ultimo
+pico = r.idxmax(); piso = r.loc[1990:].idxmin()
+vig = tr.iloc[-1]
+var_10 = (r.loc[AU] / r.loc[AU - 10] - 1) * 100
+var_80 = (r.loc[AU] / r.loc[1980] - 1) * 100
+UA = ultimo_anio_completo()
+t = leer("masa_anual_sector.csv").groupby("anho")[["devengado_sin_aguinaldo", "vinculos_promedio"]].sum().loc[2017:UA]
+rem = t.devengado_sin_aguinaldo / 12 / t.vinculos_promedio
+veces = rem / sm.salario_minimo.reindex(rem.index)
+reaj = tr.groupby("anho").salario_minimo.agg(["first", "last"]).loc[AU - 9:]
+```
+
+::: {.en-breve}
+**En breve**
+
+- El salario mínimo legal vigente es de **`{python} millones(vig.salario_minimo, 2)` millones de guaraníes** (`{python} vig.periodo.lower()` de `{python} int(vig.anho)`).
+- En guaraníes de `{python} AU`, el mínimo de hoy es `{python} pct(abs(var_80), 0)` `{python} "mayor" if var_80 >= 0 else "menor"` que el de 1980 y `{python} pct(abs(var_10), 0)` `{python} "mayor" if var_10 >= 0 else "menor"` que el de hace diez años.
+- Su poder de compra más alto fue en **`{python} pico`**; el más bajo desde 1990, en **`{python} piso`**.
+- La remuneración media por vínculo público equivale a `{python} coma(veces[UA], 1)` salarios mínimos (`{python} UA`).
+:::
+
+```{python}
+#| label: fig-largo
+#| fig-cap: "Salario mínimo legal, promedio de cada año, en millones de guaraníes del último año"
+fig = go.Figure(go.Scatter(x=r.index, y=r / 1e6, mode="lines", line=dict(color=AZUL, width=2.8), fill="tozeroy",
+                           fillcolor="rgba(42,120,214,.08)", hovertemplate="%{x}: <b>%{y:.2f} millones</b><extra></extra>"))
+estilo(fig, alto=360, leyenda=False)
+fig.update_yaxes(range=[0, r.max() / 1e6 * 1.15])
+fig.show(config=CONFIG)
+```
+
+Descontada la inflación, el salario mínimo paraguayo se movió en una banda relativamente estrecha durante más de cuarenta años. En los últimos años, los reajustes de mitad de año sostuvieron su poder de compra, pero no lo aumentaron de forma significativa.
+
+## Los últimos reajustes
+
+```{python}
+#| label: tbl-reaj
+#| output: asis
+print("| Año | Valores vigentes en el año (Gs) |\n|---|---|")
+for a, g in tr[tr.anho >= AU - 6].groupby("anho"):
+    print(f"| {a} | " + "; ".join(f"{p.lower()}: {miles(x)}" for p, x in zip(g.periodo, g.salario_minimo)) + " |")
+print("\n: Salario mínimo legal por tramo de vigencia (BCP)")
+```
+
+## El mínimo y el Estado
+
+```{python}
+#| label: fig-veces
+#| fig-cap: "Remuneración media por vínculo público, en cantidad de salarios mínimos"
+fig = go.Figure(go.Bar(x=veces.index, y=veces, marker_color=NARANJA, text=[coma(x, 2) for x in veces], textposition="outside",
+                       cliponaxis=False, textfont=dict(color=TINTA_GRAF), hovertemplate="%{x}: <b>%{y:.2f}</b><extra></extra>"))
+estilo(fig, alto=300, leyenda=False).update_layout(hovermode="closest")
+fig.update_xaxes(dtick=1); fig.update_yaxes(range=[0, veces.max() * 1.2])
+fig.show(config=CONFIG)
+```
+
+El salario mínimo es también una referencia para mirar los sueldos públicos. Una parte de los cargos públicos tiene un sueldo básico por debajo del mínimo, en general porque son de jornada parcial ([el 1 de mayo lo contamos](../2027-05-03-cargos-con-sueldo-minimo/)).
+
+::: {.fuente}
+**Fuente:** Banco Central del Paraguay, Anexo Estadístico (salario mínimo legal e IPC, base 1980 = 100). Elaboración de Pulso del Estado con datos de SINARH y SICCA para la remuneración pública. [Descargar los datos](/datos/).
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_portada, ig_dato, lineas
+social("El salario mínimo\ndesde 1980", millones(vig.salario_minimo, 2) + " millones", f"vigente desde {vig.periodo.split('/')[0].lower()} de {int(vig.anho)} · {spct(var_10, 0)} real en 10 años",
+       (list(r.index), list(r)), color=AZUL)
+ig_portada("Salario mínimo", "El salario\nmínimo\ndesde 1980", f"Hoy: {millones(vig.salario_minimo, 2)} millones de guaraníes.\nEn términos reales, casi en el mismo lugar.", (list(r.index), list(r)), color=AZUL)
+ig_dato(2, "En guaraníes de hoy", "El salario mínimo real, frente a 1980:", spct(var_80, 0), f"y frente a {AU - 10}: {spct(var_10, 0)}",
+        f"Millones de guaraníes de {AU}", lineas(list(r.index), {"Mínimo": (list(r / 1e6), AZUL)}, fmt=lambda x: coma(x, 2)), color=AZUL)
+```

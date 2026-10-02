@@ -1,0 +1,83 @@
+---
+title: "El dato del año: de dónde vino el crecimiento"
+description: "De cada 100 vínculos que sumó el Estado en el último año, cuántos fueron contratados y cuántos permanentes, y en qué sectores."
+date: 2027-12-27
+categories: [El dato de la semana, Dotación, Contratados]
+image: social.png
+image-alt: "Cambio interanual de vínculos permanentes y contratados"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import plotly.graph_objects as go
+
+A1, M = ultimo_mes()
+s = serie_mensual(); s = s[s.mes == M].set_index("anho")
+dt = s.total.diff(); dc = s.contratado.diff(); dp = s.permanente.diff()
+DT, DC, DP = dt[A1], dc[A1], dp[A1]
+crece = DT > 0
+part = DC / DT * 100 if DT else 0
+v = leer("vinculos_mensual_sector.csv"); v = v[v.mes == M]
+a = v[v.anho == A1 - 1].groupby("sector")[["permanente", "contratado"]].sum(); b = v[v.anho == A1].groupby("sector")[["permanente", "contratado"]].sum()
+d = (b - a).fillna(0); d["t"] = d.permanente + d.contratado; d = d.sort_values("t")
+h = pd.DataFrame({"p": dp, "c": dc}).dropna().loc[2017:]
+```
+
+```{python}
+#| label: kpis
+#| output: asis
+print(kpis([(signo(DT), f"vínculos entre {MESES[M - 1]} de {A1 - 1} y de {A1}"), (signo(DC), "contratados"), (signo(DP), "permanentes")]))
+```
+
+```{python}
+#| label: texto
+#| output: asis
+if crece and DC >= DT:
+    print(f"Entre {fecha_txt(A1 - 1, M)} y {fecha_txt(A1, M)} el Estado sumó {miles(DT)} vínculos. **Todo el aumento neto fue de contratados**: el personal contratado cambió {signo(DC)} y el permanente, {signo(DP)}.")
+elif crece and DC > 0:
+    print(f"Entre {fecha_txt(A1 - 1, M)} y {fecha_txt(A1, M)} el Estado sumó {miles(DT)} vínculos. **De cada 100, {coma(part, 0)} fueron contratados**: el personal contratado cambió {signo(DC)} y el permanente, {signo(DP)}.")
+else:
+    print(f"Entre {fecha_txt(A1 - 1, M)} y {fecha_txt(A1, M)} los vínculos del Estado cambiaron {signo(DT)}: el personal contratado cambió **{signo(DC)}** y el permanente, **{signo(DP)}**.")
+```
+
+```{python}
+#| label: fig
+#| fig-cap: "Cambio interanual de vínculos permanentes y contratados, mismo mes de cada año"
+fig = go.Figure()
+fig.add_trace(go.Bar(x=h.index, y=h.p, name="Permanentes", marker_color=AZUL, hovertemplate="%{x}: <b>%{y:+,.0f}</b><extra>Permanentes</extra>"))
+fig.add_trace(go.Bar(x=h.index, y=h.c, name="Contratados", marker_color=NARANJA, hovertemplate="%{x}: <b>%{y:+,.0f}</b><extra>Contratados</extra>"))
+estilo(fig, alto=320).update_layout(barmode="relative"); fig.update_xaxes(dtick=1); fig.update_yaxes(tickformat=",.0f")
+fig.add_hline(y=0, line=dict(color=GRIS, width=1)); fig.show(config=CONFIG)
+```
+
+## Por sector
+
+```{python}
+#| label: tbl
+#| output: asis
+print(f"| Sector | Permanentes | Contratados | Total |\n|---|--:|--:|--:|")
+for k, r in d.sort_values("t", ascending=False).iterrows():
+    print(f"| {k} | {signo(r.permanente)} | {signo(r.contratado)} | {signo(r.t)} |")
+print(f"\n: Cambio de vínculos entre {fecha_txt(A1 - 1, M)} y {fecha_txt(A1, M)}")
+```
+
+Que una persona figure como contratada o permanente depende del objeto de gasto con que se le paga, no necesariamente de la estabilidad de su puesto ([¿contrato o planta?](../2027-10-25-contrato-o-planta/)). Un año preelectoral es un buen momento para seguir este número ([contratos en el año preelectoral](../2027-10-04-contratos-ano-preelectoral/)).
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA. [Descargar los datos](/datos/).
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_dato, barras
+social("El dato del año", signo(DC) if not (crece and 0 < DC < DT) else f"{coma(part, 0)} de cada 100", "vínculos nuevos fueron contratados" if crece and 0 < DC < DT else f"contratados en un año · permanentes {signo(DP)}", color=NARANJA)
+ig_dato(1, "El dato del año", f"Entre {MESES[M - 1]} de {A1 - 1} y de {A1}", signo(DT), f"vínculos: {signo(DC)} contratados y {signo(DP)} permanentes",
+        "Cambio en un año", barras(["Permanentes", "Contratados", "Total"], [DP, DC, DT], [signo(x) for x in [DP, DC, DT]], colores=[AZUL, NARANJA, GRIS]))
+```

@@ -1,0 +1,373 @@
+codigo_nivel,codigo_entidad,codigo_oee,descripcion_oee,sector,agrupacion,vinculos,pcd,pcd_contratado_femenino,pcd_contratado_masculino,pcd_permanente_femenino,pcd_permanente_masculino
+11,1,1,CONGRESO NACIONAL (CN),Poder Legislativo,I - Administración Central,921,43,0,2,9,32
+11,2,1,HONORABLE CAMARA DE SENADORES (HCS),Poder Legislativo,I - Administración Central,1284,21,3,2,5,11
+11,3,1,HONORABLE CAMARA DE DIPUTADOS (HCD),Poder Legislativo,I - Administración Central,2217,33,3,9,5,16
+12,1,2,PRESIDENCIA DE LA REPUBLICA / GABINETE CIVIL,Servicio civil del Ejecutivo,I - Administración Central,258,1,0,1,0,0
+12,1,3,GABINETE MILITAR (GM),Servicio civil del Ejecutivo,I - Administración Central,19,0,0,0,0,0
+12,1,4,PROCURADURIA GENERAL DE LA REPUBLICA (PGR),Servicio civil del Ejecutivo,I - Administración Central,101,3,0,0,1,2
+12,1,6,AUDITORIA GENERAL DEL PODER EJECUTIVO (AGPE),Servicio civil del Ejecutivo,I - Administración Central,68,4,0,0,1,3
+12,1,10,SECRETARIA NACIONAL ANTIDROGAS (SENAD),Servicio civil del Ejecutivo,I - Administración Central,437,4,0,0,3,1
+12,1,12,SECRETARIA DE DESARROLLO PARA REPATRIADOS Y REFUGIADOS CONNACIONALES (SEDEREC),Servicio civil del Ejecutivo,I - Administración Central,125,5,0,0,3,2
+12,1,13,SECRETARIA NACIONAL DE TURISMO (SENATUR),Servicio civil del Ejecutivo,I - Administración Central,244,8,0,1,4,3
+12,1,14,SECRETARIA DE PREVENCION DE LAVADO DE DINERO O BIENES (SEPRELAD),Servicio civil del Ejecutivo,I - Administración Central,71,3,0,0,3,0
+12,1,15,CONSEJO NACIONAL DE CIENCIA Y TECNOLOGIA (CONACYT),Servicio civil del Ejecutivo,I - Administración Central,125,2,0,0,1,1
+12,1,16,ESCRIBANIA MAYOR DE GOBIERNO (EMG),Servicio civil del Ejecutivo,I - Administración Central,26,1,0,1,0,0
+12,1,19,SECRETARIA DE EMERGENCIA NACIONAL (SEN),Servicio civil del Ejecutivo,I - Administración Central,182,7,1,2,1,3
+12,1,22,SECRETARIA NACIONAL DE CULTURA (SNC),Servicio civil del Ejecutivo,I - Administración Central,164,4,0,0,2,2
+12,1,26,SECRETARIA NACIONAL POR LOS DERECHOS HUMANOS DE LAS PERSONAS CON DISCAPACIDAD (SENADIS),Servicio civil del Ejecutivo,I - Administración Central,456,55,5,5,23,22
+12,1,28,SECRETARIA NACIONAL DE LA JUVENTUD (SNJ),Servicio civil del Ejecutivo,I - Administración Central,26,1,0,0,0,1
+12,1,30,ORQUESTA SINFONICA NACIONAL (OSN),Servicio civil del Ejecutivo,I - Administración Central,87,2,0,0,1,1
+12,1,31,AGENCIA ESPACIAL DEL PARAGUAY(AEP),Servicio civil del Ejecutivo,I - Administración Central,20,0,0,0,0,0
+12,1,32,SECRETARIA NACIONAL DE ADMINISTRACION DE BIENES INCAUTADOS Y COMISADOS(SENABICO),Servicio civil del Ejecutivo,I - Administración Central,20,0,0,0,0,0
+12,2,1,VICEPRESIDENCIA DE LA REPUBLICA,Servicio civil del Ejecutivo,I - Administración Central,75,4,0,0,2,2
+12,3,1,MINISTERIO DEL INTERIOR (MI),Servicio civil del Ejecutivo,I - Administración Central,291,7,0,0,0,7
+12,3,2,POLICIA NACIONAL (PN),Fuerzas públicas,I - Administración Central,37741,0,0,0,0,0
+12,4,1,MINISTERIO DE RELACIONES EXTERIORES (MRE),Servicio civil del Ejecutivo,I - Administración Central,1149,23,0,0,10,13
+12,5,1,MINISTERIO DE DEFENSA NACIONAL (MDN),Fuerzas públicas,I - Administración Central,219,9,0,0,4,5
+12,5,2,CENTRO FINANCIERO 1 - COMANDO EN JEFE,Servicio civil del Ejecutivo,I - Administración Central,213,0,0,0,0,0
+12,5,3,CENTRO FINANCIERO 2 - COMANDO DEL EJERCITO,Servicio civil del Ejecutivo,I - Administración Central,455,1,0,0,0,1
+12,5,4,CENTRO FINANCIERO 3 - COMANDO DE LA ARMADA,Servicio civil del Ejecutivo,I - Administración Central,301,0,0,0,0,0
+12,5,5,CENTRO FINANCIERO 4 - COMANDO DE LA FUERZA AEREA,Servicio civil del Ejecutivo,I - Administración Central,110,3,0,0,2,1
+12,5,6,CENTRO FINANCIERO 5 - COMANDO LOGISTICO,Servicio civil del Ejecutivo,I - Administración Central,506,1,0,0,1,0
+12,6,1,MINISTERIO DE ECONOMIA Y FINANZAS (MEF),Servicio civil del Ejecutivo,I - Administración Central,1266,32,0,0,16,16
+12,7,1,MINISTERIO DE EDUCACION Y CIENCIAS (MEC),Educación,I - Administración Central,84115,500,0,0,326,174
+12,8,1,MINISTERIO DE SALUD PUBLICA Y BIENESTAR SOCIAL (MSPBS),Salud,I - Administración Central,65837,170,10,9,75,76
+12,9,1,MINISTERIO DE JUSTICIA (MJ),Servicio civil del Ejecutivo,I - Administración Central,4408,27,0,0,11,16
+12,10,1,MINISTERIO DE AGRICULTURA Y GANADERIA (MAG),Servicio civil del Ejecutivo,I - Administración Central,2329,37,1,4,13,19
+12,11,1,MINISTERIO DE INDUSTRIA Y COMERCIO (MIC),Servicio civil del Ejecutivo,I - Administración Central,341,3,0,0,0,3
+12,13,1,MINISTERIO DE OBRAS PUBLICAS Y COMUNICACIONES (MOPC),Servicio civil del Ejecutivo,I - Administración Central,3316,55,2,7,11,35
+12,14,1,MINISTERIO DE LA MUJER (MM),Servicio civil del Ejecutivo,I - Administración Central,157,3,1,0,1,1
+12,15,1,"MINISTERIO DEL TRABAJO, EMPLEO Y SEGURIDAD SOCIAL (MTESS)",Servicio civil del Ejecutivo,I - Administración Central,365,16,0,0,5,11
+12,15,2,SERVICIO NACIONAL DE PROMOCION PROFESIONAL (SNPP),Servicio civil del Ejecutivo,I - Administración Central,1850,32,1,2,12,17
+12,15,3,SISTEMA NACIONAL DE FORMACION Y CAPACITACION LABORAL (SINAFOCAL),Servicio civil del Ejecutivo,I - Administración Central,234,8,1,1,1,5
+12,17,1,MINISTERIO DEL AMBIENTE Y DESARROLLO SOSTENIBLE (MADES),Servicio civil del Ejecutivo,I - Administración Central,398,7,0,0,1,6
+12,18,1,MINISTERIO DE DESARROLLO SOCIAL,Servicio civil del Ejecutivo,I - Administración Central,1275,16,4,4,1,7
+12,19,1,"MINISTERIO DE URBANISMO, VIVIENDA Y HABITAT",Servicio civil del Ejecutivo,I - Administración Central,604,17,0,0,8,9
+12,20,1,MINISTERIO DE LA NIÑEZ Y ADOLESCENCIA,Servicio civil del Ejecutivo,I - Administración Central,969,10,1,0,6,3
+12,21,1,MINISTERIO DE TECNOLOGIAS DE LA INFORMACION Y COMUNICACION,Servicio civil del Ejecutivo,I - Administración Central,400,11,0,2,5,4
+12,40,1,ORQUESTA NACIONAL DE MÚSICA POPULAR,Servicio civil del Ejecutivo,I - Administración Central,55,0,0,0,0,0
+13,1,1,CORTE SUPREMA DE JUSTICIA (CSJ),Poder Judicial,I - Administración Central,14341,76,1,8,29,38
+13,3,1,MINISTERIO PUBLICO (MP),Poder Judicial,I - Administración Central,6227,17,0,0,6,11
+13,4,1,CONSEJO DE LA MAGISTRATURA (CM),Poder Judicial,I - Administración Central,121,0,0,0,0,0
+13,4,2,ESCUELA JUDICIAL (EJ),Poder Judicial,I - Administración Central,123,3,0,2,0,1
+13,5,1,JURADO DE ENJUICIAMIENTO DE MAGISTRADOS (JEM),Poder Judicial,I - Administración Central,241,3,0,0,1,2
+13,6,1,MINISTERIO DE LA DEFENSA PUBLICA (MDP),Poder Judicial,I - Administración Central,2773,27,1,5,13,8
+13,7,1,SINDICATURA GENERAL DE QUIEBRAS,Poder Judicial,I - Administración Central,103,1,0,1,0,0
+14,1,1,CONTRALORIA GENERAL DE LA REPUBLICA (CGR),Otros organismos,I - Administración Central,1016,8,0,0,5,3
+15,1,1,DEFENSORIA DEL PUEBLO (DP),Otros organismos,I - Administración Central,180,3,0,2,0,1
+15,2,1,MECANISMO NACIONAL DE PREVENCION CONTRA LA TORTURA Y OTROS TRATOS O PENAS CRUELES INHUMANOS O DEGRADANTES (MNP),Otros organismos,I - Administración Central,30,2,0,0,1,1
+21,1,1,BANCO CENTRAL DEL PARAGUAY (BCP),Otros organismos,II - Administración Descentralizada,769,12,0,0,2,10
+22,1,1,I DEPARTAMENTO: GOBERNACION DE CONCEPCION,Gobiernos departamentales,II - Administración Descentralizada,116,5,1,2,0,2
+22,2,1,II DEPARTAMENTO: GOBERNACION DE SAN PEDRO,Gobiernos departamentales,II - Administración Descentralizada,135,4,1,1,2,0
+22,3,1,III DEPARTAMENTO: GOBERNACION DE CORDILLERA,Gobiernos departamentales,II - Administración Descentralizada,93,1,0,0,0,1
+22,4,1,IV DEPARTAMENTO: GOBERNACION DE GUAIRA,Gobiernos departamentales,II - Administración Descentralizada,195,3,0,2,0,1
+22,5,1,V DEPARTAMENTO: GOBERNACION DE CAAGUAZU,Gobiernos departamentales,II - Administración Descentralizada,252,3,0,2,0,1
+22,6,1,VI DEPARTAMENTO: GOBERNACION DE CAAZAPA,Gobiernos departamentales,II - Administración Descentralizada,83,5,1,1,0,3
+22,7,1,VII DEPARTAMENTO: GOBERNACION DE ITAPUA,Gobiernos departamentales,II - Administración Descentralizada,207,5,0,2,0,3
+22,9,1,IX DEPARTAMENTO: GOBERNACION DE PARAGUARI,Gobiernos departamentales,II - Administración Descentralizada,153,0,0,0,0,0
+22,10,1,X DEPARTAMENTO: GOBERNACION DE ALTO PARANA,Gobiernos departamentales,II - Administración Descentralizada,256,14,4,8,0,2
+22,11,1,XI DEPARTAMENTO: GOBERNACION CENTRAL,Gobiernos departamentales,II - Administración Descentralizada,148,10,1,1,4,4
+22,12,1,XII DEPARTAMENTO: GOBERNACION DE ÑEEMBUCU,Gobiernos departamentales,II - Administración Descentralizada,111,0,0,0,0,0
+22,13,1,XIII DEPARTAMENTO: GOBERNACION DE AMAMBAY,Gobiernos departamentales,II - Administración Descentralizada,132,4,2,2,0,0
+22,14,1,XIV DEPARTAMENTO: GOBERNACION DE CANINDEYU,Gobiernos departamentales,II - Administración Descentralizada,79,2,0,2,0,0
+22,15,1,XV DEPARTAMENTO: GOBERNACION DE PRESIDENTE HAYES,Gobiernos departamentales,II - Administración Descentralizada,135,4,0,1,1,2
+22,16,1,XVI DEPARTAMENTO: GOBERNACION DE BOQUERON,Gobiernos departamentales,II - Administración Descentralizada,181,2,0,0,0,2
+22,17,1,XVII DEPARTAMENTO: GOBERNACION DE ALTO PARAGUAY,Gobiernos departamentales,II - Administración Descentralizada,45,3,0,0,1,2
+23,1,1,"INSTITUTO NACIONAL DE TECNOLOGIA, NORMALIZACION Y METROLOGIA (INTN)",Entes autónomos y autárquicos,II - Administración Descentralizada,303,13,0,0,6,7
+23,3,1,INSTITUTO NACIONAL DE DESARROLLO RURAL Y DE LA TIERRA (INDERT),Entes autónomos y autárquicos,II - Administración Descentralizada,469,18,0,0,2,16
+23,4,1,DIRECCION DE BENEFICENCIA Y AYUDA SOCIAL (DIBEN),Entes autónomos y autárquicos,II - Administración Descentralizada,100,4,0,0,3,1
+23,6,1,INSTITUTO PARAGUAYO DEL INDIGENA (INDI),Entes autónomos y autárquicos,II - Administración Descentralizada,71,1,0,1,0,0
+23,8,1,FONDO NACIONAL DE LA CULTURA Y LAS ARTES (FONDEC),Entes autónomos y autárquicos,II - Administración Descentralizada,23,1,1,0,0,0
+23,10,1,COMISION NACIONAL DE TELECOMUNICACIONES (CONATEL),Entes autónomos y autárquicos,II - Administración Descentralizada,313,13,1,6,2,4
+23,13,1,ENTE REGULADOR DE SERVICIOS SANITARIOS (ERSSAN),Entes autónomos y autárquicos,II - Administración Descentralizada,116,4,1,0,1,2
+23,14,1,INSTITUTO NACIONAL DE COOPERATIVISMO (INCOOP),Entes autónomos y autárquicos,II - Administración Descentralizada,182,1,0,0,1,0
+23,16,1,SERVICIO NACIONAL DE CALIDAD Y SALUD ANIMAL (SENACSA),Entes autónomos y autárquicos,II - Administración Descentralizada,1274,51,1,1,11,38
+23,17,1,INSTITUTO PARAGUAYO DE ARTESANIA (IPA),Entes autónomos y autárquicos,II - Administración Descentralizada,70,2,0,0,0,2
+23,18,1,SERVICIO NACIONAL DE CALIDAD Y SANIDAD VEGETAL Y DE SEMILLA (SENAVE),Entes autónomos y autárquicos,II - Administración Descentralizada,506,12,0,1,6,5
+23,19,1,DIRECCION NACIONAL DE CONTRATACIONES PUBLICAS (DNCP),Entes autónomos y autárquicos,II - Administración Descentralizada,242,9,1,2,2,4
+23,20,1,INSTITUTO FORESTAL NACIONAL (INFONA),Entes autónomos y autárquicos,II - Administración Descentralizada,337,10,1,0,5,4
+23,22,1,INSTITUTO PARAGUAYO DE TECNOLOGIA AGRARIA (IPTA),Entes autónomos y autárquicos,II - Administración Descentralizada,507,29,0,5,5,19
+23,24,1,DIRECCION NACIONAL DE CORREOS DEL PARAGUAY (DINACOPA),Entes autónomos y autárquicos,II - Administración Descentralizada,764,34,0,0,14,20
+23,25,1,DIRECCION NACIONAL DE PROPIEDAD INTELECTUAL (DINAPI),Entes autónomos y autárquicos,II - Administración Descentralizada,117,5,0,0,1,4
+23,26,1,SECRETARIA DE DEFENSA DEL CONSUMIDOR Y EL USUARIO (SEDECO),Entes autónomos y autárquicos,II - Administración Descentralizada,29,2,0,0,1,1
+23,27,1,COMISION NACIONAL DE LA COMPETENCIA (CONACOM),Entes autónomos y autárquicos,II - Administración Descentralizada,29,1,0,0,0,1
+23,28,1,AGENCIA NACIONAL DE TRANSITO Y SEGURIDAD VIAL (ANTSV),Entes autónomos y autárquicos,II - Administración Descentralizada,38,1,0,0,0,1
+23,29,1,CONSEJO NACIONAL DE EDUCACION SUPERIOR (CONES),Entes autónomos y autárquicos,II - Administración Descentralizada,29,1,0,0,0,1
+23,30,1,AGENCIA NACIONAL DE EVALUACION Y ACREDITACION DE LA EDUCACION SUPERIOR (ANEAES),Entes autónomos y autárquicos,II - Administración Descentralizada,47,1,0,0,0,1
+23,31,1,AUTORIDAD REGULADORA RADIOLOGICA Y NUCLEAR (ARRN),Entes autónomos y autárquicos,II - Administración Descentralizada,31,0,0,0,0,0
+23,32,1,SECRETARIA NACIONAL DE INTELIGENCIA (SNI),Entes autónomos y autárquicos,II - Administración Descentralizada,29,0,0,0,0,0
+23,33,1,INSTITUTO SUPERIOR DE BELLAS ARTES,Entes autónomos y autárquicos,II - Administración Descentralizada,199,1,0,0,1,0
+23,34,1,INSTITUTO NACIONAL DE EDUCACIÓN SUPERIOR,Entes autónomos y autárquicos,II - Administración Descentralizada,278,5,0,0,2,3
+23,35,1,"DIRECCIÓN NACIONAL DE DEFENSA, SALUD Y BIENESTAR ANIMAL",Entes autónomos y autárquicos,II - Administración Descentralizada,25,0,0,0,0,0
+23,36,1,INSTITUTO NACIONAL DE ESTADISTICAS,Entes autónomos y autárquicos,II - Administración Descentralizada,569,5,0,0,0,5
+23,37,1,INSTITUTO NACIONAL DEL AUDIOVISUAL PARAGUAYO,Entes autónomos y autárquicos,II - Administración Descentralizada,6,0,0,0,0,0
+23,38,1,DIRECCIÓN NACIONAL DE VIGILANCIA SANITARIA,Entes autónomos y autárquicos,II - Administración Descentralizada,247,1,0,0,1,0
+23,39,1,DIRECCIÓN NACIONAL DE MIGRACIONES,Entes autónomos y autárquicos,II - Administración Descentralizada,587,13,0,1,3,9
+23,40,1,DIRECCIÓN NACIONAL DE INGRESOS TRIBUTARIOS,Entes autónomos y autárquicos,II - Administración Descentralizada,1781,28,1,8,5,14
+24,1,1,INSTITUTO DE PREVISION SOCIAL (IPS),Salud,II - Administración Descentralizada,25587,131,0,0,40,91
+24,2,1,CAJA DE SEGURIDAD SOCIAL DE EMPLEADOS Y OBREROS FERROVIARIOS,Otros organismos,II - Administración Descentralizada,12,0,0,0,0,0
+24,4,1,CAJA DE JUBILACIONES Y PENSIONES DE EMPLEADOS DE BANCOS Y AFINES,Otros organismos,II - Administración Descentralizada,129,1,0,0,0,1
+24,5,1,CAJA DE JUBILACIONES Y PENSIONES DEL PERSONAL MUNICIPAL (CJPPM),Otros organismos,II - Administración Descentralizada,167,3,0,0,2,1
+25,2,1,ADMINISTRACION NACIONAL DE ELECTRICIDAD (ANDE),Empresas públicas,II - Administración Descentralizada,4764,179,16,31,43,89
+25,4,1,ADMINISTRACION NACIONAL DE NAVEGACION Y PUERTOS (ANNP),Empresas públicas,II - Administración Descentralizada,1118,12,0,0,1,11
+25,5,1,DIRECCION NACIONAL DE AERONAUTICA CIVIL (DINAC),Empresas públicas,II - Administración Descentralizada,1922,40,2,4,9,25
+25,6,1,PETROLEOS PARAGUAYOS (PETROPAR),Empresas públicas,II - Administración Descentralizada,822,28,0,1,4,23
+25,7,1,INDUSTRIA NACIONAL DEL CEMENTO (INC),Empresas públicas,II - Administración Descentralizada,906,11,0,0,3,8
+27,1,1,BANCO NACIONAL DE FOMENTO (BNF),Otros organismos,II - Administración Descentralizada,1657,27,3,2,10,12
+27,3,1,CREDITO AGRICOLA DE HABILITACION (CAH),Otros organismos,II - Administración Descentralizada,401,15,0,0,2,13
+27,7,1,AGENCIA FINANCIERA DE DESARROLLO (AFD),Otros organismos,II - Administración Descentralizada,101,2,0,0,1,1
+28,1,1,UNA RECTORADO (RECTORADO UNA),Educación,II - Administración Descentralizada,683,4,0,0,1,3
+28,1,2,FACULTAD DE ENFERMERIA Y OBSTETRICIA,Educación,II - Administración Descentralizada,610,0,0,0,0,0
+28,1,3,COLEGIO EXPERIMENTAL PARAGUAY-BRASIL (CEPB),Educación,II - Administración Descentralizada,174,0,0,0,0,0
+28,1,4,FACULTAD DE CIENCIAS AGRARIAS (FCA-UNA),Educación,II - Administración Descentralizada,965,7,0,0,2,5
+28,1,5,UNA FACULTAD CIENCIAS EXACTAS Y NATURALES (FACEN),Educación,II - Administración Descentralizada,670,0,0,0,0,0
+28,1,6,"UNA FACULTAD DE ARQUITECTURA, DISENO Y ARTE",Educación,II - Administración Descentralizada,771,0,0,0,0,0
+28,1,7,FACULTAD DE CIENCIAS ECONOMICAS (FCE),Educación,II - Administración Descentralizada,1521,3,0,1,1,1
+28,1,8,FACULTAD DE CIENCIAS MEDICAS (FCM),Educación,II - Administración Descentralizada,5361,8,0,0,2,6
+28,1,9,FACULTAD DE CIENCIAS QUIMICAS (FCQ),Educación,II - Administración Descentralizada,479,0,0,0,0,0
+28,1,10,FACULTAD DE DERECHO Y CIENCIAS SOCIALES (FDCS),Educación,II - Administración Descentralizada,1119,1,1,0,0,0
+28,1,11,FACULTAD DE FILOSOFIA (FIL),Educación,II - Administración Descentralizada,1021,0,0,0,0,0
+28,1,12,FACULTAD DE INGENIERIA (FIUNA),Educación,II - Administración Descentralizada,1248,0,0,0,0,0
+28,1,13,FACULTAD DE ODONTOLOGIA (FO),Educación,II - Administración Descentralizada,388,0,0,0,0,0
+28,1,14,FACULTAD DE POLITECNICA (FPUNA),Educación,II - Administración Descentralizada,1028,4,0,0,2,2
+28,1,15,FACULTAD DE CIENCIAS VETERINARIAS (FCV),Educación,II - Administración Descentralizada,842,0,0,0,0,0
+28,1,16,INSTITUTO DE INVESTIGACIONES EN CIENCIAS DE LA SALUD (IICS),Educación,II - Administración Descentralizada,139,0,0,0,0,0
+28,1,17,FACULTAD DE CIENCIAS SOCIALES,Educación,II - Administración Descentralizada,140,1,0,0,1,0
+28,2,1,UNIVERSIDAD NACIONAL DEL ESTE (UNE),Educación,II - Administración Descentralizada,1747,3,0,0,0,3
+28,3,1,UNIVERSIDAD NACIONAL DE PILAR (UNP),Educación,II - Administración Descentralizada,851,1,0,0,0,1
+28,4,1,UNIVERSIDAD NACIONAL DE ITAPUA (UNI),Educación,II - Administración Descentralizada,980,14,0,2,3,9
+28,6,1,UNIVERSIDAD NACIONAL DE VILLARRICA DEL ESPIRITU SANTO (UNVES),Educación,II - Administración Descentralizada,1588,2,0,0,1,1
+28,7,1,UNIVERSIDAD NACIONAL DE CAAGUAZU (UNCAA),Educación,II - Administración Descentralizada,1133,26,0,0,14,12
+28,8,1,UNIVERSIDAD NACIONAL DE CANINDEYU (UNCAN),Educación,II - Administración Descentralizada,126,0,0,0,0,0
+28,9,9,UNIVERSIDAD POLITECNICA TAIWAN-PARAGUAY,Educación,II - Administración Descentralizada,37,0,0,0,0,0
+28,10,1,UNIVERSIDAD NACIONAL DE  MISIONES,Educación,II - Administración Descentralizada,341,0,0,0,0,0
+30,1,2,MUNICIPALIDAD DE CONCEPCION,Municipalidades,III - Municipalidades,399,2,0,2,0,0
+30,1,3,MUNICIPALIDAD DE  BELEN,Municipalidades,III - Municipalidades,47,0,0,0,0,0
+30,1,4,MUNICIPALIDAD DE HORQUETA,Municipalidades,III - Municipalidades,75,0,0,0,0,0
+30,1,5,MUNICIPALIDAD DE LORETO,Municipalidades,III - Municipalidades,42,0,0,0,0,0
+30,1,6,MUNICIPALIDAD DE SAN LAZARO,Municipalidades,III - Municipalidades,55,0,0,0,0,0
+30,1,237,MUNICIPALIDAD DE SAN CARLOS DEL APA,Municipalidades,III - Municipalidades,31,0,0,0,0,0
+30,1,238,MUNICIPALIDAD DE AZOTEY,Municipalidades,III - Municipalidades,28,0,0,0,0,0
+30,1,241,MUNICIPALIDAD DE SARGENTO JOSE FELIX LOPEZ,Municipalidades,III - Municipalidades,23,0,0,0,0,0
+30,1,249,MUNICIPALIDAD DE SAN ALFREDO,Municipalidades,III - Municipalidades,30,0,0,0,0,0
+30,1,257,MUNICIPALIDAD DE PASO HORQUETA,Municipalidades,III - Municipalidades,40,0,0,0,0,0
+30,1,263,MUNICIPALIDAD DE ITACUA,Municipalidades,III - Municipalidades,13,0,0,0,0,0
+30,1,524,MUNICIPALIDAD DE ARROYITO,Municipalidades,III - Municipalidades,18,0,0,0,0,0
+30,2,10,MUNICIPALIDAD DE CHORE,Municipalidades,III - Municipalidades,54,1,0,1,0,0
+30,2,12,MUNICIPALIDAD DE ITACURUBI  DEL ROSARIO,Municipalidades,III - Municipalidades,28,0,0,0,0,0
+30,2,13,MUNICIPALIDAD DE LIMA,Municipalidades,III - Municipalidades,44,1,0,1,0,0
+30,2,14,MUNICIPALIDAD DE NUEVA GERMANIA,Municipalidades,III - Municipalidades,23,0,0,0,0,0
+30,2,15,MUNICIPALIDAD DE SAN ESTANISLAO,Municipalidades,III - Municipalidades,95,3,1,2,0,0
+30,2,16,MUNICIPALIDAD DE YRYBUCUA,Municipalidades,III - Municipalidades,47,0,0,0,0,0
+30,2,17,MUNICIPALIDAD DE SAN PABLO,Municipalidades,III - Municipalidades,27,0,0,0,0,0
+30,2,18,MUNICIPALIDAD DE TACUATI,Municipalidades,III - Municipalidades,62,0,0,0,0,0
+30,2,19,MUNICIPALIDAD DE UNION,Municipalidades,III - Municipalidades,40,1,0,1,0,0
+30,2,20,MUNICIPALIDAD DE 25 DE DICIEMBRE,Municipalidades,III - Municipalidades,44,0,0,0,0,0
+30,2,22,MUNICIPALIDAD DE GRAL. F. RESQUIN,Municipalidades,III - Municipalidades,44,0,0,0,0,0
+30,2,23,MUNICIPALIDAD DE YATAITY DEL NORTE,Municipalidades,III - Municipalidades,33,0,0,0,0,0
+30,2,24,MUNICIPALIDAD DE GUAJAYVI,Municipalidades,III - Municipalidades,54,0,0,0,0,0
+30,2,25,MUNICIPALIDAD DE CAPIIBARY,Municipalidades,III - Municipalidades,60,0,0,0,0,0
+30,2,26,MUNICIPALIDAD DE SANTA ROSA DEL AGUARAY,Municipalidades,III - Municipalidades,84,1,0,1,0,0
+30,2,239,MUNICIPALIDAD DE LIBERACION,Municipalidades,III - Municipalidades,47,0,0,0,0,0
+30,2,260,MUNICIPALIDAD DE SAN JOSE DEL ROSARIO,Municipalidades,III - Municipalidades,38,0,0,0,0,0
+30,3,27,MUNICIPALIDAD DE CAACUPE,Municipalidades,III - Municipalidades,248,2,1,1,0,0
+30,3,28,MUNICIPALIDAD DE ALTOS,Municipalidades,III - Municipalidades,88,0,0,0,0,0
+30,3,31,MUNICIPALIDAD DE CARAGUATAY,Municipalidades,III - Municipalidades,57,2,1,0,1,0
+30,3,32,MUNICIPALIDAD DE EMBOSCADA,Municipalidades,III - Municipalidades,80,0,0,0,0,0
+30,3,33,MUNICIPALIDAD DE EUSEBIO AYALA,Municipalidades,III - Municipalidades,85,2,0,1,0,1
+30,3,34,MUNICIPALIDAD DE ISLA PUCU,Municipalidades,III - Municipalidades,45,0,0,0,0,0
+30,3,35,MUNICIPALIDAD DE ITACURUBI DE LA CORDILLERA,Municipalidades,III - Municipalidades,63,2,1,1,0,0
+30,3,37,MUNICIPALIDAD DE LOMA GRANDE,Municipalidades,III - Municipalidades,31,1,0,1,0,0
+30,3,38,MUNICIPALIDAD DE MBOCAYATY DEL YHAGUY,Municipalidades,III - Municipalidades,37,0,0,0,0,0
+30,3,39,MUNICIPALIDAD DE NUEVA COLOMBIA,Municipalidades,III - Municipalidades,36,0,0,0,0,0
+30,3,40,MUNICIPALIDAD DE PIRIBEBUY,Municipalidades,III - Municipalidades,71,0,0,0,0,0
+30,3,42,MUNICIPALIDAD DE SAN BERNARDINO,Municipalidades,III - Municipalidades,273,3,0,2,0,1
+30,3,43,MUNICIPALIDAD DE SANTA ELENA,Municipalidades,III - Municipalidades,37,0,0,0,0,0
+30,3,46,MUNICIPALIDAD DE SAN JOSE OBRERO,Municipalidades,III - Municipalidades,23,1,0,0,0,1
+30,4,47,MUNICIPALIDAD DE VILLARRICA DEL ESPIRITU SANTO,Municipalidades,III - Municipalidades,383,7,0,7,0,0
+30,4,48,MUNICIPALIDAD DE BORJA,Municipalidades,III - Municipalidades,21,0,0,0,0,0
+30,4,49,MUNICIPALIDAD DE CAPITAN MAURICIO JOSE TROCHE,Municipalidades,III - Municipalidades,37,0,0,0,0,0
+30,4,50,MUNICIPALIDAD DE CORONEL MARTINEZ,Municipalidades,III - Municipalidades,37,0,0,0,0,0
+30,4,51,MUNICIPALIDAD DE FELIX PEREZ CARDOZO,Municipalidades,III - Municipalidades,48,0,0,0,0,0
+30,4,53,MUNICIPALIDAD DE INDEPENDENCIA,Municipalidades,III - Municipalidades,68,0,0,0,0,0
+30,4,54,MUNICIPALIDAD DE ITAPE,Municipalidades,III - Municipalidades,36,0,0,0,0,0
+30,4,55,MUNICIPALIDAD DE ITURBE,Municipalidades,III - Municipalidades,39,0,0,0,0,0
+30,4,56,MUNICIPALIDAD DE JOSE A. FASSARDI,Municipalidades,III - Municipalidades,36,0,0,0,0,0
+30,4,57,MUNICIPALIDAD DE MBOCAYATY DEL GUAIRA,Municipalidades,III - Municipalidades,28,1,0,1,0,0
+30,4,58,MUNICIPALIDAD DE NATALICIO TALAVERA,Municipalidades,III - Municipalidades,43,1,0,1,0,0
+30,4,59,MUNICIPALIDAD DE ÑUMI,Municipalidades,III - Municipalidades,28,1,0,1,0,0
+30,4,60,MUNICIPALIDAD DE SAN SALVADOR,Municipalidades,III - Municipalidades,45,0,0,0,0,0
+30,4,61,MUNICIPALIDAD DE YATAITY DEL GUAIRA,Municipalidades,III - Municipalidades,41,2,0,1,1,0
+30,4,62,MUNICIPALIDAD DE DR. BOTRELL,Municipalidades,III - Municipalidades,36,0,0,0,0,0
+30,4,63,MUNICIPALIDAD DE PASO YOBAI,Municipalidades,III - Municipalidades,42,0,0,0,0,0
+30,4,234,MUNICIPALIDAD DE TEBICUARY,Municipalidades,III - Municipalidades,57,0,0,0,0,0
+30,5,64,MUNICIPALIDAD DE CORONEL OVIEDO,Municipalidades,III - Municipalidades,444,5,1,2,0,2
+30,5,67,MUNICIPALIDAD DE DR. CECILIO BAEZ,Municipalidades,III - Municipalidades,33,0,0,0,0,0
+30,5,68,MUNICIPALIDAD DE SANTA.ROSA DEL MBUTUY,Municipalidades,III - Municipalidades,26,1,0,1,0,0
+30,5,69,MUNICIPALIDAD DE DR. JUAN MANUEL FRUTOS,Municipalidades,III - Municipalidades,21,1,0,0,0,1
+30,5,70,MUNICIPALIDAD DE REPATRIACION,Municipalidades,III - Municipalidades,57,0,0,0,0,0
+30,5,71,MUNICIPALIDAD DE NUEVA LONDRES,Municipalidades,III - Municipalidades,34,1,1,0,0,0
+30,5,72,MUNICIPALIDAD DE SAN JOAQUIN,Municipalidades,III - Municipalidades,34,0,0,0,0,0
+30,5,73,MUNICIPALIDAD DE SAN JOSE DE LOS ARROYOS,Municipalidades,III - Municipalidades,53,1,0,1,0,0
+30,5,74,MUNICIPALIDAD DE YHU,Municipalidades,III - Municipalidades,65,0,0,0,0,0
+30,5,76,MUNICIPALIDAD DE R.I. 3 CORRALES,Municipalidades,III - Municipalidades,33,0,0,0,0,0
+30,5,77,MUNICIPALIDAD DE RAUL ARSENIO OVIEDO,Municipalidades,III - Municipalidades,43,0,0,0,0,0
+30,5,78,MUNICIPALIDAD DE JOSE DOMINGO OCAMPOS,Municipalidades,III - Municipalidades,65,0,0,0,0,0
+30,5,79,MUNICIPALIDAD DE MARISCAL FRANCISCO SOLANO LOPEZ,Municipalidades,III - Municipalidades,40,0,0,0,0,0
+30,5,81,MUNICIPALIDAD DE 3 DE FEBRERO,Municipalidades,III - Municipalidades,35,1,1,0,0,0
+30,5,82,MUNICIPALIDAD DE SIMON BOLIVAR,Municipalidades,III - Municipalidades,34,0,0,0,0,0
+30,5,83,MUNICIPALIDAD DE VAQUERIA,Municipalidades,III - Municipalidades,20,0,0,0,0,0
+30,5,233,MUNICIPALIDAD DE TEMBIAPORA,Municipalidades,III - Municipalidades,38,0,0,0,0,0
+30,5,243,MUNICIPALIDAD DE NUEVA TOLEDO,Municipalidades,III - Municipalidades,32,0,0,0,0,0
+30,6,84,MUNICIPALIDAD DE CAAZAPA,Municipalidades,III - Municipalidades,81,1,0,0,0,1
+30,6,85,MUNICIPALIDAD DE ABAI,Municipalidades,III - Municipalidades,62,0,0,0,0,0
+30,6,86,MUNICIPALIDAD DE BUENA VISTA,Municipalidades,III - Municipalidades,34,2,0,2,0,0
+30,6,87,MUNICIPALIDAD DE DR. MOISES BERTONI,Municipalidades,III - Municipalidades,26,0,0,0,0,0
+30,6,88,MUNICIPALIDAD DE GRAL.MORINIGO,Municipalidades,III - Municipalidades,30,2,0,2,0,0
+30,6,89,MUNICIPALIDAD DE MACIEL,Municipalidades,III - Municipalidades,33,0,0,0,0,0
+30,6,90,MUNICIPALIDAD DE SAN JUAN NEPOMUCENO,Municipalidades,III - Municipalidades,80,0,0,0,0,0
+30,6,91,MUNICIPALIDAD DE TAVAI,Municipalidades,III - Municipalidades,27,0,0,0,0,0
+30,6,92,MUNICIPALIDAD DE FULGENCIO YEGROS,Municipalidades,III - Municipalidades,45,0,0,0,0,0
+30,6,93,MUNICIPALIDAD DE YUTY,Municipalidades,III - Municipalidades,75,0,0,0,0,0
+30,7,94,MUNICIPALIDAD DE ENCARNACION,Municipalidades,III - Municipalidades,1285,17,0,15,0,2
+30,7,95,MUNICIPALIDAD DE BELLA VISTA,Municipalidades,III - Municipalidades,78,1,1,0,0,0
+30,7,96,MUNICIPALIDAD DE CAMBYRETA,Municipalidades,III - Municipalidades,231,1,0,1,0,0
+30,7,97,MUNICIPALIDAD DE CAPITAN MEZA,Municipalidades,III - Municipalidades,76,2,0,1,0,1
+30,7,98,MUNICIPALIDAD DE CAPITAN MIRANDA,Municipalidades,III - Municipalidades,66,1,0,1,0,0
+30,7,100,MUNICIPALIDAD DE CARMEN DEL PARANA,Municipalidades,III - Municipalidades,85,0,0,0,0,0
+30,7,101,MUNICIPALIDAD DE CORONEL BOGADO,Municipalidades,III - Municipalidades,94,0,0,0,0,0
+30,7,102,MUNICIPALIDAD DE CARLOS ANTONIO LOPEZ,Municipalidades,III - Municipalidades,89,2,0,1,0,1
+30,7,103,MUNICIPALIDAD DE NATALIO,Municipalidades,III - Municipalidades,81,0,0,0,0,0
+30,7,104,MUNICIPALIDAD DE FRAM,Municipalidades,III - Municipalidades,72,0,0,0,0,0
+30,7,106,MUNICIPALIDAD DE GENERAL DELGADO,Municipalidades,III - Municipalidades,25,0,0,0,0,0
+30,7,107,MUNICIPALIDAD DE HOHENAU,Municipalidades,III - Municipalidades,113,3,0,3,0,0
+30,7,108,MUNICIPALIDAD DE JESUS,Municipalidades,III - Municipalidades,44,0,0,0,0,0
+30,7,109,MUNICIPALIDAD DE JOSE LEANDRO OVIEDO,Municipalidades,III - Municipalidades,51,1,0,1,0,0
+30,7,110,MUNICIPALIDAD DE OBLIGADO,Municipalidades,III - Municipalidades,125,1,0,1,0,0
+30,7,111,MUNICIPALIDAD DE MAYOR OTAÑO,Municipalidades,III - Municipalidades,60,0,0,0,0,0
+30,7,112,MUNICIPALIDAD DE SAN COSME Y SAN DAMIAN,Municipalidades,III - Municipalidades,71,2,0,2,0,0
+30,7,113,MUNICIPALIDAD DE SAN PEDRO DEL PARANA,Municipalidades,III - Municipalidades,98,1,1,0,0,0
+30,7,114,MUNICIPALIDAD DE SAN RAFAEL DEL PARANA,Municipalidades,III - Municipalidades,101,1,0,1,0,0
+30,7,115,MUNICIPALIDAD DE TRINIDAD,Municipalidades,III - Municipalidades,25,0,0,0,0,0
+30,7,116,MUNICIPALIDAD DE EDELIRA,Municipalidades,III - Municipalidades,74,0,0,0,0,0
+30,7,117,MUNICIPALIDAD DE TOMAS ROMERO PEREIRA,Municipalidades,III - Municipalidades,112,0,0,0,0,0
+30,7,118,MUNICIPALIDAD DE ALTO VERA,Municipalidades,III - Municipalidades,45,0,0,0,0,0
+30,7,119,MUNICIPALIDAD DE LA PAZ,Municipalidades,III - Municipalidades,29,0,0,0,0,0
+30,7,120,MUNICIPALIDAD DE YATYTAY,Municipalidades,III - Municipalidades,55,0,0,0,0,0
+30,7,121,MUNICIPALIDAD DE SAN JUAN DEL PARANA,Municipalidades,III - Municipalidades,108,0,0,0,0,0
+30,7,122,MUNICIPALIDAD DE PIRAPO,Municipalidades,III - Municipalidades,67,3,1,2,0,0
+30,7,123,MUNICIPALIDAD DE ITAPUA POTY,Municipalidades,III - Municipalidades,44,1,0,1,0,0
+30,8,124,MUNICIPALIDAD DE SAN JUAN BAUSTISTA DE LAS MISIONES,Municipalidades,III - Municipalidades,78,0,0,0,0,0
+30,8,125,MUNICIPALIDAD DE AYOLAS,Municipalidades,III - Municipalidades,139,0,0,0,0,0
+30,8,126,MUNICIPALIDAD DE SAN IGNACIO GUAZU,Municipalidades,III - Municipalidades,177,1,0,1,0,0
+30,8,127,MUNICIPALIDAD DE SAN MIGUEL MISIONES,Municipalidades,III - Municipalidades,58,3,1,1,0,1
+30,8,129,MUNICIPALIDAD DE SANTA MARIA,Municipalidades,III - Municipalidades,44,0,0,0,0,0
+30,8,130,MUNICIPALIDAD DE SANTA ROSA MISIONES,Municipalidades,III - Municipalidades,108,0,0,0,0,0
+30,8,131,MUNICIPALIDAD DE SANTIAGO,Municipalidades,III - Municipalidades,58,0,0,0,0,0
+30,9,135,MUNICIPALIDAD DE ACAHAY,Municipalidades,III - Municipalidades,29,0,0,0,0,0
+30,9,137,MUNICIPALIDAD DE GENERAL CABALLERO,Municipalidades,III - Municipalidades,45,1,0,0,0,1
+30,9,138,MUNICIPALIDAD DE CARAPEGUA,Municipalidades,III - Municipalidades,124,1,0,0,0,1
+30,9,139,MUNICIPALIDAD DE ESCOBAR,Municipalidades,III - Municipalidades,35,0,0,0,0,0
+30,9,140,MUNICIPALIDAD DE LA COLMENA,Municipalidades,III - Municipalidades,49,0,0,0,0,0
+30,9,141,MUNICIPALIDAD DE MBUYAPEY,Municipalidades,III - Municipalidades,36,3,0,0,1,2
+30,9,142,MUNICIPALIDAD DE PIRAYU,Municipalidades,III - Municipalidades,64,2,1,1,0,0
+30,9,143,MUNICIPALIDAD DE QUIINDY,Municipalidades,III - Municipalidades,76,1,1,0,0,0
+30,9,144,MUNICIPALIDAD DE QUYQUYHO,Municipalidades,III - Municipalidades,50,0,0,0,0,0
+30,9,146,MUNICIPALIDAD DE SAPUCAI,Municipalidades,III - Municipalidades,27,1,0,1,0,0
+30,9,147,MUNICIPALIDAD DE TEBICUARYMI,Municipalidades,III - Municipalidades,29,0,0,0,0,0
+30,9,148,MUNICIPALIDAD DE YAGUARON,Municipalidades,III - Municipalidades,103,1,0,1,0,0
+30,9,149,MUNICIPALIDAD DE YBYCUI,Municipalidades,III - Municipalidades,62,1,0,1,0,0
+30,9,150,MUNICIPALIDAD DE YBYTYMI,Municipalidades,III - Municipalidades,24,0,0,0,0,0
+30,10,151,MUNICIPALIDAD DE CIUDAD DEL ESTE,Municipalidades,III - Municipalidades,2335,18,9,8,0,1
+30,10,152,MUNICIPALIDAD DE PRESIDENTE FRANCO,Municipalidades,III - Municipalidades,553,2,0,2,0,0
+30,10,153,MUNICIPALIDAD DE DOMINGO MARTINEZ DE IRALA,Municipalidades,III - Municipalidades,64,2,0,2,0,0
+30,10,154,MUNICIPALIDAD DE JUAN LEON MALLORQUIN,Municipalidades,III - Municipalidades,70,2,1,1,0,0
+30,10,155,MUNICIPALIDAD DE HERNANDARIAS,Municipalidades,III - Municipalidades,424,7,0,6,0,1
+30,10,156,MUNICIPALIDAD DE SANTA FE DEL PARANA,Municipalidades,III - Municipalidades,68,1,0,0,0,1
+30,10,157,MUNICIPALIDAD DE ITAKYRY,Municipalidades,III - Municipalidades,91,1,0,1,0,0
+30,10,158,MUNICIPALIDAD DE JUAN E. O'LEARY,Municipalidades,III - Municipalidades,56,0,0,0,0,0
+30,10,159,MUNICIPALIDAD DE ÑACUNDAY,Municipalidades,III - Municipalidades,57,2,0,0,0,2
+30,10,160,MUNICIPALIDAD DE YGUAZU,Municipalidades,III - Municipalidades,68,3,0,3,0,0
+30,10,161,MUNICIPALIDAD DE LOS CEDRALES,Municipalidades,III - Municipalidades,83,1,0,1,0,0
+30,10,162,MUNICIPALIDAD DE MINGA GUAZU,Municipalidades,III - Municipalidades,269,12,1,9,0,2
+30,10,163,MUNICIPALIDAD DE SAN CRISTOBAL,Municipalidades,III - Municipalidades,56,0,0,0,0,0
+30,10,164,MUNICIPALIDAD DE SANTA RITA,Municipalidades,III - Municipalidades,225,9,0,5,1,3
+30,10,165,MUNICIPALIDAD DE NARANJAL,Municipalidades,III - Municipalidades,86,0,0,0,0,0
+30,10,166,MUNICIPALIDAD DE STA. ROSA DEL MONDAY,Municipalidades,III - Municipalidades,66,1,0,1,0,0
+30,10,167,MUNICIPALIDAD DE MINGA PORA,Municipalidades,III - Municipalidades,89,2,0,2,0,0
+30,10,170,MUNICIPALIDAD DE IRUÑA,Municipalidades,III - Municipalidades,45,1,1,0,0,0
+30,10,240,MUNICIPALIDAD DE TAVAPY,Municipalidades,III - Municipalidades,63,1,0,1,0,0
+30,10,246,MUNICIPALIDAD DE DR. RAUL PENA,Municipalidades,III - Municipalidades,26,1,0,1,0,0
+30,11,171,MUNICIPALIDAD DE AREGUA,Municipalidades,III - Municipalidades,188,5,1,2,2,0
+30,11,172,MUNICIPALIDAD DE CAPIATA,Municipalidades,III - Municipalidades,1181,0,0,0,0,0
+30,11,173,MUNICIPALIDAD DE FERNANDO DE LA MORA,Municipalidades,III - Municipalidades,1159,15,3,9,1,2
+30,11,174,MUNICIPALIDAD DE GUARAMBARE,Municipalidades,III - Municipalidades,164,1,0,1,0,0
+30,11,175,MUNICIPALIDAD DE ITA,Municipalidades,III - Municipalidades,196,1,0,1,0,0
+30,11,176,MUNICIPALIDAD DE ITAUGUA,Municipalidades,III - Municipalidades,434,3,0,2,0,1
+30,11,177,MUNICIPALIDAD DE LAMBARE,Municipalidades,III - Municipalidades,861,3,1,2,0,0
+30,11,178,MUNICIPALIDAD DE LIMPIO,Municipalidades,III - Municipalidades,301,12,0,0,4,8
+30,11,179,MUNICIPALIDAD DE LUQUE,Municipalidades,III - Municipalidades,1002,19,4,10,1,4
+30,11,180,MUNICIPALIDAD DE MARIANO ROQUE ALONSO,Municipalidades,III - Municipalidades,644,0,0,0,0,0
+30,11,181,MUNICIPALIDAD DE NUEVA ITALIA,Municipalidades,III - Municipalidades,71,2,1,1,0,0
+30,11,182,MUNICIPALIDAD DE ÑEMBY,Municipalidades,III - Municipalidades,448,6,2,3,0,1
+30,11,183,MUNICIPALIDAD DE SAN ANTONIO,Municipalidades,III - Municipalidades,207,2,1,1,0,0
+30,11,184,MUNICIPALIDAD DE SAN LORENZO,Municipalidades,III - Municipalidades,1316,17,5,10,1,1
+30,11,185,MUNICIPALIDAD DE VILLA ELISA,Municipalidades,III - Municipalidades,370,0,0,0,0,0
+30,11,186,MUNICIPALIDAD DE VILLETA,Municipalidades,III - Municipalidades,180,1,0,1,0,0
+30,11,187,MUNICIPALIDAD DE YPACARAI,Municipalidades,III - Municipalidades,115,0,0,0,0,0
+30,11,188,MUNICIPALIDAD DE YPANE,Municipalidades,III - Municipalidades,145,0,0,0,0,0
+30,12,191,MUNICIPALIDAD DE ALBERDI,Municipalidades,III - Municipalidades,39,0,0,0,0,0
+30,12,192,MUNICIPALIDAD DE CERRITO,Municipalidades,III - Municipalidades,127,0,0,0,0,0
+30,12,193,MUNICIPALIDAD DE DESMOCHADOS,Municipalidades,III - Municipalidades,21,0,0,0,0,0
+30,12,194,MUNICIPALIDAD DE GENERAL JOSE EDUVIGIS DIAZ,Municipalidades,III - Municipalidades,34,0,0,0,0,0
+30,12,195,MUNICIPALIDAD DE GUAZU CUA,Municipalidades,III - Municipalidades,40,0,0,0,0,0
+30,12,196,MUNICIPALIDAD DE HUMAITA,Municipalidades,III - Municipalidades,67,0,0,0,0,0
+30,12,197,MUNICIPALIDAD DE ISLA UMBU,Municipalidades,III - Municipalidades,45,0,0,0,0,0
+30,12,198,MUNICIPALIDAD DE LAURELES,Municipalidades,III - Municipalidades,62,0,0,0,0,0
+30,12,199,MUNICIPALIDAD DE MAYOR JOSE D. MARTINEZ,Municipalidades,III - Municipalidades,27,0,0,0,0,0
+30,12,200,MUNICIPALIDAD DE PASO DE PATRIA,Municipalidades,III - Municipalidades,139,0,0,0,0,0
+30,12,201,MUNICIPALIDAD DE SAN JUAN BAUTISTA DE ÑEEMBUCU,Municipalidades,III - Municipalidades,28,0,0,0,0,0
+30,12,202,MUNICIPALIDAD DE TACUARAS,Municipalidades,III - Municipalidades,50,0,0,0,0,0
+30,12,203,MUNICIPALIDAD DE VILLA FRANCA,Municipalidades,III - Municipalidades,44,1,1,0,0,0
+30,12,205,MUNICIPALIDAD DE VILLALBIN,Municipalidades,III - Municipalidades,43,0,0,0,0,0
+30,13,206,MUNICIPALIDAD DE PEDRO J. CABALLERO,Municipalidades,III - Municipalidades,480,2,0,2,0,0
+30,13,207,MUNICIPALIDAD DE BELLA VISTA - NORTE,Municipalidades,III - Municipalidades,36,0,0,0,0,0
+30,13,208,MUNICIPALIDAD DE CAPITAN BADO,Municipalidades,III - Municipalidades,77,1,0,0,0,1
+30,13,242,MUNICIPALIDAD DE ZANJA PYTA,Municipalidades,III - Municipalidades,33,0,0,0,0,0
+30,13,250,MUNICIPALIDAD DE KARAPAI,Municipalidades,III - Municipalidades,27,0,0,0,0,0
+30,14,209,MUNICIPALIDAD DE SALTO DEL GUAIRA,Municipalidades,III - Municipalidades,249,0,0,0,0,0
+30,14,210,MUNICIPALIDAD DE CORPUS CHRISTI,Municipalidades,III - Municipalidades,60,0,0,0,0,0
+30,14,211,MUNICIPALIDAD DE VILLA CURUGUATY,Municipalidades,III - Municipalidades,93,1,1,0,0,0
+30,14,212,MUNICIPALIDAD DE YASY CAÑY,Municipalidades,III - Municipalidades,30,0,0,0,0,0
+30,14,213,MUNICIPALIDAD DE VILLA YGATIMI,Municipalidades,III - Municipalidades,48,0,0,0,0,0
+30,14,214,MUNICIPALIDAD DE ITANARA,Municipalidades,III - Municipalidades,28,1,0,0,0,1
+30,14,215,MUNICIPALIDAD DE YPE JHU,Municipalidades,III - Municipalidades,36,0,0,0,0,0
+30,14,216,MUNICIPALIDAD DE GENERAL FRANCISCO CABALLERO ALVAREZ,Municipalidades,III - Municipalidades,51,1,0,0,0,1
+30,14,217,MUNICIPALIDAD DE KATUETE,Municipalidades,III - Municipalidades,118,2,0,2,0,0
+30,14,218,MUNICIPALIDAD DE LA PALOMA,Municipalidades,III - Municipalidades,32,0,0,0,0,0
+30,14,219,MUNICIPALIDAD DE NUEVA ESPERANZA,Municipalidades,III - Municipalidades,85,0,0,0,0,0
+30,14,244,MUNICIPALIDAD DE YVYRAROBANA,Municipalidades,III - Municipalidades,19,0,0,0,0,0
+30,14,247,MUNICIPALIDAD DE YBY PYTA,Municipalidades,III - Municipalidades,39,1,0,1,0,0
+30,14,251,MUNICIPALIDAD DE MARACANA,Municipalidades,III - Municipalidades,41,0,0,0,0,0
+30,14,255,MUNICIPALIDAD DE PUERTO ADELA,Municipalidades,III - Municipalidades,29,0,0,0,0,0
+30,14,256,MUNICIPALIDAD DE LAUREL,Municipalidades,III - Municipalidades,30,0,0,0,0,0
+30,15,220,MUNICIPALIDAD DE BENJAMIN ACEVAL,Municipalidades,III - Municipalidades,103,2,0,2,0,0
+30,15,221,MUNICIPALIDAD DE PUERTO PINASCO,Municipalidades,III - Municipalidades,148,2,0,1,0,1
+30,15,222,MUNICIPALIDAD DE VILLA HAYES,Municipalidades,III - Municipalidades,298,13,0,8,0,5
+30,15,223,MUNICIPALIDAD DE NANAWA,Municipalidades,III - Municipalidades,51,1,0,0,0,1
+30,15,224,MUNICIPALIDAD DE JOSE FALCON,Municipalidades,III - Municipalidades,117,0,0,0,0,0
+30,15,229,MUNICIPALIDAD DE TTE. 1RO. MANUEL IRALA FERNANDEZ,Municipalidades,III - Municipalidades,44,0,0,0,0,0
+30,15,232,MUNICIPALIDAD DE TENIENTE ESTEBAN MARTINEZ,Municipalidades,III - Municipalidades,57,0,0,0,0,0
+30,15,233,MUNICIPALIDAD DE GENERAL JOSE MARIA BRUGUEZ,Municipalidades,III - Municipalidades,59,0,0,0,0,0
+30,15,258,MUNICIPALIDAD DE CAMPO ACEVAL,Municipalidades,III - Municipalidades,33,1,0,1,0,0
+30,15,262,MUNICIPALIDAD DE NUEVA ASUNCION,Municipalidades,III - Municipalidades,145,0,0,0,0,0
+30,16,228,MUNICIPALIDAD DE MARISCAL JOSE FELIX ESTIGARRIBIA,Municipalidades,III - Municipalidades,151,0,0,0,0,0
+30,16,230,MUNICIPALIDAD DE FILADELFIA,Municipalidades,III - Municipalidades,208,0,0,0,0,0
+30,16,231,MUNICIPALIDAD DE LOMA PLATA,Municipalidades,III - Municipalidades,145,1,0,0,0,1
+30,16,261,MUNICIPALIDAD DE BOQUERON,Municipalidades,III - Municipalidades,81,0,0,0,0,0
+30,17,226,MUNICIPALIDAD DE LA VICTORIA,Municipalidades,III - Municipalidades,46,0,0,0,0,0
+30,17,227,MUNICIPALIDAD DE BAHIA NEGRA,Municipalidades,III - Municipalidades,33,0,0,0,0,0
+30,17,235,MUNICIPALIDAD DE CARMELO PERALTA,Municipalidades,III - Municipalidades,30,0,0,0,0,0
+40,1,1,COMPAÑIA PARAGUAYA DE COMUNICACIONES S.A.,SA del Estado,IV - Sociedades Anónimas del Estado,2222,18,2,12,0,4
+40,2,1,EMPRESA DE SERVICIOS SANITARIOS DEL PARAGUAY S.A. (ESSAP),SA del Estado,IV - Sociedades Anónimas del Estado,2001,29,0,2,5,22
+40,3,1,CAÑAS PARAGUAYAS S.A. (CAPASA),SA del Estado,IV - Sociedades Anónimas del Estado,109,0,0,0,0,0

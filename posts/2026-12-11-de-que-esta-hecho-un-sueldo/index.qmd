@@ -1,0 +1,116 @@
+---
+title: "¿De qué está hecho un sueldo público?"
+description: "El sueldo básico es el 63% de la masa salarial. El resto son contratos, bonificaciones, aguinaldo, dietas y gastos de representación. En las municipalidades, dietas y gastos de representación suman el 18%."
+date: 2026-12-11
+categories: [Masa salarial, Remuneraciones]
+image: social.png
+image-alt: "Composición de la masa salarial pública por componente y sector, 2025"
+draft: true  # programada
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import plotly.graph_objects as go
+
+A0, A1 = 2017, 2025
+mm = leer("masa_mensual_sector.csv")
+GRUPO = {"Sueldo básico": "Sueldo básico", "Personal contratado": "Personal contratado",
+         "Bonificaciones y asignaciones": "Bonificaciones y asignaciones", "Aguinaldo": "Aguinaldo",
+         "Dietas": "Dietas y gastos de representación", "Gastos de representación": "Dietas y gastos de representación",
+         "Remuneraciones temporales": "Otros", "Servicio exterior": "Otros", "Otros gastos del personal": "Otros"}
+ORDEN = ["Sueldo básico", "Personal contratado", "Bonificaciones y asignaciones", "Aguinaldo",
+         "Dietas y gastos de representación", "Otros"]
+COL = [AZUL, NARANJA, VERDE_AGUA, AMARILLO, "#e87ba4", GRIS]
+mm["grupo"] = mm.componente.map(GRUPO)
+y = mm[mm.anho.isin([A0, A1])].groupby(["anho", "grupo"]).devengado.sum().unstack("anho")
+y = y / y.sum() * 100
+s = mm[mm.anho == A1].groupby(["sector", "grupo"]).devengado.sum().unstack().fillna(0)
+s = s.div(s.sum(axis=1), axis=0) * 100
+tot_dg = y.loc["Dietas y gastos de representación", A1]
+mun, gob, emp, fza, sal, edu = (s.loc[x] for x in ["Municipalidades", "Gobiernos departamentales",
+                                                   "Empresas públicas", "Fuerzas públicas", "Salud", "Educación"])
+comp = mm[mm.anho == A1].groupby("componente").devengado.sum()
+monto_dg = comp[["Dietas", "Gastos de representación"]].sum()
+monto_bon = comp["Bonificaciones y asignaciones"]
+```
+
+::: {.en-breve}
+**En breve**
+
+- En `{python} A1`, el **sueldo básico** fue el `{python} pct(y.loc['Sueldo básico', A1])` de la masa salarial. Le siguen los **contratos** (`{python} pct(y.loc['Personal contratado', A1])`), las **bonificaciones y asignaciones** (`{python} pct(y.loc['Bonificaciones y asignaciones', A1])`) y el **aguinaldo** (`{python} pct(y.loc['Aguinaldo', A1])`).
+- Las **dietas y gastos de representación** suman el `{python} pct(tot_dg)` del total, unos `{python} milmillones(monto_dg)` mil millones de guaraníes, pero son el **`{python} pct(mun['Dietas y gastos de representación'], 0)` en las municipalidades** y el `{python} pct(gob['Dietas y gastos de representación'], 0)` en las gobernaciones.
+- En las **empresas públicas** las bonificaciones son casi un tercio de la masa (`{python} pct(emp['Bonificaciones y asignaciones'], 0)`).
+- En **Salud**, los contratos ya pesan casi lo mismo que el sueldo básico.
+:::
+
+```{python}
+#| label: kpis
+#| output: asis
+print(kpis([
+    (pct(y.loc["Sueldo básico", A1], 0), f"de la masa salarial es sueldo básico ({A1})"),
+    (milmillones(monto_bon) + " mil M", "de guaraníes en bonificaciones y asignaciones"),
+    (pct(mun["Dietas y gastos de representación"], 0), "de la masa municipal son dietas y gastos de representación"),
+    (pct(sal["Personal contratado"], 0), "de la masa de Salud se paga en contratos"),
+]))
+```
+
+Detrás de la palabra "sueldo" hay varios conceptos que el presupuesto registra por separado, cada uno con su **objeto de gasto**: el sueldo básico de la planta permanente (111), las dietas de concejales y miembros de órganos colegiados (112), los gastos de representación de autoridades (113), el aguinaldo (114), las bonificaciones y asignaciones complementarias (13x), el personal contratado (14x) y otros conceptos menores.
+
+## El total, en 2017 y en 2025
+
+```{python}
+#| label: tbl-total
+#| output: asis
+print(f"| Componente | {A0} | {A1} | Cambio (puntos) |")
+print("|---|--:|--:|--:|")
+for g_ in ORDEN:
+    print(f"| {g_} | {pct(y.loc[g_, A0])} | {pct(y.loc[g_, A1])} | {signo(y.loc[g_, A1] - y.loc[g_, A0], coma)} |")
+print("\n: Composición de la masa salarial del sector público")
+```
+
+En ocho años la composición total cambió poco. Los movimientos más visibles: el **sueldo básico** ganó `{python} coma(y.loc['Sueldo básico', A1] - y.loc['Sueldo básico', A0])` puntos, en parte porque creció el peso de Educación, cuya masa es casi toda sueldo básico, y las **bonificaciones y asignaciones** perdieron `{python} coma(y.loc['Bonificaciones y asignaciones', A0] - y.loc['Bonificaciones y asignaciones', A1])`.
+
+## Cada sector, una receta distinta
+
+```{python}
+#| label: fig-sectores
+#| fig-cap: "Composición de la masa salarial por sector, 2025 (% del total de cada sector)"
+o = s.sort_values("Sueldo básico")
+fig = go.Figure()
+for g_, c in zip(ORDEN, COL):
+    fig.add_trace(go.Bar(y=o.index, x=o[g_], name=g_, orientation="h", marker_color=c,
+                         marker_line=dict(width=1, color="#fcfcfb"),
+                         hovertemplate=f"<b>%{{y}}</b><br>{g_}: %{{x:.1f}}%<extra></extra>"))
+estilo(fig, alto=600).update_layout(barmode="stack", hovermode="closest", bargap=0.3,
+                                    margin=dict(t=90), legend=dict(orientation="h", y=1.02, yanchor="bottom",
+                                                                   x=0, traceorder="normal"))
+fig.update_xaxes(range=[0, 100], ticksuffix="%", showgrid=True, gridcolor="rgba(128,128,128,.18)")
+fig.update_yaxes(showgrid=False)
+fig.show(config=CONFIG)
+```
+
+- **Educación** es el sector más "simple": el `{python} pct(edu['Sueldo básico'], 0)` de su masa es sueldo básico.
+- En **Salud** los contratos (`{python} pct(sal['Personal contratado'], 0)`) casi igualan al sueldo básico (`{python} pct(sal['Sueldo básico'], 0)`), reflejo de cómo creció su personal desde la pandemia.
+- En **Fuerzas públicas** las bonificaciones y asignaciones son el `{python} pct(fza['Bonificaciones y asignaciones'], 0)`: una parte importante de la remuneración policial y militar se paga por fuera del sueldo básico.
+- En las **municipalidades** el sueldo básico es apenas el `{python} pct(mun['Sueldo básico'], 0)`: más de la mitad son contratos (`{python} pct(mun['Personal contratado'], 0)`) y casi una quinta parte son dietas de concejales y gastos de representación de autoridades.
+- En las **gobernaciones** las dietas de los concejales departamentales y los gastos de representación suman el `{python} pct(gob['Dietas y gastos de representación'], 0)` de la masa.
+
+## Por qué mirar los componentes
+
+La guía *Creación de indicadores de nómina pública* del BID recomienda seguir los componentes porque son los que más difieren entre instituciones y los que suelen crecer por fuera de la política salarial general. Un reajuste del sueldo básico se discute y se publica; una nueva bonificación o un aumento de los gastos de representación, no siempre.
+
+::: {.callout-note collapse="true"}
+## Notas
+
+- Montos devengados en el grupo 100 (servicios personales), SINARH y SICCA, año 2025.
+- "Otros" agrupa remuneraciones temporales (12x), servicio exterior (16x) y otros gastos del personal (19x).
+- El aguinaldo de diciembre de 2021 fue corregido por un error de registro (ver [¿Cuánto paga el Estado en salarios?](../2026-10-16-masa-salarial-real/)).
+:::
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA (devengado por objeto de gasto). [Descargar los datos](/datos/).
+:::

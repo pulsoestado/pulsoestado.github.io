@@ -1,0 +1,127 @@
+---
+title: "La cuota del 5%: personas con discapacidad en el Estado"
+description: "La ley obliga a que al menos el 5% del personal público sean personas con discapacidad. Hoy son el 0,73%: harían falta unas 15.000 personas más para cumplirla. Solo 14 de 372 instituciones llegan al mínimo."
+date: 2026-11-06
+categories: [Inclusión, Discapacidad]
+image: social.png
+image-alt: "Porcentaje de personas con discapacidad en el sector público frente a la cuota legal del 5%"
+draft: true  # programada
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import plotly.graph_objects as go
+
+CUOTA = 5.0
+pm = leer("pcd_mensual.csv")
+po = leer("pcd_oee.csv")
+po["pct"] = po.pcd / po.vinculos * 100
+serie = pm[(pm.mes == 6) & (pm.anho >= 2017)].copy()
+serie["pct"] = serie.pcd / serie.vinculos * 100
+
+V, P = po.vinculos.sum(), po.pcd.sum()
+pct_tot = P / V * 100
+necesarias = CUOTA / 100 * V
+faltan = necesarias - P
+n_oee = len(po); cumplen = int((po.pct >= CUOTA).sum()); cero = int((po.pcd == 0).sum())
+s17 = serie[serie.anho == 2017].iloc[0]
+ritmo = (serie.pct.iloc[-1] - s17.pct) / (serie.anho.iloc[-1] - 2017)
+siglos = int((CUOTA - serie.pct.iloc[-1]) / ritmo // 100)
+max_pct = pm.assign(p=pm.pcd / pm.vinculos * 100).query("anho >= 2017").sort_values("p").iloc[-1]
+
+hombres = po.pcd_contratado_masculino.sum() + po.pcd_permanente_masculino.sum()
+contr = po.pcd_contratado_masculino.sum() + po.pcd_contratado_femenino.sum()
+pct_h = hombres / P * 100; pct_c = contr / P * 100
+
+sec = po.groupby("sector")[["vinculos", "pcd"]].sum()
+sec["pct"] = sec.pcd / sec.vinculos * 100
+sec["faltan"] = (CUOTA / 100 * sec.vinculos - sec.pcd).clip(lower=0)
+grandes = po[po.vinculos >= 5000].sort_values("vinculos", ascending=False)
+senadis = po[po.descripcion_oee.str.contains("PERSONAS CON DISCAPACIDAD")].iloc[0]
+```
+
+::: {.en-breve}
+**En breve**
+
+- La Ley 3585/08 obliga a las instituciones públicas a que **al menos el 5%** de su personal sean personas con discapacidad.
+- En junio de 2026 había **`{python} miles(P)` vínculos de personas con discapacidad** sobre `{python} miles(V)`: el **`{python} pct(pct_tot, 2)`**.
+- Para cumplir la cuota harían falta unas **`{python} miles(round(faltan, -2))` personas más**.
+- Solo **`{python} cumplen` de `{python} n_oee` instituciones** llegan al 5%. Otras **`{python} cero` no registran ninguna** persona con discapacidad.
+:::
+
+```{python}
+#| label: kpis
+#| output: asis
+print(kpis([
+    (pct(pct_tot, 2), "del personal público son personas con discapacidad (junio 2026)"),
+    ("5%", "cuota mínima que fija la ley"),
+    (miles(round(faltan, -2)), "personas más harían falta para cumplirla"),
+    (f"{cumplen} de {n_oee}", "instituciones cumplen la cuota"),
+]))
+```
+
+## Lejos de la meta, y casi sin avances
+
+```{python}
+#| label: fig-serie
+#| fig-cap: "Personas con discapacidad como porcentaje de los vínculos públicos (junio de cada año) y cuota legal"
+fig = go.Figure()
+fig.add_trace(go.Scatter(x=serie.anho, y=serie.pct, mode="lines+markers", name="Personas con discapacidad",
+                         line=dict(color=AZUL, width=2.6), marker=dict(size=8, line=dict(width=2, color="#fcfcfb")),
+                         customdata=serie.pcd,
+                         hovertemplate="%{x}: <b>%{y:.2f}%</b> (%{customdata:,.0f} personas)<extra></extra>"))
+fig.add_hline(y=CUOTA, line=dict(color=NARANJA, width=2, dash="dash"))
+fig.add_annotation(x=serie.anho.min(), y=CUOTA, text="<b>Cuota legal: 5%</b>", showarrow=False, yshift=12,
+                   xanchor="left", font=dict(color=NARANJA))
+estilo(fig, alto=360, leyenda=False).update_layout(hovermode="closest")
+fig.update_yaxes(range=[0, 5.6], ticksuffix="%")
+fig.update_xaxes(dtick=1)
+fig.show(config=CONFIG)
+```
+
+En 2017 las personas con discapacidad eran el `{python} pct(s17.pct, 2)` del personal registrado (`{python} miles(s17.pcd)` personas). La proporción subió hasta un máximo de `{python} pct(max_pct.p, 2)` en `{python} MESES[int(max_pct.mes) - 1]` de `{python} int(max_pct.anho)` y desde entonces está estancada, por debajo del 1%. **Al ritmo observado desde 2017, unos `{python} coma(ritmo, 3)` puntos por año, alcanzar la cuota llevaría más de `{python} siglos` siglos.** Para cumplirla hoy harían falta unas `{python} miles(round(necesarias, -2))` personas con discapacidad trabajando en el Estado: casi siete veces las actuales.
+
+## Ningún sector se acerca al 5%
+
+```{python}
+#| label: fig-sectores
+#| fig-cap: "Personas con discapacidad como porcentaje del personal, por sector (junio 2026)"
+o = sec[sec.vinculos >= 1000].sort_values("pct")
+fig = barras_h(o.index, o.pct, [pct(v, 2) for v in o.pct], colores=[AZUL] * len(o),
+               hover="<b>%{y}</b>: %{text}<extra></extra>")
+fig.add_vline(x=CUOTA, line=dict(color=NARANJA, width=2, dash="dash"))
+fig.update_xaxes(range=[0, 5.8], ticksuffix="%")
+fig.show(config=CONFIG)
+```
+
+Los sectores más grandes son los que más lejos están. **Educación** (`{python} pct(sec.loc['Educación','pct'], 2)`) y **Salud** (`{python} pct(sec.loc['Salud','pct'], 2)`) emplean a casi 200.000 personas y entre las dos necesitarían unas `{python} miles(round(sec.loc[['Educación','Salud'],'faltan'].sum(), -2))` personas con discapacidad más para cumplir. Los entes autónomos, las empresas públicas y las gobernaciones rondan el 3%.
+
+```{python}
+#| label: tbl-grandes
+#| output: asis
+print("| Institución | Vínculos | Personas con discapacidad | % |")
+print("|---|--:|--:|--:|")
+for _, r in grandes.iterrows():
+    print(f"| {nombre(r.descripcion_oee)} | {miles(r.vinculos)} | {miles(r.pcd)} | {pct(r.pct, 2)} |")
+print("\n: Instituciones con más de 5.000 vínculos (junio de 2026)")
+```
+
+La propia **SENADIS**, la Secretaría Nacional por los Derechos Humanos de las Personas con Discapacidad, es la institución con mayor proporción: `{python} pct(senadis.pct, 1)`. En el otro extremo, la **Policía Nacional** no registra ninguna persona con discapacidad. Puede deberse a los requisitos físicos de la carrera policial, pero la ley no prevé excepciones y el personal administrativo también cuenta.
+
+## Quiénes son
+
+De las personas con discapacidad que trabajan en el Estado, el `{python} pct(pct_h, 0)` son **hombres**, cuando en el conjunto del personal público las mujeres son mayoría. El `{python} pct(pct_c, 0)` tiene un **contrato** y el resto es personal permanente; en el conjunto del Estado los contratos son cerca de una cuarta parte.
+
+## Qué tener en cuenta
+
+- Los datos provienen del **SICCA**, que registra si el funcionario tiene una discapacidad certificada. Una persona con discapacidad que no la declaró o no tiene certificado no figura, por lo que la cifra real podría ser algo mayor.
+- La base de cálculo son los vínculos registrados en el SICCA en junio de 2026 (`{python} miles(V)`), que no incluye al personal militar del Ministerio de Defensa (solo a su personal civil) ni a todas las municipalidades.
+- La ley exige una discapacidad mínima del 33% certificada por la autoridad competente.
+
+::: {.fuente}
+**Fuentes:** elaboración de Pulso del Estado con datos del SICCA (vínculos por institución, tipo de vínculo, sexo y discapacidad), junio de 2026. [Ley N.º 3585/08](https://www.bacn.gov.py/leyes-paraguayas/1111/modifica-los-articulos-1-4-y-6-de-la-ley-n-247904-que-establece-la-obligatoriedad-de-la-incorporacion-de-personas-con-discapacidad-en-las-instituciones-publicas), que modifica la [Ley N.º 2479/04](https://www.bacn.gov.py/leyes-paraguayas/2541/ley-n-2479-establece-la-obligatoriedad-de-la-incorporacion-de-personas-con-discapacidad-en-las-instituciones-publicas). Antecedente: [CEAMSO](https://www.ceamso.org.py/funcionarios-con-discapacidad-fcd-en-los-organismos-y-entidades-del-estado-oee/), con datos de la SFP de 2017. [Descargar los datos](/datos/).
+:::

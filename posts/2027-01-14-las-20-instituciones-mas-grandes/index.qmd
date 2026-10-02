@@ -1,0 +1,99 @@
+---
+title: "Las 20 instituciones más grandes del Estado"
+description: "Veinte instituciones concentran la gran mayoría del empleo público. Una ficha de cada una: cuántos vínculos, cuántos contratos, cuántas mujeres y cuánto cuestan."
+date: 2027-01-14
+categories: [Dotación, Instituciones, Masa salarial]
+image: social.png
+image-alt: "Las 20 instituciones con más vínculos del sector público paraguayo"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import plotly.graph_objects as go
+
+UA = ultimo_anio_completo()
+p = vin_promedio_oee(UA)
+mo = masa_oee_anual(UA)[K_OEE + ["masa", "Aguinaldo"]]
+p = p.merge(mo, on=K_OEE, how="left")
+p["pc"] = p.contratado / p.total * 100; p["pm"] = p.mujeres / p.total * 100
+p["rem"] = (p.masa - p.Aguinaldo) / 12 / p.total
+T = p.total.sum(); MT = p.masa.sum()
+top = p.sort_values("total", ascending=False).head(20).reset_index(drop=True)
+part20 = top.total.sum() / T * 100; partm20 = top.masa.sum() / MT * 100
+n_inst = int((p.total > 0).sum())
+top5 = top.head(5).total.sum() / T * 100
+mas_c = top.loc[top.pc.idxmax()]; mas_m = top.loc[top.pm.idxmax()]; menos_m = top.loc[top.pm.idxmin()]
+mas_r = top.loc[top.rem.idxmax()]; menos_r = top.loc[top.rem.idxmin()]
+```
+
+::: {.en-breve}
+**En breve**
+
+- En `{python} UA`, `{python} n_inst` instituciones pagaron vínculos. Las **20 más grandes** reúnen el **`{python} pct(part20, 0)` de los vínculos** y el `{python} pct(partm20, 0)` de la masa salarial.
+- Solo las cinco primeras suman el `{python} pct(top5, 0)` del empleo público.
+- Entre las 20, la proporción de contratados va del `{python} pct(top.pc.min(), 0)` al `{python} pct(mas_c.pc, 0)` (`{python} mas_c.nombre_largo`).
+- La remuneración media mensual va de `{python} millones(menos_r.rem)` millones de guaraníes (`{python} menos_r.nombre_largo`) a `{python} millones(mas_r.rem)` millones (`{python} mas_r.nombre_largo`).
+:::
+
+```{python}
+#| label: fig-top
+#| fig-cap: "Vínculos promedio del último año completo, por tipo"
+o = top.sort_values("total")
+fig = go.Figure()
+fig.add_trace(go.Bar(y=o.nombre_largo, x=o.total - o.contratado, name="Permanentes", orientation="h",
+                     marker_color=AZUL, hovertemplate="<b>%{y}</b><br>Permanentes: %{x:,.0f}<extra></extra>"))
+fig.add_trace(go.Bar(y=o.nombre_largo, x=o.contratado, name="Contratados", orientation="h", marker_color=NARANJA,
+                     text=[miles(x) for x in o.total], textposition="outside", cliponaxis=False,
+                     textfont=dict(color=TINTA_GRAF),
+                     hovertemplate="<b>%{y}</b><br>Contratados: %{x:,.0f}<extra></extra>"))
+estilo(fig, alto=700).update_layout(barmode="stack", hovermode="closest", bargap=0.3, margin=dict(r=60))
+fig.update_xaxes(tickformat=",.0f", showgrid=True, gridcolor="rgba(128,128,128,.18)")
+fig.update_yaxes(showgrid=False)
+fig.show(config=CONFIG)
+```
+
+El empleo público está muy concentrado. El **Ministerio de Educación y Ciencias** es, por lejos, la institución más grande: `{python} miles(top.total[0])` vínculos, el `{python} pct(top.total[0] / T * 100, 0)` del total. Le siguen `{python} top.nombre_largo[1]` (`{python} miles(top.total[1])`) y `{python} top.nombre_largo[2]` (`{python} miles(top.total[2])`).
+
+## La ficha completa
+
+```{python}
+#| label: tbl-ficha
+#| output: asis
+print("| # | Institución | Sector | Vínculos | % contratados | % mujeres | Masa salarial (mil M Gs) | Remuneración media (M Gs/mes) |")
+print("|--:|---|---|--:|--:|--:|--:|--:|")
+for i, r in top.iterrows():
+    print(f"| {i + 1} | {r.nombre_largo} | {r.sector} | {miles(r.total)} | {pct(r.pc, 0)} | {pct(r.pm, 0)} | "
+          f"{milmillones(r.masa)} | {millones(r.rem)} |")
+print(f"\n: Las 20 instituciones con más vínculos, promedio de {UA}. Remuneración media = masa salarial sin aguinaldo / 12 / vínculos promedio")
+```
+
+Las diferencias entre instituciones son grandes. La que más depende de contratos es **`{python} mas_c.nombre_largo`** (`{python} pct(mas_c.pc, 0)`). La mayor proporción de mujeres está en **`{python} mas_m.nombre_largo`** (`{python} pct(mas_m.pm, 0)`) y la menor, en **`{python} menos_m.nombre_largo`** (`{python} pct(menos_m.pm, 0)`).
+
+La remuneración media no es el sueldo de una persona: mezcla cargos, jornadas y niveles muy distintos, y cuenta como vínculos separados los casos de personas con más de un cargo. Pero permite comparar cuánto cuesta en promedio cada vínculo en cada institución.
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA (vínculos por mes y devengado en servicios personales). [Descargar los datos](/datos/).
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_portada, ig_dato, barras_h as bh
+cort = lambda x: (x.replace("Ministerio de Salud Pública y Bienestar Social", "Ministerio de Salud")
+                   .replace("Ministerio de Educación y Ciencias", "Ministerio de Educación")
+                   .replace("Instituto de Previsión Social", "IPS").replace("Universidad Nacional de Asunción", "UNA"))
+t10 = top.head(10).sort_values("total")
+social("Las 20 instituciones\nmás grandes del Estado", pct(part20, 0) + " del empleo",
+       f"público está en 20 de {n_inst} instituciones ({UA})", (list(range(20)), list(top.total[::-1])), tipo="barras")
+ig_portada("Instituciones", "Las 20\ninstituciones\nmás grandes", f"Reúnen el {pct(part20, 0)} de los vínculos\ny el {pct(partm20, 0)} de la masa salarial.",
+           (list(range(20)), list(top.total[::-1])), tipo="barras")
+ig_dato(2, "Las 10 primeras", "Solo el Ministerio de Educación tiene", miles(top.total[0]),
+        f"vínculos: el {pct(top.total[0] / T * 100, 0)} del total", f"Vínculos promedio de {UA}",
+        bh([cort(x) for x in t10.nombre_largo], t10.total, [miles(x) for x in t10.total]))
+```

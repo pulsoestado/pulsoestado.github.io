@@ -1,0 +1,55 @@
+---
+title: "Los contratos en el año preelectoral"
+description: "A meses de las internas partidarias y de las elecciones generales de 2028, cuántos contratos paga hoy el Estado y cuánto crecieron frente al año anterior."
+date: 2027-10-04
+categories: [El dato de la semana, Ciclo electoral, Contratados]
+image: social.png
+image-alt: "Vínculos contratados por año, mismo mes"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+
+A1, M = ultimo_mes()
+s = serie_mensual().set_index(["anho", "mes"])
+y = s.xs(M, level="mes").loc[2017:A1]
+d = y.contratado.diff()
+u = y.loc[A1]; pc = u.contratado / u.total * 100
+```
+
+```{python}
+#| label: kpis
+#| output: asis
+print(kpis([(miles(u.contratado), f"vínculos contratados en {fecha_txt(A1, M)}"), (signo(d.loc[A1]), f"frente a {fecha_txt(A1 - 1, M)}"), (pct(pc), "del total")]))
+```
+
+En `{python} fecha_txt(A1, M)` el Estado pagó **`{python} miles(u.contratado)` vínculos contratados**, `{python} signo(d.loc[A1])` frente al mismo mes del año anterior. Son el `{python} pct(pc)` de todos los vínculos. El mayor aumento interanual de la serie para ese mes fue en `{python} int(d.idxmax())` (`{python} signo(d.max())`).
+
+```{python}
+#| label: fig
+#| fig-cap: "Vínculos contratados en el mismo mes de cada año"
+fig = barras_h([str(a) for a in y.index], y.contratado, [f"{miles(c)} ({signo(x)})" if pd.notna(x) else miles(c) for c, x in zip(y.contratado, d)],
+               colores=[NARANJA if a == A1 else "#f5b89f" for a in y.index], rango=[0, y.contratado.max() * 1.3])
+fig.show(config=CONFIG)
+```
+
+En los dos ciclos anteriores, las internas partidarias simultáneas se hicieron en diciembre del año previo a las elecciones generales (2017 y 2022); la fecha de este ciclo la fija el Tribunal Superior de Justicia Electoral. Este jueves analizamos qué pasó con los contratos antes de cada elección desde 2017 ([¿se contrata más antes de votar?](../2027-10-07-ciclo-electoral-antes-de-votar/)).
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA. [Descargar los datos](/datos/).
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_dato, barras
+social("Los contratos en el\naño preelectoral", miles(u.contratado) + " contratos", f"en {fecha_txt(A1, M)} · {signo(d.loc[A1])} en un año", (list(y.index), list(y.contratado)), tipo="barras")
+ig_dato(1, "El dato de la semana", f"En {fecha_txt(A1, M)} el Estado pagó", miles(u.contratado), f"contratos ({signo(d.loc[A1])} en un año)",
+        f"Contratados, {MESES[M - 1]} de cada año", barras(list(y.index), list(y.contratado / 1000), [coma(x / 1000, 0) + " mil" for x in y.contratado], colores=[NARANJA] * len(y)))
+```

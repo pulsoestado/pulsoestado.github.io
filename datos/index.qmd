@@ -8,6 +8,16 @@ Todos los datos están en formato CSV (separador coma, codificación UTF-8) y se
 
 | Archivo | Descripción | Periodo |
 |---|---|---|
+| [masa_anual_sector.csv](/data/processed/masa_anual_sector.csv) | Masa salarial anual por sector, nominal y en guaraníes de 2025, y vínculos promedio | 2015 – 2026 (parcial) |
+| [masa_mensual_sector.csv](/data/processed/masa_mensual_sector.csv) | Presupuestado y devengado mensual por sector y componente de la remuneración | ene 2015 – ago 2026 |
+| [vinculos_mensual_sector.csv](/data/processed/vinculos_mensual_sector.csv) | Vínculos por mes y sector (clasificación versión 1): permanentes, contratados y mujeres | ene 2015 – ago 2026 |
+| [panel_situcap.csv](/data/processed/panel_situcap.csv) | Vínculos y masa salarial por institución en el último mes y el mismo mes del año anterior | ago 2025 y ago 2026 |
+| [ipc_salarios_bcp.csv](/data/processed/ipc_salarios_bcp.csv) | IPC promedio anual, salario mínimo e Índice de Sueldos y Salarios (BCP) | 2010 – 2026 |
+| [pcd_mensual.csv](/data/processed/pcd_mensual.csv) | Vínculos y personas con discapacidad por mes (SICCA) | ene 2015 – ago 2026 |
+| [pcd_oee.csv](/data/processed/pcd_oee.csv) | Personas con discapacidad por institución | jun 2026 |
+| [genero_brecha_anual.csv](/data/processed/genero_brecha_anual.csv) | Brecha salarial de género, bruta y en igual institución y categoría | 2015 – 2026 |
+| [genero_brecha_sector.csv](/data/processed/genero_brecha_sector.csv) | Brecha salarial de género por sector | jun 2026 |
+| [municipios_2025.csv](/data/processed/municipios_2025.csv) | Vínculos, contratados, mujeres y masa salarial por municipalidad | 2025 |
 | [dw_mensual.csv](/data/processed/dw_mensual.csv) | Vínculos pagados por mes: permanentes, contratados, mujeres, hombres e instituciones que reportan | ene 2015 – ago 2026 |
 | [dw_mensual_sector.csv](/data/processed/dw_mensual_sector.csv) | Vínculos por mes y sector (Salud, Educación, Policía, Defensa, resto) | ene 2015 – ago 2026 |
 | [dw_anual_sector.csv](/data/processed/dw_anual_sector.csv) | Promedio anual de vínculos por sector | 2015 – 2025 |
@@ -15,5 +25,19 @@ Todos los datos están en formato CSV (separador coma, codificación UTF-8) y se
 | [dotacion_anual.csv](/data/processed/dotacion_anual.csv) | Personas distintas por año, promedio mensual, permanentes y contratados | 2015 – 2025 (parcial) |
 | [dotacion_mensual.csv](/data/processed/dotacion_mensual.csv) | Personas que cobraron cada mes y vínculos por tipo | ene 2015 – may 2025 |
 | [dotacion_anual_nivel.csv](/data/processed/dotacion_anual_nivel.csv) | Personas distintas por año y nivel institucional | 2015 – 2025 (parcial) |
+| [instituciones.csv](/data/processed/instituciones.csv) | Catálogo de instituciones: códigos, nombre legible, nivel, sector y agrupación | — |
+| [vinculos_mensual_oee.csv](/data/processed/vinculos_mensual_oee.csv) | Vínculos por mes e institución: permanentes, contratados y mujeres | ene 2015 – ago 2026 |
+| [vinculos_tipo_sexo.csv](/data/processed/vinculos_tipo_sexo.csv) | Vínculos por mes, sector, tipo de vínculo y sexo | ene 2015 – ago 2026 |
+| [masa_mensual_oee.csv](/data/processed/masa_mensual_oee.csv) | Presupuestado, devengado y aguinaldo por mes e institución | ene 2015 – ago 2026 |
+| [masa_anual_oee.csv](/data/processed/masa_anual_oee.csv) | Masa salarial anual por institución y componente | 2015 – 2026 (parcial) |
+| [masa_anual_objeto.csv](/data/processed/masa_anual_objeto.csv) | Masa salarial anual por objeto de gasto | 2015 – 2026 (parcial) |
+| [masa_anual_oee_objeto.csv](/data/processed/masa_anual_oee_objeto.csv) | Devengado anual por institución de los objetos 12x, 13x, 14x y 16x | 2015 – 2026 (parcial) |
+| [categorias_oee.csv](/data/processed/categorias_oee.csv) | Cargos y sueldo básico (objeto 111) por institución, categoría y sexo | junio de cada año y último mes |
+| [pcd_oee_anual.csv](/data/processed/pcd_oee_anual.csv) | Vínculos y personas con discapacidad por institución | junio de cada año y último mes |
+| [personas_vinculos_oee.csv](/data/processed/personas_vinculos_oee.csv) | Personas distintas y vínculos por mes e institución | 2015 – 2025 |
+| [bcp_salario_minimo.csv](/data/processed/bcp_salario_minimo.csv) | Salario mínimo legal anual, nominal y real (BCP) | 1980 – 2026 |
+| [bcp_salario_minimo_tramos.csv](/data/processed/bcp_salario_minimo_tramos.csv) | Salario mínimo por tramo de vigencia (BCP) | 1980 – 2026 |
+| [bcp_iss_ramas.csv](/data/processed/bcp_iss_ramas.csv) | Índice de Sueldos y Salarios por rama de actividad, junio y diciembre (BCP) | 2001 – 2025 |
+| [indec_dotacion_apn.csv](/data/processed/indec_dotacion_apn.csv) | Dotación de la administración pública nacional argentina (INDEC), para comparación | 2022 – 2026 |
 
 Las definiciones de cada columna están en la [metodología](/metodologia.qmd).

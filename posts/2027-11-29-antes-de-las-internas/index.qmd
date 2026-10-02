@@ -1,0 +1,65 @@
+---
+title: "Antes de las internas: qué pasó con el empleo en 2017 y 2022"
+description: "En los dos ciclos anteriores, las internas partidarias se hicieron en diciembre del año previo a las elecciones generales. Qué pasó con los vínculos del Estado en los meses previos."
+date: 2027-11-29
+categories: [El dato de la semana, Ciclo electoral, Dotación]
+image: social.png
+image-alt: "Vínculos del Estado en los meses previos a las internas de 2017 y 2022"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import numpy as np
+import plotly.graph_objects as go
+
+s = serie_mensual().set_index(["anho", "mes"])
+def ind(a):
+    return [s.loc[(a, m), "total"] / s.loc[(a, 6), "total"] * 100 for m in range(6, 13)]
+I = {a: ind(a) for a in [2017, 2022]}
+otros = [a for a in range(2016, 2100) if (a, 12) in s.index and a not in (2017, 2022)]
+N = np.mean([ind(a) for a in otros], axis=0)
+d = {a: s.loc[(a, 12), "total"] - s.loc[(a, 6), "total"] for a in [2017, 2022]}
+dn = np.mean([s.loc[(a, 12), "total"] - s.loc[(a, 6), "total"] for a in otros])
+```
+
+```{python}
+#| label: kpis
+#| output: asis
+print(kpis([(signo(d[2017]), "vínculos entre junio y diciembre de 2017"), (signo(d[2022]), "entre junio y diciembre de 2022"), (signo(dn), "en un año sin internas (promedio)")]))
+```
+
+En los dos últimos ciclos electorales, las internas partidarias simultáneas se hicieron en **diciembre** del año previo a las elecciones generales: el 17 de diciembre de 2017 y el 18 de diciembre de 2022. Entre junio y diciembre de esos años, los vínculos del Estado cambiaron `{python} signo(d[2017])` y `{python} signo(d[2022])`; en los años sin internas, el cambio promedio en esos mismos meses es de `{python} signo(dn)`.
+
+```{python}
+#| label: fig
+#| fig-cap: "Vínculos del Estado de junio a diciembre, índice junio = 100"
+x = [MES_C[m - 1] for m in range(6, 13)]
+fig = go.Figure()
+fig.add_trace(go.Scatter(x=x, y=N, name="Otros años (promedio)", mode="lines", line=dict(color=GRIS, width=2, dash="dot")))
+for a, c in [(2017, AZUL), (2022, NARANJA)]:
+    fig.add_trace(go.Scatter(x=x, y=I[a], name=f"{a} (internas)", mode="lines+markers", line=dict(color=c, width=2.6)))
+fig.add_hline(y=100, line=dict(color=GRIS, width=1))
+estilo(fig, alto=320)
+fig.show(config=CONFIG)
+```
+
+Como mostramos en [¿se contrata más antes de votar?](../2027-10-07-ciclo-electoral-antes-de-votar/), en el total del Estado no aparece un salto de contrataciones antes de las internas. La fecha de las internas de este ciclo la fija el Tribunal Superior de Justicia Electoral; cuando estén los datos de esos meses, actualizaremos la comparación.
+
+::: {.fuente}
+**Fuentes:** elaboración de Pulso del Estado con datos de SINARH y SICCA. Fechas electorales: Tribunal Superior de Justicia Electoral. [Descargar los datos](/datos/).
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_dato, barras
+social("Antes de las internas", f"{signo(d[2017])} y {signo(d[2022])}", "vínculos entre junio y diciembre de 2017 y de 2022")
+ig_dato(1, "El dato de la semana", "Junio a diciembre de 2022, antes de las internas:", signo(d[2022]), f"vínculos (otros años: {signo(dn)})",
+        "Cambio de vínculos, junio a diciembre", barras(["Otros años", "2017", "2022"], [dn, d[2017], d[2022]], [signo(x) for x in [dn, d[2017], d[2022]]], colores=[GRIS, AZUL, NARANJA]))
+```

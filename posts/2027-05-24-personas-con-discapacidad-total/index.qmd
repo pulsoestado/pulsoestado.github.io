@@ -1,0 +1,64 @@
+---
+title: "Personas con discapacidad en el Estado: cuántas son"
+description: "Cuántos vínculos de personas con discapacidad registran las instituciones públicas, cómo cambió la cifra desde 2017 y cuánto falta para la cuota legal del 5%."
+date: 2027-05-24
+categories: [El dato de la semana, Discapacidad]
+image: social.png
+image-alt: "Vínculos de personas con discapacidad en el sector público por año"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import plotly.graph_objects as go
+
+p = leer("pcd_mensual.csv")
+u = p.iloc[-1]; A1, M = int(u.anho), int(u.mes)
+j = p[(p.mes == 6) & (p.anho >= 2017)].copy(); j["pp"] = j.pcd / j.vinculos * 100
+pp = u.pcd / u.vinculos * 100
+meta = u.vinculos * 0.05
+falta = meta - u.pcd
+```
+
+```{python}
+#| label: kpis
+#| output: asis
+print(kpis([
+    (miles(u.pcd), f"vínculos de personas con discapacidad ({fecha_txt(A1, M)})"),
+    (pct(pp, 2), "del total registrado en SICCA"),
+    (miles(falta), "vínculos más harían falta para llegar al 5%"),
+]))
+```
+
+En `{python} fecha_txt(A1, M)` las instituciones que informan en SICCA registraron **`{python} miles(u.pcd)` vínculos de personas con discapacidad**, el `{python} pct(pp, 2)` de sus `{python} miles(u.vinculos)` vínculos. La ley fija una cuota mínima del 5%: para cumplirla harían falta unos **`{python} miles(falta)` vínculos más**. En junio de 2017 se registraban `{python} miles(j.pcd.iloc[0])`.
+
+```{python}
+#| label: fig-pcd
+#| fig-cap: "Vínculos de personas con discapacidad, junio de cada año"
+fig = go.Figure(go.Bar(x=j.anho, y=j.pcd, marker_color=VERDE_AGUA, text=[miles(x) for x in j.pcd], textposition="outside",
+                       cliponaxis=False, textfont=dict(color=TINTA_GRAF), hovertemplate="%{x}: <b>%{y:,.0f}</b><extra></extra>"))
+estilo(fig, alto=320, leyenda=False).update_layout(hovermode="closest")
+fig.update_xaxes(dtick=1); fig.update_yaxes(tickformat=",.0f", range=[0, j.pcd.max() * 1.18])
+fig.show(config=CONFIG)
+```
+
+La cifra creció hasta 2022 y desde entonces se mantiene casi estable, mientras el total de vínculos siguió aumentando. El detalle por institución, y cuáles cumplen la cuota, está en [la cuota del 5%](../2026-11-06-discapacidad-cuota-5/).
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SICCA (vínculos de personas con discapacidad). El registro depende de que la persona declare su discapacidad y de que la institución la cargue en el sistema. [Descargar los datos](/datos/).
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_dato, barras
+social("Personas con discapacidad\nen el Estado", miles(u.pcd) + " vínculos", f"el {pct(pp, 2)} del total · la cuota legal es 5%",
+       (list(j.anho), list(j.pcd)), color=VERDE_AGUA, tipo="barras")
+ig_dato(1, "El dato de la semana", f"En {fecha_txt(A1, M)} se registraron", miles(u.pcd), f"vínculos de personas con discapacidad ({pct(pp, 2)})",
+        "Junio de cada año", barras(list(j.anho), list(j.pcd), [miles(x) for x in j.pcd], colores=[VERDE_AGUA] * len(j)), color=VERDE_AGUA)
+```

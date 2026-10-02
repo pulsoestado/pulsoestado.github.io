@@ -1,0 +1,64 @@
+---
+title: "¿Cuesta más un contrato o un cargo de planta?"
+description: "Cuánto cuesta en promedio, por mes, un vínculo contratado frente a uno permanente en cada sector del Estado."
+date: 2027-10-25
+categories: [El dato de la semana, Contratados, Remuneraciones]
+image: social.png
+image-alt: "Costo medio mensual de un contrato y de un cargo permanente por sector"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import plotly.graph_objects as go
+
+UA = ultimo_anio_completo()
+m = leer("masa_mensual_sector.csv"); m = m[m.anho == UA]
+c = m[m.componente == "Personal contratado"].groupby("sector").devengado.sum()
+p_ = m[~m.componente.isin(["Personal contratado", "Aguinaldo", "Dietas"])].groupby("sector").devengado.sum()
+v = leer("vinculos_mensual_sector.csv"); v = v[v.anho == UA].groupby(["mes", "sector"])[["contratado", "permanente"]].sum().groupby("sector").mean()
+d = pd.DataFrame({"contrato": c / 12 / v.contratado, "planta": p_ / 12 / v.permanente, "n": v.contratado})
+d = d[d.n >= 500].dropna()
+d["r"] = d.contrato / d.planta * 100; d = d.sort_values("r")
+C = c.sum() / 12 / v.contratado.sum(); P = p_.sum() / 12 / v.permanente.sum()
+```
+
+```{python}
+#| label: kpis
+#| output: asis
+print(kpis([(millones(C, 2) + " M", f"de Gs por mes: costo medio de un contrato ({UA})"), (millones(P, 2) + " M", "de un vínculo permanente, sin aguinaldo ni dietas"),
+            (pct(C / P * 100, 0), "relación entre ambos")]))
+```
+
+En `{python} UA`, cada vínculo **contratado** le costó al Estado en promedio **`{python} millones(C, 2)` millones de guaraníes por mes**, y cada vínculo **permanente**, `{python} millones(P, 2)` millones (sin aguinaldo ni dietas). Un contrato cuesta en promedio el `{python} pct(C / P * 100, 0)` de un cargo de planta. La diferencia es mayor en **`{python} d.index[0]`**, donde un contrato cuesta el `{python} pct(d.r.iloc[0], 0)` de un vínculo permanente, y menor en **`{python} d.index[-1]`** (`{python} pct(d.r.iloc[-1], 0)`).
+
+```{python}
+#| label: fig
+#| fig-cap: "Costo medio mensual de un vínculo contratado y de uno permanente, por sector (millones de guaraníes; sectores con al menos 500 contratos)"
+fig = go.Figure()
+fig.add_trace(go.Bar(y=d.index, x=d.planta / 1e6, name="Permanente", orientation="h", marker_color=AZUL, hovertemplate="<b>%{y}</b><br>Permanente: %{x:.2f} M<extra></extra>"))
+fig.add_trace(go.Bar(y=d.index, x=d.contrato / 1e6, name="Contratado", orientation="h", marker_color=NARANJA, hovertemplate="<b>%{y}</b><br>Contratado: %{x:.2f} M<extra></extra>"))
+estilo(fig, alto=440).update_layout(barmode="group", hovermode="closest", bargap=0.25)
+fig.update_xaxes(showgrid=True, gridcolor="rgba(128,128,128,.18)"); fig.update_yaxes(showgrid=False)
+fig.show(config=CONFIG)
+```
+
+Una explicación posible es que los contratos se concentran en funciones y sectores con remuneraciones más bajas. Por eso, cuando el personal crece sobre todo con contratos, la remuneración media del Estado tiende a bajar ([contratados](../2027-06-03-contratados/)).
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA. Costo de un contrato = devengado del subgrupo 14x / 12 / contratados promedio; costo de un vínculo permanente = resto del grupo 100 sin aguinaldo ni dietas / 12 / permanentes promedio. [Descargar los datos](/datos/).
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_dato, barras
+social("¿Cuesta más un contrato\no un cargo de planta?", pct(C / P * 100, 0), f"cuesta un contrato frente a un cargo permanente ({UA})")
+ig_dato(1, "El dato de la semana", "Un contrato cuesta en promedio", millones(C, 2) + " M", f"de Gs por mes; un cargo de planta, {millones(P, 2)} M",
+        "Costo medio mensual, millones de Gs", barras(["Contratado", "Permanente"], [C / 1e6, P / 1e6], [millones(C, 2), millones(P, 2)], colores=[NARANJA, AZUL]))
+```

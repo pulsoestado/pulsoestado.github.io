@@ -1,0 +1,85 @@
+---
+title: "Explicador: las categorías salariales"
+description: "Cada cargo público presupuestado tiene una categoría, un código de letras y números que fija su sueldo básico. Cuántas hay, cuáles son las más comunes y por qué la misma letra no significa el mismo sueldo en todas las instituciones."
+date: 2027-06-10
+categories: [Explicador, Categorías, Remuneraciones]
+image: social.png
+image-alt: "Las categorías salariales con más cargos en el sector público"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import numpy as np
+import plotly.graph_objects as go
+
+c = leer("categorias_oee.csv"); c = c[c.mes == 6]
+A = int(c.anho.max())
+u = c[c.anho == A].groupby(K_OEE + ["nivel_categoria"])[["cantidad", "devengado"]].sum().reset_index()
+u["s"] = u.devengado / u.cantidad
+u = u.merge(instituciones()[K_OEE + ["nombre_largo", "sector"]], on=K_OEE)
+n_cat = u.nivel_categoria.nunique(); n_inst = u[K_OEE].drop_duplicates().shape[0]; N = u.cantidad.sum()
+k = u.groupby("nivel_categoria").agg(cargos=("cantidad", "sum"), masa=("devengado", "sum"), inst=("codigo_oee", "size")).sort_values("cargos", ascending=False)
+rg = u[u.cantidad >= 20].groupby("nivel_categoria").s.agg(["min", "max"])
+k["smin"], k["smax"] = rg["min"], rg["max"]
+k["s"] = k.masa / k.cargos; k["p"] = k.cargos / N * 100
+top = k.head(12)
+# Una misma letra en distintas instituciones
+var = u[u.cantidad >= 20].groupby("nivel_categoria").agg(n=("s", "size"), lo=("s", "min"), hi=("s", "max"))
+var = var[var.n >= 10]; var["ratio"] = var.hi / var.lo
+ej = var.sort_values("n", ascending=False).index[0]
+ejd = u[(u.nivel_categoria == ej) & (u.cantidad >= 20)].sort_values("s")
+```
+
+En el Anexo de Personal del Presupuesto General de la Nación, cada cargo permanente tiene una **categoría salarial**: un código, en general una letra, que fija el **sueldo básico** de ese cargo. Es la base de todo lo que cobra un funcionario permanente; a ese sueldo se suman después bonificaciones, gastos de representación y otros conceptos.
+
+## Cuántas categorías hay
+
+En junio de `{python} A`, los registros de SINARH y SICCA muestran **`{python} miles(N)` cargos** con sueldo básico en `{python} n_inst` instituciones, distribuidos en **`{python} n_cat` códigos de categoría distintos**. Pero la mayoría de los cargos está en unos pocos: las 12 categorías más comunes reúnen el `{python} pct(top.p.sum(), 0)`.
+
+```{python}
+#| label: tbl-top
+#| output: asis
+print("| Categoría | Cargos | % | Instituciones que la usan | Sueldo básico medio (M Gs) | Rango entre instituciones con al menos 20 cargos (M Gs) |\n|---|--:|--:|--:|--:|---|")
+for cat_, r in top.iterrows():
+    print(f"| {cat_} | {miles(r.cargos)} | {pct(r.p)} | {int(r.inst)} | {millones(r.s, 2)} | {(millones(r.smin, 1) + ' a ' + millones(r.smax, 1)) if pd.notna(r.smin) else '—'} |")
+print(f"\n: Las 12 categorías salariales con más cargos, junio de {A}")
+```
+
+## La misma letra, distinto sueldo
+
+Una categoría no tiene el mismo valor en todas las instituciones. Cada institución tiene su propia escala dentro del presupuesto, y lo que en una es una categoría de jefatura en otra puede ser un cargo técnico. Por ejemplo, la categoría **`{python} ej`** aparece en `{python} int(var.loc[ej, 'n'])` instituciones (con al menos 20 cargos), con un sueldo básico medio que va de `{python} millones(var.loc[ej, 'lo'], 1)` a `{python} millones(var.loc[ej, 'hi'], 1)` millones de guaraníes.
+
+```{python}
+#| label: fig-ej
+#| fig-cap: "Sueldo básico medio de la categoría más extendida en cada institución que la usa (al menos 20 cargos, millones de guaraníes)"
+o = ejd.tail(15)
+fig = barras_h(o.nombre_largo, o.s / 1e6, [millones(x, 1) for x in o.s], colores=[AZUL] * len(o), rango=[0, o.s.max() / 1e6 * 1.2])
+fig.show(config=CONFIG)
+```
+
+Por eso, en Pulso del Estado comparamos las categorías **dentro de cada institución**, como en el análisis de la [brecha salarial de género](../2026-11-13-brecha-salarial-genero/) o del [techo de cristal](../2027-03-04-el-techo-de-cristal/), y no entre instituciones.
+
+## Lo que no está en los datos abiertos
+
+El significado de cada código (qué cargo es, qué requisitos tiene, si es directivo o técnico) figura en el Anexo de Personal y en las normas de cada institución, pero no en los registros de pagos. Contar con una **tabla oficial de categorías en formato de datos abiertos**, que vincule cada código con su descripción y su escala, permitiría comparar puestos equivalentes entre instituciones, como recomienda la [guía del BID sobre indicadores de nómina](../2027-05-27-indicadores-de-nomina/).
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA (sueldo básico, objeto 111, por institución y categoría, junio). [Descargar los datos](/datos/).
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_portada, ig_dato, barras
+t8 = top.head(8)
+social("Explicador: las\ncategorías salariales", f"{n_cat} categorías", f"para {miles(N)} cargos con sueldo básico (junio de {A})")
+ig_portada("Explicador", "Las categorías\nsalariales", f"{n_cat} códigos para {miles(N)} cargos.\nLa misma letra no paga lo mismo en todas partes.")
+ig_dato(2, "Las más comunes", "Las 12 categorías más comunes reúnen", pct(top.p.sum(), 0), "de los cargos con sueldo básico",
+        "% de los cargos, por categoría", barras(list(t8.index), list(t8.p), [pct(x, 0) for x in t8.p]))
+```
