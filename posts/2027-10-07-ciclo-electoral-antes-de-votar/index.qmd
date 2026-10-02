@@ -1,12 +1,12 @@
 ---
 title: "Ciclo electoral I: ¿se contrata más antes de votar?"
 description: "Se dice que el empleo público crece antes de las elecciones. Con los datos de las elecciones de 2017 a 2026, comparamos los contratos de los seis meses previos a cada votación con los mismos meses de otros años."
-date: 2027-10-07
+date: "2026-10-02T14:25:00"
+redes: 2027-10-07
 categories: [Ciclo electoral, Contratados, Dotación]
 image: social.png
 image-alt: "Cambio de contratos en los seis meses previos a cada elección frente a otros años"
 resources: ["ig_*.png"]
-draft: true  # programada
 ---
 
 ```{python}
@@ -78,7 +78,7 @@ fig.show(config=CONFIG)
 
 ## Lo que no se puede ver en el total
 
-Que el total no muestre un salto no descarta que haya contrataciones con fines electorales en algunas instituciones o que, a la vez, se den de baja otros contratos. Para eso hace falta mirar institución por institución y persona por persona, algo que los datos abiertos todavía no permiten ([los indicadores que faltan](../2027-05-27-indicadores-de-nomina/)). Lo que sí se ve con claridad es lo que pasa **después** de las elecciones generales, cuando cambia el gobierno: lo analizamos en la segunda parte, la semana próxima.
+Que el total no muestre un salto no descarta que haya contrataciones con fines electorales en algunas instituciones o que, a la vez, se den de baja otros contratos. Para eso hace falta mirar institución por institución y persona por persona, algo que los datos abiertos todavía no permiten ([los indicadores que faltan](../2027-05-27-indicadores-de-nomina/)). Lo que sí se ve con claridad es lo que pasa **después** de las elecciones generales, cuando cambia el gobierno: lo analizamos en la [segunda parte](../2027-10-14-ciclo-electoral-cambio-de-gobierno/).
 
 ::: {.fuente}
 **Fuentes:** elaboración de Pulso del Estado con datos de SINARH y SICCA. Fechas electorales: Tribunal Superior de Justicia Electoral. [Descargar los datos](/datos/).

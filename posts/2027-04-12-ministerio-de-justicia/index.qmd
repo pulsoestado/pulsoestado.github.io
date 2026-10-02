@@ -1,12 +1,12 @@
 ---
 title: "El Ministerio de Justicia, uno de los que más creció"
 description: "El Ministerio de Justicia, a cargo del sistema penitenciario, es una de las instituciones del servicio civil que más personal sumó desde 2017, casi todo con contratos."
-date: 2027-04-12
+date: "2026-10-02T11:00:00"
+redes: 2027-04-12
 categories: [El dato de la semana, Instituciones, Contratados]
 image: social.png
 image-alt: "Vínculos del Ministerio de Justicia por tipo, por año"
 resources: ["ig_*.png"]
-draft: true  # programada
 ---
 
 ```{python}

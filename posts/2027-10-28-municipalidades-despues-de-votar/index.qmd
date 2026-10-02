@@ -2,6 +2,7 @@
 title: "Municipalidades, un año después de votar"
 description: "Qué pasó con el personal de las municipalidades en los meses posteriores a las elecciones municipales de octubre de 2026, comparado con el ciclo de 2021."
 date: 2027-10-28
+redes: 2027-10-28
 categories: [Municipalidades, Ciclo electoral, Contratados]
 image: social.png
 image-alt: "Vínculos municipales antes y después de las elecciones municipales de 2021 y 2026"

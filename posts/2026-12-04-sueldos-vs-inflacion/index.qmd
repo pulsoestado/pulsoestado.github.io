@@ -1,11 +1,11 @@
 ---
 title: "¿Le ganaron los sueldos públicos a la inflación?"
 description: "Entre 2017 y 2025 los precios subieron 41%. La remuneración media pública subió 40%, el salario mínimo 42% y los salarios privados 41%. Ocho años después, el poder de compra está casi en el mismo lugar."
-date: 2026-12-04
+date: "2026-10-02T08:40:00"
+redes: 2026-12-04
 categories: [Salarios, Inflación, Público y privado]
 image: social.png
 image-alt: "Remuneración media pública, salario mínimo, salarios privados e inflación, índice 2017 = 100"
-draft: true  # programada
 ---
 
 ```{python}

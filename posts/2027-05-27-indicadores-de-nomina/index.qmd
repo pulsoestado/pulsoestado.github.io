@@ -1,12 +1,12 @@
 ---
 title: "Los indicadores de nómina que Paraguay podría publicar"
 description: "Una guía del BID propone ocho familias de indicadores para analizar la nómina pública. Con los datos abiertos de Paraguay se pueden calcular cinco, al menos en parte; las otras tres necesitan datos que hoy no se publican."
-date: 2027-05-27
+date: "2026-10-02T11:55:00"
+redes: 2027-05-27
 categories: [Metodología, Datos abiertos, Gestión pública]
 image: social.png
 image-alt: "Indicadores de nómina pública: cuáles se pueden calcular en Paraguay"
 resources: ["ig_*.png"]
-draft: true  # programada
 ---
 
 ```{python}

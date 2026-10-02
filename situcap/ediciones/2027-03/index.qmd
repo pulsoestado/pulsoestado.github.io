@@ -2,6 +2,7 @@
 title: "SITUCAP N.º 8 · Marzo de 2027"
 description: "Vínculos, masa salarial, contratos y sectores del Estado paraguayo en marzo de 2027, con la comparación interanual y descontada la inflación."
 date: 2027-05-20
+redes: 2027-05-20
 image: social.png
 image-alt: "SITUCAP marzo de 2027: vínculos y masa salarial del sector público"
 resources: ["ig_*.png"]

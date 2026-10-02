@@ -2,6 +2,7 @@
 title: "SITUCAP N.º 11 · Junio de 2027"
 description: "Vínculos, masa salarial, contratos y sectores del Estado paraguayo en junio de 2027, con la comparación interanual y descontada la inflación."
 date: 2027-08-19
+redes: 2027-08-19
 image: social.png
 image-alt: "SITUCAP junio de 2027: vínculos y masa salarial del sector público"
 resources: ["ig_*.png"]

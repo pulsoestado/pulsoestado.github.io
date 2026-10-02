@@ -2,6 +2,7 @@
 title: "SITUCAP N.º 9 · Abril de 2027"
 description: "Vínculos, masa salarial, contratos y sectores del Estado paraguayo en abril de 2027, con la comparación interanual y descontada la inflación."
 date: 2027-06-17
+redes: 2027-06-17
 image: social.png
 image-alt: "SITUCAP abril de 2027: vínculos y masa salarial del sector público"
 resources: ["ig_*.png"]

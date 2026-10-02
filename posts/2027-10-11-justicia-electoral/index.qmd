@@ -1,12 +1,12 @@
 ---
 title: "La Justicia Electoral y sus contratos"
 description: "La Justicia Electoral organiza cada elección y ajusta su personal contratado al calendario electoral. Cuántos contratos tiene hoy y cómo se movieron en los ciclos anteriores."
-date: 2027-10-11
+date: "2026-10-02T14:30:00"
+redes: 2027-10-11
 categories: [El dato de la semana, Ciclo electoral, Poder Judicial]
 image: social.png
 image-alt: "Contratados de la Justicia Electoral por mes"
 resources: ["ig_*.png"]
-draft: true  # programada
 ---
 
 ```{python}

@@ -2,6 +2,7 @@
 title: "SITUCAP N.º 4 · Noviembre de 2026"
 description: "Vínculos, masa salarial, contratos y sectores del Estado paraguayo en noviembre de 2026, con la comparación interanual y descontada la inflación."
 date: 2027-01-21
+redes: 2027-01-21
 image: social.png
 image-alt: "SITUCAP noviembre de 2026: vínculos y masa salarial del sector público"
 resources: ["ig_*.png"]

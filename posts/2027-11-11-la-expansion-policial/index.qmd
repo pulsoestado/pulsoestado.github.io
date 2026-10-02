@@ -1,12 +1,12 @@
 ---
 title: "La expansión policial: cuánto creció y cuánto cuesta"
 description: "Desde 2024, la Policía Nacional sumó más de diez mil vínculos con varias promociones de agentes. Cuánto cambió su masa salarial, cuánto cuesta cada nuevo agente y qué parte del crecimiento del Estado explica."
-date: 2027-11-11
+date: "2026-10-02T15:05:00"
+redes: 2027-11-11
 categories: [Fuerzas públicas, Masa salarial, Dotación]
 image: social.png
 image-alt: "Vínculos y masa salarial de la Policía Nacional desde 2017"
 resources: ["ig_*.png"]
-draft: true  # programada
 ---
 
 ```{python}

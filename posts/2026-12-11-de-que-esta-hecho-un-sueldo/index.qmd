@@ -1,11 +1,11 @@
 ---
 title: "¿De qué está hecho un sueldo público?"
 description: "El sueldo básico es el 63% de la masa salarial. El resto son contratos, bonificaciones, aguinaldo, dietas y gastos de representación. En las municipalidades, dietas y gastos de representación suman el 18%."
-date: 2026-12-11
+date: "2026-10-02T08:45:00"
+redes: 2026-12-11
 categories: [Masa salarial, Remuneraciones]
 image: social.png
 image-alt: "Composición de la masa salarial pública por componente y sector, 2025"
-draft: true  # programada
 ---
 
 ```{python}

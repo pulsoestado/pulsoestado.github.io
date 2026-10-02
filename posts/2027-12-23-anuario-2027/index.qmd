@@ -2,6 +2,7 @@
 title: "Anuario 2027: el empleo público en 12 gráficos"
 description: "El cierre del año de Pulso del Estado: dotación, contratos, mujeres, masa salarial, remuneraciones, aguinaldo y discapacidad, en doce gráficos con los últimos datos."
 date: 2027-12-23
+redes: 2027-12-23
 categories: [Anuario, Dotación, Masa salarial]
 image: social.png
 image-alt: "Doce gráficos sobre el empleo público en Paraguay"

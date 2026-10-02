@@ -1,12 +1,12 @@
 ---
 title: "Cuántos vínculos tiene el Ministerio de Educación"
 description: "El Ministerio de Educación y Ciencias es la institución más grande del Estado paraguayo. Cuánto personal tiene, cuántas son mujeres y cómo cambió desde 2017."
-date: 2027-02-08
+date: "2026-10-02T09:40:00"
+redes: 2027-02-08
 categories: [El dato de la semana, Educación, Dotación]
 image: social.png
 image-alt: "Vínculos del Ministerio de Educación y Ciencias por mes"
 resources: ["ig_*.png"]
-draft: true  # programada
 ---
 
 ```{python}

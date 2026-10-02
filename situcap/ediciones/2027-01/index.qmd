@@ -2,6 +2,7 @@
 title: "SITUCAP N.º 6 · Enero de 2027"
 description: "Vínculos, masa salarial, contratos y sectores del Estado paraguayo en enero de 2027, con la comparación interanual y descontada la inflación."
 date: 2027-03-18
+redes: 2027-03-18
 image: social.png
 image-alt: "SITUCAP enero de 2027: vínculos y masa salarial del sector público"
 resources: ["ig_*.png"]

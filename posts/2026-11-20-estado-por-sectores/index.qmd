@@ -1,11 +1,11 @@
 ---
 title: "El Estado por sectores: educación, salud, seguridad y el resto"
 description: "Tres sectores concentran dos de cada tres vínculos públicos y el 70% de la masa salarial. Una ficha de los 12 sectores del Estado: cuánta gente, cuánto cuestan, cuántos contratos, cuántas mujeres y cómo cambiaron desde 2017."
-date: 2026-11-20
+date: "2026-10-02T08:30:00"
+redes: 2026-11-20
 categories: [Sectores, Dotación, Masa salarial]
 image: social.png
 image-alt: "Vínculos del sector público por sector, índice 2017 = 100"
-draft: true  # programada
 ---
 
 ```{python}

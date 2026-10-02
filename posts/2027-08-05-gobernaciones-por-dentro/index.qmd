@@ -1,12 +1,12 @@
 ---
 title: "Gobernaciones por dentro"
 description: "Las 17 gobernaciones del país pagan unos dos mil cuatrocientos vínculos. Cuánto personal tiene cada una, cuántos son contratos y cuánto pesan las dietas de las juntas departamentales."
-date: 2027-08-05
+date: "2026-10-02T13:25:00"
+redes: 2027-08-05
 categories: [Gobernaciones, Territorio, Instituciones]
 image: social.png
 image-alt: "Vínculos y composición de la masa salarial de las gobernaciones"
 resources: ["ig_*.png"]
-draft: true  # programada
 ---
 
 ```{python}

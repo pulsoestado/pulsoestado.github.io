@@ -1,12 +1,12 @@
 ---
 title: "La Corte Suprema, casi sin contratados"
 description: "En 2017 la Corte Suprema de Justicia llegó a pagar más de dos mil contratos en un mes. Desde 2023 casi no tiene contratados."
-date: 2027-03-29
+date: "2026-10-02T10:40:00"
+redes: 2027-03-29
 categories: [El dato de la semana, Poder Judicial, Contratados]
 image: social.png
 image-alt: "Contratados de la Corte Suprema de Justicia por mes"
 resources: ["ig_*.png"]
-draft: true  # programada
 ---
 
 ```{python}

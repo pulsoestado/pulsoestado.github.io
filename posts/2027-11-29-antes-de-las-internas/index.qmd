@@ -2,6 +2,7 @@
 title: "Antes de las internas: qué pasó con el empleo en 2017 y 2022"
 description: "En los dos ciclos anteriores, las internas partidarias se hicieron en diciembre del año previo a las elecciones generales. Qué pasó con los vínculos del Estado en los meses previos."
 date: 2027-11-29
+redes: 2027-11-29
 categories: [El dato de la semana, Ciclo electoral, Dotación]
 image: social.png
 image-alt: "Vínculos del Estado en los meses previos a las internas de 2017 y 2022"

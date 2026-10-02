@@ -1,12 +1,12 @@
 ---
 title: "Cuántas instituciones reportan sus datos"
 description: "Los registros de SINARH y SICCA no se completan al mismo tiempo: en los meses más recientes faltan instituciones, sobre todo municipalidades, que cargan sus datos con atraso."
-date: 2027-02-22
+date: "2026-10-02T09:55:00"
+redes: 2027-02-22
 categories: [El dato de la semana, Metodología, Municipalidades]
 image: social.png
 image-alt: "Cantidad de instituciones con vínculos registrados por mes"
 resources: ["ig_*.png"]
-draft: true  # programada
 ---
 
 ```{python}

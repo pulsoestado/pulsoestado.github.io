@@ -1,12 +1,12 @@
 ---
-title: "Aguinaldo 2027: cuánto costará"
-description: "Una estimación de cuánto pagará el Estado en aguinaldo este diciembre, a partir de lo que lleva pagado en sueldos en el año."
-date: 2027-12-06
+title: "Aguinaldo: cuánto costará este año"
+description: "Una estimación de cuánto pagará el Estado en aguinaldo en diciembre, a partir de lo que lleva pagado en sueldos en el año."
+date: "2026-10-02T15:30:00"
+redes: 2027-12-06
 categories: [El dato de la semana, Aguinaldo, Masa salarial]
 image: social.png
 image-alt: "Aguinaldo pagado cada año y estimación para el año en curso"
 resources: ["ig_*.png"]
-draft: true  # programada
 ---
 
 ```{python}
@@ -46,7 +46,7 @@ fig = barras_h(x, y, [miles(v_) for v_ in y], colores=[AZUL] * len(h) + ([AMARIL
 fig.show(config=CONFIG)
 ```
 
-Es una estimación simple: el aguinaldo final dependerá de los pagos de los últimos meses del año y de los contratos que reciben aguinaldo por otros objetos de gasto. El jueves analizamos cómo se reparte entre sectores e instituciones.
+Es una estimación simple: el aguinaldo final dependerá de los pagos de los últimos meses del año y de los contratos que reciben aguinaldo por otros objetos de gasto. Cómo se reparte entre sectores e instituciones lo analizamos en [el aguinaldo: cuánto cuesta y cómo se reparte](../2027-12-09-el-aguinaldo-como-se-reparte/).
 
 ::: {.fuente}
 **Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA (objetos 111 y 114). [Descargar los datos](/datos/).

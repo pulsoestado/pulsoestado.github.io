@@ -2,6 +2,7 @@
 title: "Los contratos en el año preelectoral"
 description: "A meses de las internas partidarias y de las elecciones generales de 2028, cuántos contratos paga hoy el Estado y cuánto crecieron frente al año anterior."
 date: 2027-10-04
+redes: 2027-10-04
 categories: [El dato de la semana, Ciclo electoral, Contratados]
 image: social.png
 image-alt: "Vínculos contratados por año, mismo mes"

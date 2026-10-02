@@ -1,12 +1,12 @@
 ---
 title: "Cuánto personal tiene el Congreso"
 description: "La Cámara de Senadores, la Cámara de Diputados y el Congreso Nacional suman más de cuatro mil vínculos. Cuántos son contratos y cuánto cuesta cada uno."
-date: 2027-06-07
+date: "2026-10-02T12:10:00"
+redes: 2027-06-07
 categories: [El dato de la semana, Poder Legislativo, Instituciones]
 image: social.png
 image-alt: "Vínculos del Poder Legislativo por cámara"
 resources: ["ig_*.png"]
-draft: true  # programada
 ---
 
 ```{python}

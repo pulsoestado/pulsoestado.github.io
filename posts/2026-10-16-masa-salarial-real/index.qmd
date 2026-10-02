@@ -1,11 +1,11 @@
 ---
 title: "¿Cuánto paga el Estado en salarios?"
 description: "En 2025 el Estado pagó 30,4 billones de guaraníes en salarios. Descontada la inflación, la masa salarial creció 14% desde 2017, casi lo mismo que la cantidad de vínculos: el sueldo medio real casi no cambió."
-date: 2026-10-16
+date: "2026-10-02T08:05:00"
+redes: 2026-10-16
 categories: [Masa salarial, Inflación]
 image: social.png
 image-alt: "Masa salarial del sector público paraguayo en términos reales, 2017-2025"
-draft: true  # programada
 ---
 
 ```{python}
@@ -98,7 +98,7 @@ fig.show(config=CONFIG)
 
 Si se divide la masa salarial (sin aguinaldo) entre los vínculos pagados cada mes, se obtiene una **remuneración media por vínculo**: `{python} millones(t.loc[A1, 'rem_nom'])` millones de guaraníes por mes en `{python} A1`. En términos reales, esa cifra es prácticamente la misma que en `{python} A0` (`{python} spct(var_rem)`). Dicho de otra forma: **casi todo el aumento de la masa salarial real desde `{python} A0` se explica por más vínculos, no por mejores sueldos promedio**.
 
-Ese promedio esconde historias muy distintas entre sectores: en Educación los sueldos reales subieron con fuerza, mientras que en Salud el promedio bajó porque la mayoría de los nuevos vínculos fueron contratos. Lo analizamos en detalle en la próxima nota: *¿Más gente o mejores sueldos?*
+Ese promedio esconde historias muy distintas entre sectores: en Educación los sueldos reales subieron con fuerza, mientras que en Salud el promedio bajó porque la mayoría de los nuevos vínculos fueron contratos. Lo analizamos en detalle en [¿más gente o mejores sueldos?](../2026-10-30-mas-gente-o-mejores-sueldos/)
 
 ## Adónde va la plata
 

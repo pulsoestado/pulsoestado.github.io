@@ -1,12 +1,12 @@
 ---
 title: "El sueldo básico medio de un cargo público"
 description: "Cuánto es, en promedio, el sueldo básico de un cargo permanente en el Estado paraguayo y cuánto cambió desde 2018, en guaraníes de cada año y descontada la inflación."
-date: 2027-07-26
+date: "2026-10-02T13:10:00"
+redes: 2027-07-26
 categories: [El dato de la semana, Remuneraciones, Categorías]
 image: social.png
 image-alt: "Sueldo básico medio por cargo, nominal y real"
 resources: ["ig_*.png"]
-draft: true  # programada
 ---
 
 ```{python}

@@ -1,12 +1,12 @@
 ---
 title: "Gastos de representación: cuánto y dónde"
 description: "Los gastos de representación son un complemento que cobran las autoridades. Cuánto suman en un año y qué instituciones pagan más."
-date: 2027-03-15
+date: "2026-10-02T10:25:00"
+redes: 2027-03-15
 categories: [El dato de la semana, Masa salarial, Remuneraciones]
 image: social.png
 image-alt: "Gastos de representación por institución"
 resources: ["ig_*.png"]
-draft: true  # programada
 ---
 
 ```{python}

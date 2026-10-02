@@ -1,12 +1,12 @@
 ---
 title: "Explicador: cómo se decide la masa salarial"
 description: "Del proyecto de presupuesto al pago de cada mes: quién decide cuánto personal tiene el Estado y cuánto le paga, y en qué momento del año se puede seguir cada paso."
-date: 2027-08-12
+date: "2026-10-02T13:35:00"
+redes: 2027-08-12
 categories: [Explicador, Presupuesto, Masa salarial]
 image: social.png
 image-alt: "El ciclo presupuestario de la masa salarial"
 resources: ["ig_*.png"]
-draft: true  # programada
 ---
 
 ```{python}
@@ -64,7 +64,7 @@ fig.update_xaxes(dtick=1); fig.update_yaxes(ticksuffix="%", range=[0, cr.max() *
 fig.show(config=CONFIG)
 ```
 
-En guaraníes de cada año, la masa salarial creció todos los años desde 2017. Hay tres motores: **nuevos cargos y contratos**, **reajustes** salariales generales o para grupos específicos (docentes, personal de salud, policías y militares) y el **crecimiento vegetativo** de algunos complementos que aumentan solos con el tiempo, como los ligados a la antigüedad en ciertas carreras. Por eso, el momento clave para discutir el gasto en personal no es la ejecución sino la aprobación del presupuesto, entre septiembre y diciembre. Este año lo seguiremos en [qué mirar del Presupuesto 2028](../2027-08-30-que-mirar-del-presupuesto-2028/).
+En guaraníes de cada año, la masa salarial creció todos los años desde 2017. Hay tres motores: **nuevos cargos y contratos**, **reajustes** salariales generales o para grupos específicos (docentes, personal de salud, policías y militares) y el **crecimiento vegetativo** de algunos complementos que aumentan solos con el tiempo, como los ligados a la antigüedad en ciertas carreras. Por eso, el momento clave para discutir el gasto en personal no es la ejecución sino la aprobación del presupuesto, entre septiembre y diciembre. Lo seguimos cada año en el blog, cuando el proyecto llega al Congreso.
 
 ::: {.fuente}
 **Fuentes:** Constitución Nacional, artículos 216 y 217. Elaboración de Pulso del Estado con datos de SINARH y SICCA (devengado del grupo 100). [Descargar los datos](/datos/).

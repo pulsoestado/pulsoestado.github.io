@@ -1,12 +1,12 @@
 ---
 title: "Explicador: cómo leer las cifras de empleo público en campaña"
 description: "Se viene un año electoral y con él, cifras sobre el tamaño del Estado. Seis preguntas para saber si una cifra de empleo público está bien usada."
-date: 2027-11-04
+date: "2026-10-02T14:55:00"
+redes: 2027-11-04
 categories: [Explicador, Ciclo electoral, Metodología]
 image: social.png
 image-alt: "Seis preguntas para leer cifras de empleo público"
 resources: ["ig_*.png"]
-draft: true  # programada
 ---
 
 ```{python}

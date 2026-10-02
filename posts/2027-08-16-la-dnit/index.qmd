@@ -1,12 +1,12 @@
 ---
 title: "La DNIT, la nueva recaudadora"
 description: "La Dirección Nacional de Ingresos Tributarios reunió desde 2024 la recaudación de impuestos y las aduanas. Cuánto personal tiene, cuánto cuesta y cómo cambió."
-date: 2027-08-16
+date: "2026-10-02T13:40:00"
+redes: 2027-08-16
 categories: [El dato de la semana, Instituciones, Reorganización]
 image: social.png
 image-alt: "Vínculos de la Dirección Nacional de Ingresos Tributarios por mes"
 resources: ["ig_*.png"]
-draft: true  # programada
 ---
 
 ```{python}

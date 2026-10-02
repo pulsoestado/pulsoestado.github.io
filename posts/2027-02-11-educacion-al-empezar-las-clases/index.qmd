@@ -1,12 +1,12 @@
 ---
 title: "Educación al empezar las clases"
 description: "El Ministerio de Educación y las universidades nacionales reúnen casi un tercio del empleo público. Cuánto personal tienen, cómo cambia entre el receso y el inicio de clases y cuánto subió su remuneración real."
-date: 2027-02-11
+date: "2026-10-02T09:45:00"
+redes: 2027-02-11
 categories: [Educación, Dotación, Remuneraciones]
 image: social.png
 image-alt: "Remuneración media real del Ministerio de Educación y Ciencias desde 2017"
 resources: ["ig_*.png"]
-draft: true  # programada
 ---
 
 ```{python}

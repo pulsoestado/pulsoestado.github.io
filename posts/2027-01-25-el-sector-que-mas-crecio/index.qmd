@@ -1,12 +1,12 @@
 ---
 title: "El sector que más creció en el último año"
 description: "Con las mismas instituciones y los mismos meses, qué sector del Estado sumó más vínculos en el último año y cuál perdió."
-date: 2027-01-25
+date: "2026-10-02T09:20:00"
+redes: 2027-01-25
 categories: [El dato de la semana, Sectores, Dotación]
 image: social.png
 image-alt: "Cambio de vínculos por sector en el último año"
 resources: ["ig_*.png"]
-draft: true  # programada
 ---
 
 ```{python}

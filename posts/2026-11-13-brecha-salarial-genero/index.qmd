@@ -1,11 +1,11 @@
 ---
 title: "¿Ganan menos las mujeres en el Estado?"
 description: "En promedio, el sueldo básico de las mujeres en el sector público ya supera al de los hombres. Pero en la misma institución y la misma categoría, ellas siguen ganando menos: 1,6% en promedio y 5% en Salud."
-date: 2026-11-13
+date: "2026-10-02T08:25:00"
+redes: 2026-11-13
 categories: [Género, Salarios]
 image: social.png
 image-alt: "Brecha salarial de género en el sector público paraguayo: bruta y dentro de la misma categoría"
-draft: true  # programada
 ---
 
 ```{python}

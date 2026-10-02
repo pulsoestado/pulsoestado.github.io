@@ -1,12 +1,12 @@
 ---
 title: "Las mujeres en la Policía Nacional"
 description: "Cuántas mujeres hay en la Policía Nacional y cómo cambió su proporción con las últimas promociones de agentes."
-date: 2027-07-12
+date: "2026-10-02T12:55:00"
+redes: 2027-07-12
 categories: [El dato de la semana, Género, Fuerzas públicas]
 image: social.png
 image-alt: "Mujeres en la Policía Nacional por mes"
 resources: ["ig_*.png"]
-draft: true  # programada
 ---
 
 ```{python}

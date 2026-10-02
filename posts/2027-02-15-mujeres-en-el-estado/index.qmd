@@ -1,12 +1,12 @@
 ---
 title: "Mujeres en el Estado: cuántas son"
 description: "Las mujeres son más de la mitad de los vínculos públicos y una proporción todavía mayor de los contratos."
-date: 2027-02-15
+date: "2026-10-02T09:50:00"
+redes: 2027-02-15
 categories: [El dato de la semana, Género, Dotación]
 image: social.png
 image-alt: "Proporción de mujeres en los vínculos públicos, permanentes y contratados"
 resources: ["ig_*.png"]
-draft: true  # programada
 ---
 
 ```{python}
@@ -56,7 +56,7 @@ fig.update_yaxes(ticksuffix="%", range=[40, 65])
 fig.show(config=CONFIG)
 ```
 
-La diferencia tiene que ver con dónde trabajan las mujeres. Son mayoría en **Salud**, el sector con más contratos, y en **Educación**, y minoría en las **Fuerzas públicas**, casi todas de planta permanente. El jueves 25 publicamos el análisis completo sobre dónde trabajan las mujeres del Estado.
+La diferencia tiene que ver con dónde trabajan las mujeres. Son mayoría en **Salud**, el sector con más contratos, y en **Educación**, y minoría en las **Fuerzas públicas**, casi todas de planta permanente. El análisis completo está en [dónde trabajan las mujeres del Estado](../2027-02-25-donde-trabajan-las-mujeres/).
 
 ::: {.fuente}
 **Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA (vínculos por mes, tipo y sexo). [Descargar los datos](/datos/).

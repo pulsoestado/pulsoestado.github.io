@@ -1,12 +1,12 @@
 ---
 title: "De cada 100 guaraníes en salarios, ¿a dónde va cada uno?"
 description: "Cómo se reparte la masa salarial del Estado entre sectores: cuántos guaraníes de cada 100 van a Educación, a Salud, a las Fuerzas públicas y al resto."
-date: 2027-05-17
+date: "2026-10-02T11:45:00"
+redes: 2027-05-17
 categories: [El dato de la semana, Masa salarial, Sectores]
 image: social.png
 image-alt: "Distribución de la masa salarial pública por sector"
 resources: ["ig_*.png"]
-draft: true  # programada
 ---
 
 ```{python}

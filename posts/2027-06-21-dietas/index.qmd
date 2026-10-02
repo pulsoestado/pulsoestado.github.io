@@ -1,12 +1,12 @@
 ---
 title: "Dietas: cuánto cuestan concejales y legisladores"
 description: "Las dietas son lo que cobran los miembros de cuerpos colegiados: concejales municipales y departamentales, senadores y diputados. Cuánto suman en un año y dónde se pagan."
-date: 2027-06-21
+date: "2026-10-02T12:25:00"
+redes: 2027-06-21
 categories: [El dato de la semana, Masa salarial, Municipalidades]
 image: social.png
 image-alt: "Dietas pagadas por sector"
 resources: ["ig_*.png"]
-draft: true  # programada
 ---
 
 ```{python}

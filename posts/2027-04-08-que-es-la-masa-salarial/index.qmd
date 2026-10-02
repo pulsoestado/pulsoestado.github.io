@@ -1,12 +1,12 @@
 ---
 title: "Explicador: qué es la masa salarial y cómo se mide"
 description: "Servicios personales, objetos de gasto, devengado, aguinaldo y términos reales: qué significa cada palabra cuando hablamos de lo que el Estado paga en salarios."
-date: 2027-04-08
+date: "2026-10-02T10:55:00"
+redes: 2027-04-08
 categories: [Explicador, Masa salarial, Metodología]
 image: social.png
 image-alt: "La masa salarial del Estado paraguayo por subgrupo de gasto"
 resources: ["ig_*.png"]
-draft: true  # programada
 ---
 
 ```{python}

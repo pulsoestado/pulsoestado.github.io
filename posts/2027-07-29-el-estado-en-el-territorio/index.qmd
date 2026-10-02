@@ -1,14 +1,14 @@
 ---
 title: "El Estado en el territorio"
 description: "Cuánto personal tienen las municipalidades y las gobernaciones de cada departamento, y cuánto representa por cada mil habitantes."
-date: 2027-07-29
+date: "2026-10-02T13:15:00"
+redes: 2027-07-29
 categories: [Municipalidades, Gobernaciones, Territorio]
 image: social.png
 image-alt: "Vínculos municipales y departamentales por cada mil habitantes, por departamento"
 resources: ["ig_*.png"]
 requiere:
   archivo: "data/manual/poblacion_departamentos_2022.csv"
-draft: true  # programada
 ---
 
 ```{python}

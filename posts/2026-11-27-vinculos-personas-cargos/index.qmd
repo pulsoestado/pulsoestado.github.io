@@ -1,11 +1,11 @@
 ---
 title: "Vínculos, personas y cargos: tres maneras de contar al Estado"
 description: "¿Son 334 mil, 359 mil o 369 mil? Las cifras de funcionarios públicos que circulan no se contradicen: miden cosas distintas. Una guía para leerlas sin confundirse."
-date: 2026-11-27
+date: "2026-10-02T08:35:00"
+redes: 2026-11-27
 categories: [Metodología, Dotación]
 image: social.png
 image-alt: "Tres medidas del empleo público en Paraguay: cargos presupuestados, personas y vínculos"
-draft: true  # programada
 ---
 
 ```{python}

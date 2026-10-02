@@ -1,12 +1,12 @@
 ---
 title: "Jornales: quién los paga"
 description: "Los jornales son la segunda forma de contratación más grande del Estado, después de los contratos de personal de salud. Cuánto suman y qué instituciones los usan."
-date: 2027-09-13
+date: "2026-10-02T14:05:00"
+redes: 2027-09-13
 categories: [El dato de la semana, Contratados, Masa salarial]
 image: social.png
 image-alt: "Instituciones que más pagan en jornales"
 resources: ["ig_*.png"]
-draft: true  # programada
 ---
 
 ```{python}

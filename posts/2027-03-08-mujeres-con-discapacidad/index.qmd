@@ -1,12 +1,12 @@
 ---
-title: "8M: las mujeres con discapacidad en el empleo público"
+title: "Las mujeres con discapacidad en el empleo público"
 description: "Las mujeres son la mayoría del personal público, pero una minoría entre las personas con discapacidad que trabajan en el Estado."
-date: 2027-03-08
+date: "2026-10-02T10:15:00"
+redes: 2027-03-08
 categories: [El dato de la semana, Discapacidad, Género]
 image: social.png
 image-alt: "Proporción de mujeres entre los vínculos de personas con discapacidad, por año"
 resources: ["ig_*.png"]
-draft: true  # programada
 ---
 
 ```{python}

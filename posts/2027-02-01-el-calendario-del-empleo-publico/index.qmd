@@ -1,12 +1,12 @@
 ---
 title: "El calendario del empleo público"
 description: "El Estado no tiene la misma cantidad de personal todo el año. Los contratos caen en enero y se recuperan hasta mitad de año; la planta permanente se mueve mucho menos."
-date: 2027-02-01
+date: "2026-10-02T09:30:00"
+redes: 2027-02-01
 categories: [El dato de la semana, Dotación, Contratados]
 image: social.png
 image-alt: "Patrón mensual de los vínculos permanentes y contratados"
 resources: ["ig_*.png"]
-draft: true  # programada
 ---
 
 ```{python}

@@ -1,12 +1,12 @@
 ---
 title: "Universidades nacionales por dentro"
 description: "Diez universidades públicas pagan más de veinte mil vínculos. La Universidad Nacional de Asunción concentra siete de cada diez. Personal, contratos, mujeres y masa salarial de cada una."
-date: 2027-03-11
+date: "2026-10-02T10:20:00"
+redes: 2027-03-11
 categories: [Educación, Universidades, Instituciones]
 image: social.png
 image-alt: "Vínculos de las universidades nacionales"
 resources: ["ig_*.png"]
-draft: true  # programada
 ---
 
 ```{python}

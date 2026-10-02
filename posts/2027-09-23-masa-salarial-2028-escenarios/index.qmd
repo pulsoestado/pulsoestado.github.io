@@ -2,6 +2,7 @@
 title: "La masa salarial en 2028: tres escenarios"
 description: "Una proyección simple de la masa salarial para 2028, con tres combinaciones de crecimiento del personal, reajustes e inflación. Cuánto podría costar el Estado y qué decisiones mueven la cifra."
 date: 2027-09-23
+redes: 2027-09-23
 categories: [Masa salarial, Proyecciones, Presupuesto]
 image: social.png
 image-alt: "Masa salarial proyectada a 2028 en tres escenarios"

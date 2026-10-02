@@ -1,12 +1,12 @@
 ---
 title: "Personas con discapacidad en el Estado: cuántas son"
 description: "Cuántos vínculos de personas con discapacidad registran las instituciones públicas, cómo cambió la cifra desde 2017 y cuánto falta para la cuota legal del 5%."
-date: 2027-05-24
+date: "2026-10-02T11:50:00"
+redes: 2027-05-24
 categories: [El dato de la semana, Discapacidad]
 image: social.png
 image-alt: "Vínculos de personas con discapacidad en el sector público por año"
 resources: ["ig_*.png"]
-draft: true  # programada
 ---
 
 ```{python}

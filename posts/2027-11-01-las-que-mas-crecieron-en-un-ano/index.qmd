@@ -1,12 +1,12 @@
 ---
 title: "Las instituciones que más crecieron en el último año"
 description: "Con el mismo mes de dos años consecutivos, qué instituciones del Estado sumaron más vínculos en el último año."
-date: 2027-11-01
+date: "2026-10-02T14:50:00"
+redes: 2027-11-01
 categories: [El dato de la semana, Instituciones, Dotación]
 image: social.png
 image-alt: "Instituciones con mayor aumento de vínculos en un año"
 resources: ["ig_*.png"]
-draft: true  # programada
 ---
 
 ```{python}

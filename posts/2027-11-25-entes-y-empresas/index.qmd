@@ -1,12 +1,12 @@
 ---
 title: "Entes autónomos, empresas y sociedades del Estado por dentro"
 description: "ANDE, COPACO, ESSAP, el Banco Central, el BNF, la DNIT y decenas de entes: la parte del Estado que no depende de un ministerio. Cuánto personal tiene, cuánto cuesta y qué la distingue."
-date: 2027-11-25
+date: "2026-10-02T15:20:00"
+redes: 2027-11-25
 categories: [Empresas públicas, Entes autónomos, Instituciones]
 image: social.png
 image-alt: "Vínculos y remuneración media de entes, empresas y sociedades del Estado"
 resources: ["ig_*.png"]
-draft: true  # programada
 ---
 
 ```{python}

@@ -1,12 +1,12 @@
 ---
 title: "Un día de salarios del Estado"
 description: "Si se reparte la masa salarial anual entre los días del año, cuánto paga el Estado en salarios por día y por hora."
-date: 2027-04-26
+date: "2026-10-02T11:15:00"
+redes: 2027-04-26
 categories: [El dato de la semana, Masa salarial]
 image: social.png
 image-alt: "Masa salarial del Estado por día"
 resources: ["ig_*.png"]
-draft: true  # programada
 ---
 
 ```{python}

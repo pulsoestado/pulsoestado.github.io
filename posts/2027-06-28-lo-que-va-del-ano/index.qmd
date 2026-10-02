@@ -1,12 +1,12 @@
 ---
 title: "Lo que va del año: vínculos y masa salarial"
 description: "A mitad de año, cómo vienen el empleo y la masa salarial del Estado en los meses con datos, frente a los mismos meses del año anterior."
-date: 2027-06-28
+date: "2026-10-02T12:35:00"
+redes: 2027-06-28
 categories: [El dato de la semana, Dotación, Masa salarial]
 image: social.png
 image-alt: "Vínculos y masa salarial acumulada del año frente al año anterior"
 resources: ["ig_*.png"]
-draft: true  # programada
 ---
 
 ```{python}

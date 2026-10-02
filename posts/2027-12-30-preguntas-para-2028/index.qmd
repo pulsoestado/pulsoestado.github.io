@@ -2,6 +2,7 @@
 title: "Seis preguntas para 2028"
 description: "Lo que vamos a mirar el año que viene: el empleo en el año de las elecciones generales, el presupuesto 2028, los contratados, la cuota de discapacidad, la brecha de género y la nueva ley de la función pública."
 date: 2027-12-30
+redes: 2027-12-30
 categories: [Balance, Ciclo electoral, Agenda]
 image: social.png
 image-alt: "Seis preguntas sobre el empleo público para 2028"

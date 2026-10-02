@@ -1,12 +1,12 @@
 ---
 title: "La brecha salarial de género en un número"
 description: "En la misma institución y la misma categoría, el sueldo básico de las mujeres sigue siendo algo menor que el de los hombres. Así cambió desde 2018."
-date: 2027-03-01
+date: "2026-10-02T10:05:00"
+redes: 2027-03-01
 categories: [El dato de la semana, Género, Remuneraciones]
 image: social.png
 image-alt: "Brecha salarial de género dentro de la misma institución y categoría, por año"
 resources: ["ig_*.png"]
-draft: true  # programada
 ---
 
 ```{python}
@@ -44,7 +44,7 @@ fig.update_xaxes(dtick=1); fig.update_yaxes(ticksuffix="%", range=[0, g.brecha_m
 fig.show(config=CONFIG)
 ```
 
-Es una brecha chica, porque en el Estado el sueldo de cada categoría está fijado en el presupuesto. La diferencia que queda puede deberse, por ejemplo, a cargos con distinta carga horaria o distinta asignación dentro de una misma categoría. La otra pregunta es si las mujeres llegan en la misma proporción a las categorías mejor pagas: la respondemos este jueves en [¿Hay un techo de cristal en el Estado?](../2027-03-04-el-techo-de-cristal/).
+Es una brecha chica, porque en el Estado el sueldo de cada categoría está fijado en el presupuesto. La diferencia que queda puede deberse, por ejemplo, a cargos con distinta carga horaria o distinta asignación dentro de una misma categoría. La otra pregunta es si las mujeres llegan en la misma proporción a las categorías mejor pagas: la respondemos en [¿Hay un techo de cristal en el Estado?](../2027-03-04-el-techo-de-cristal/).
 
 ::: {.fuente}
 **Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA (sueldo básico por institución, categoría y sexo, junio de cada año). Método: [¿Ganan menos las mujeres en el Estado?](../2026-11-13-brecha-salarial-genero/). [Descargar los datos](/datos/).

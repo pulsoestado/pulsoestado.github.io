@@ -2,6 +2,7 @@
 title: "Qué mirar del Presupuesto 2028 en personal"
 description: "El 1 de septiembre el Poder Ejecutivo presenta el proyecto de Presupuesto 2028. Cinco cifras para leerlo en lo que hace al personal del Estado."
 date: 2027-08-30
+redes: 2027-08-30
 categories: [El dato de la semana, Presupuesto, Masa salarial]
 image: social.png
 image-alt: "Cinco cifras para leer el Presupuesto 2028"

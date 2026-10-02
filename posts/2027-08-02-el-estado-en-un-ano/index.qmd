@@ -1,12 +1,12 @@
 ---
 title: "El Estado en un año: cuántos vínculos sumó"
 description: "Con las mismas instituciones y el mismo mes, cuántos vínculos más (o menos) paga el Estado que hace un año, y cuántos de ellos son contratos."
-date: 2027-08-02
+date: "2026-10-02T13:20:00"
+redes: 2027-08-02
 categories: [El dato de la semana, Dotación]
 image: social.png
 image-alt: "Cambio interanual de vínculos del Estado por tipo"
 resources: ["ig_*.png"]
-draft: true  # programada
 ---
 
 ```{python}

@@ -1,12 +1,12 @@
 ---
 title: "¿Dónde se concentra la masa salarial?"
 description: "Cientos de instituciones pagan salarios, pero un puñado concentra la mayor parte del gasto. Cuántas hacen falta para sumar la mitad, tres cuartos y nueve de cada diez guaraníes de la masa salarial."
-date: 2027-07-22
+date: "2026-10-02T13:05:00"
+redes: 2027-07-22
 categories: [Masa salarial, Instituciones]
 image: social.png
 image-alt: "Curva de concentración de la masa salarial por institución"
 resources: ["ig_*.png"]
-draft: true  # programada
 ---
 
 ```{python}

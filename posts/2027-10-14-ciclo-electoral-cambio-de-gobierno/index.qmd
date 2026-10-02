@@ -1,12 +1,12 @@
 ---
 title: "Ciclo electoral II: el cambio de gobierno"
 description: "Después de las elecciones generales de 2018 y de 2023, los contratos del Estado bajaron en los meses siguientes, a diferencia de lo que pasa en otros años. Dónde se concentró la caída."
-date: 2027-10-14
+date: "2026-10-02T14:35:00"
+redes: 2027-10-14
 categories: [Ciclo electoral, Contratados, Dotación]
 image: social.png
 image-alt: "Contratos en los meses posteriores a las elecciones generales de 2018 y 2023"
 resources: ["ig_*.png"]
-draft: true  # programada
 ---
 
 ```{python}

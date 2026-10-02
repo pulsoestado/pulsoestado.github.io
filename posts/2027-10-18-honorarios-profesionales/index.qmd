@@ -1,12 +1,12 @@
 ---
 title: "Honorarios profesionales: quién los paga"
 description: "Los honorarios profesionales son la forma de contratar servicios de profesionales independientes. Cuánto suman y qué instituciones los usan más."
-date: 2027-10-18
+date: "2026-10-02T14:40:00"
+redes: 2027-10-18
 categories: [El dato de la semana, Contratados, Masa salarial]
 image: social.png
 image-alt: "Instituciones que más pagan en honorarios profesionales"
 resources: ["ig_*.png"]
-draft: true  # programada
 ---
 
 ```{python}

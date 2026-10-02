@@ -1,12 +1,12 @@
 ---
 title: "Las instituciones que más personal perdieron en el último año"
 description: "Con el mismo mes de dos años consecutivos, qué instituciones del Estado tienen hoy menos vínculos que hace un año."
-date: 2027-05-31
+date: "2026-10-02T12:00:00"
+redes: 2027-05-31
 categories: [El dato de la semana, Instituciones, Dotación]
 image: social.png
 image-alt: "Instituciones con mayor caída de vínculos en un año"
 resources: ["ig_*.png"]
-draft: true  # programada
 ---
 
 ```{python}

@@ -71,8 +71,21 @@ def faltantes(req):
     return f
 
 
+def flyers(carpeta, texto):
+    """Nombres de los flyers de una nota: los que ya están en la carpeta y los que genera su celda `redes`."""
+    n = {p.name for p in carpeta.glob("*.png")}
+    if re.search(r"\bsocial\(", texto):
+        n.add("social.png")
+    if re.search(r"\big_portada\(", texto):
+        n.add("ig_1.png")
+    n |= {f"ig_{k}.png" for k in re.findall(r"\big_dato\(\s*(\d+)", texto)}
+    orden = lambda s: (s != "social.png", s)
+    return sorted(n, key=orden)
+
+
 archivos = sorted(RAIZ.glob("posts/*/index.qmd")) + sorted(RAIZ.glob("situcap/ediciones/*/index.qmd"))
 pendientes = []
+agenda = []
 for f in archivos:
     texto = f.read_text(encoding="utf-8")
     m = re.match(r"^---\n(.*?)\n---\n", texto, flags=re.S)
@@ -101,8 +114,23 @@ for f in archivos:
     else:
         estado = "programada" if oculta else "publicada"
     print(f"{fecha}  {estado:10s}  {f.parent.name}")
+    red = meta.get("redes") or fecha
+    ruta = f.parent.relative_to(RAIZ).as_posix()
+    agenda.append({"redes": str(red)[:10], "titulo": meta.get("title", ""), "ruta": ruta,
+                   "estado": "en el sitio" if not oculta else ("programada" if fecha > hoy else "espera datos"),
+                   "flyers": " ".join(flyers(f.parent, texto))})
     if oculta and RETIRAR:
         shutil.rmtree(f.parent)
+
+# Agenda de redes: qué flyer publicar cada día en Instagram y X (página /redes/ del sitio)
+ag = pd.DataFrame(agenda).sort_values(["redes", "ruta"])
+(RAIZ / "redes").mkdir(exist_ok=True)
+ag.to_csv(RAIZ / "redes" / "agenda.csv", index=False)
+URL = "https://pulsoestado.github.io/"
+for _, r in ag[ag.redes == str(hoy)].iterrows():
+    aviso = f"Hoy en redes: {r.titulo} · {URL}{r.ruta}/"
+    print(f"\n{aviso}" + ("" if r.estado == "en el sitio" else f"  (la nota todavía no está en el sitio: {r.estado})"))
+    print(f"::notice::{aviso}")
 
 if pendientes:
     print("\nNotas con fecha cumplida que esperan datos:")

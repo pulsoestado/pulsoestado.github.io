@@ -2,6 +2,7 @@
 title: "El dato del año: de dónde vino el crecimiento"
 description: "De cada 100 vínculos que sumó el Estado en el último año, cuántos fueron contratados y cuántos permanentes, y en qué sectores."
 date: 2027-12-27
+redes: 2027-12-27
 categories: [El dato de la semana, Dotación, Contratados]
 image: social.png
 image-alt: "Cambio interanual de vínculos permanentes y contratados"

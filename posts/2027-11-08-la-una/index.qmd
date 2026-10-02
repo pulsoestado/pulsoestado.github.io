@@ -1,12 +1,12 @@
 ---
 title: "La UNA en números"
 description: "La Universidad Nacional de Asunción es la institución pública de educación superior más grande del país. Cuánto personal tiene, cuánto cuesta y cómo cambió."
-date: 2027-11-08
+date: "2026-10-02T15:00:00"
+redes: 2027-11-08
 categories: [El dato de la semana, Universidades, Educación]
 image: social.png
 image-alt: "Vínculos de la Universidad Nacional de Asunción por mes"
 resources: ["ig_*.png"]
-draft: true  # programada
 ---
 
 ```{python}

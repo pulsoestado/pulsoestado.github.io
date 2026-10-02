@@ -1,12 +1,12 @@
 ---
 title: "Mujeres con contrato, sector por sector"
 description: "En qué sectores las mujeres tienen más contratos que los hombres y dónde la diferencia es mayor."
-date: 2027-11-15
+date: "2026-10-02T15:10:00"
+redes: 2027-11-15
 categories: [El dato de la semana, Género, Contratados]
 image: social.png
 image-alt: "Proporción de contratados entre mujeres y hombres por sector"
 resources: ["ig_*.png"]
-draft: true  # programada
 ---
 
 ```{python}

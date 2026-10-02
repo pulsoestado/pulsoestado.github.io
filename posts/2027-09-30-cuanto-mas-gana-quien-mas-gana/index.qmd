@@ -1,12 +1,12 @@
 ---
 title: "¿Cuánto más gana quien más gana?"
 description: "Dentro de cada institución, cuántas veces más es el sueldo básico de los cargos mejor pagos que el de los peor pagos. Las escalas más comprimidas y las más abiertas del Estado."
-date: 2027-09-30
+date: "2026-10-02T14:20:00"
+redes: 2027-09-30
 categories: [Remuneraciones, Categorías, Instituciones]
 image: social.png
 image-alt: "Relación entre el sueldo básico del 10% mejor pago y el del 10% peor pago, por institución"
 resources: ["ig_*.png"]
-draft: true  # programada
 ---
 
 ```{python}

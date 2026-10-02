@@ -1,12 +1,12 @@
 ---
 title: "El sueldo básico de la Policía Nacional"
 description: "Cuánto es el sueldo básico medio de los cargos policiales, cómo se distribuye entre categorías y cuánto cambió desde 2018."
-date: 2027-09-20
+date: "2026-10-02T14:10:00"
+redes: 2027-09-20
 categories: [El dato de la semana, Fuerzas públicas, Remuneraciones]
 image: social.png
 image-alt: "Sueldo básico medio de la Policía Nacional, nominal y real"
 resources: ["ig_*.png"]
-draft: true  # programada
 ---
 
 ```{python}

@@ -1,12 +1,12 @@
 ---
 title: "¿Cuánto cuesta el aguinaldo?"
 description: "El aguinaldo del sector público se paga casi entero en diciembre y equivale a algo menos de un mes de sueldo básico. Cuánto costó el último año completo y cómo cambió."
-date: 2027-01-18
+date: "2026-10-02T09:15:00"
+redes: 2027-01-18
 categories: [El dato de la semana, Masa salarial, Aguinaldo]
 image: social.png
 image-alt: "Aguinaldo pagado por el sector público cada año, en términos reales"
 resources: ["ig_*.png"]
-draft: true  # programada
 ---
 
 ```{python}

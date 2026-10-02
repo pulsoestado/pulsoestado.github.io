@@ -1,12 +1,12 @@
 ---
 title: "El salario mínimo vigente y la remuneración pública"
 description: "Con el reajuste de mitad de año, cuánto es el salario mínimo legal y cómo se compara con la remuneración media de cada sector del Estado."
-date: 2027-07-05
+date: "2026-10-02T12:45:00"
+redes: 2027-07-05
 categories: [El dato de la semana, Salario mínimo, Remuneraciones]
 image: social.png
 image-alt: "Remuneración media por sector en salarios mínimos"
 resources: ["ig_*.png"]
-draft: true  # programada
 ---
 
 ```{python}

@@ -1,15 +1,12 @@
 ---
 title: "El año en masa salarial"
 description: "Cuánto pagó el Estado en salarios en lo que va del año, cuánto creció frente al mismo período del año anterior y cuánto de ese aumento se explica por la inflación."
-date: 2027-12-20
+date: "2026-10-02T15:45:00"
+redes: 2027-12-20
 categories: [El dato de la semana, Masa salarial, Inflación]
 image: social.png
 image-alt: "Masa salarial acumulada del año frente al mismo período del año anterior"
 resources: ["ig_*.png"]
-requiere:
-  datos: "2027-10"
-  ipc: "2027-10"
-draft: true  # programada
 ---
 
 ```{python}

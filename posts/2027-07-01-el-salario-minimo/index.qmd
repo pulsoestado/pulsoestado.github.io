@@ -1,12 +1,12 @@
 ---
 title: "El salario mínimo desde 1980"
 description: "Más de cuatro décadas del salario mínimo legal en Paraguay, en guaraníes de hoy: cuándo creció, cuándo perdió poder de compra y cómo se compara con la remuneración media pública."
-date: 2027-07-01
+date: "2026-10-02T12:40:00"
+redes: 2027-07-01
 categories: [Salario mínimo, Inflación, Salarios]
 image: social.png
 image-alt: "Salario mínimo legal real desde 1980"
 resources: ["ig_*.png"]
-draft: true  # programada
 ---
 
 ```{python}

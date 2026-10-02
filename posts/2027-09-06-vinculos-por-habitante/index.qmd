@@ -1,14 +1,14 @@
 ---
 title: "Vínculos públicos por cada 100 habitantes"
 description: "Cuántos vínculos paga el Estado paraguayo por cada 100 habitantes, y cuántos docentes, trabajadores de la salud y policías hay por cada mil."
-date: 2027-09-06
+date: "2026-10-02T13:55:00"
+redes: 2027-09-06
 categories: [El dato de la semana, Dotación, Población]
 image: social.png
 image-alt: "Vínculos públicos por cada mil habitantes, por sector"
 resources: ["ig_*.png"]
 requiere:
   archivo: "data/manual/poblacion_departamentos_2022.csv"
-draft: true  # programada
 ---
 
 ```{python}

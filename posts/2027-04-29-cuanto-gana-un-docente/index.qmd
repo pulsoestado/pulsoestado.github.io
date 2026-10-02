@@ -1,12 +1,12 @@
 ---
 title: "¿Cuánto gana un docente?"
-description: "Cuánto es el sueldo básico medio de quienes cobran en el Ministerio de Educación, cuánto subió desde 2017 descontada la inflación y qué muestran (y qué no) los registros, en la semana del Día del Maestro."
-date: 2027-04-29
+description: "Cuánto es el sueldo básico medio de quienes cobran en el Ministerio de Educación, cuánto subió desde 2017 descontada la inflación y qué muestran (y qué no) los registros."
+date: "2026-10-02T11:20:00"
+redes: 2027-04-29
 categories: [Educación, Remuneraciones, Categorías]
 image: social.png
 image-alt: "Sueldo básico medio mensual en el Ministerio de Educación, nominal y real"
 resources: ["ig_*.png"]
-draft: true  # programada
 ---
 
 ```{python}

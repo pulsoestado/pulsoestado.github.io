@@ -1,12 +1,12 @@
 ---
 title: "Salud: dos sistemas, dos plantas"
 description: "El Ministerio de Salud y el IPS sumaron casi treinta mil vínculos desde 2017, la mayoría con contratos. Cómo creció cada uno, cuánto cuesta y qué pasó con su remuneración media."
-date: 2027-04-01
+date: "2026-10-02T10:45:00"
+redes: 2027-04-01
 categories: [Salud, Dotación, Contratados]
 image: social.png
 image-alt: "Vínculos del Ministerio de Salud y del IPS por tipo, desde 2017"
 resources: ["ig_*.png"]
-draft: true  # programada
 ---
 
 ```{python}

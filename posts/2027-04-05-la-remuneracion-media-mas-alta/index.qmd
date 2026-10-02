@@ -1,12 +1,12 @@
 ---
 title: "Dónde está la remuneración media más alta"
 description: "Entre las instituciones con al menos 500 vínculos, cuáles tienen la remuneración media por vínculo más alta y cuánto más que el promedio del Estado."
-date: 2027-04-05
+date: "2026-10-02T10:50:00"
+redes: 2027-04-05
 categories: [El dato de la semana, Remuneraciones, Instituciones]
 image: social.png
 image-alt: "Las instituciones con mayor remuneración media por vínculo"
 resources: ["ig_*.png"]
-draft: true  # programada
 ---
 
 ```{python}

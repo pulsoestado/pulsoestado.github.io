@@ -1,12 +1,12 @@
 ---
 title: "Las promociones policiales de mayo"
 description: "Cada mayo, la Policía Nacional incorpora a sus nuevas promociones de agentes. En los últimos años, cada una sumó varios miles de vínculos de una sola vez."
-date: 2027-05-10
+date: "2026-10-02T11:35:00"
+redes: 2027-05-10
 categories: [El dato de la semana, Fuerzas públicas, Dotación]
 image: social.png
 image-alt: "Vínculos de la Policía Nacional por mes"
 resources: ["ig_*.png"]
-draft: true  # programada
 ---
 
 ```{python}
@@ -52,7 +52,7 @@ estilo(fig, alto=340, leyenda=False).update_yaxes(tickformat=",.0f")
 fig.show(config=CONFIG)
 ```
 
-Entre el promedio de 2017 y `{python} fecha_txt(p.iloc[-1].anho, p.iloc[-1].mes)`, la Policía pasó de `{python} miles(v17)` a `{python} miles(vu)` vínculos: **`{python} spct((vu / v17 - 1) * 100, 0)`**. Cada nueva promoción suma de inmediato a la masa salarial: lo analizamos en [Fuerzas públicas: policías y militares](../2027-05-13-fuerzas-publicas/), este jueves.
+Entre el promedio de 2017 y `{python} fecha_txt(p.iloc[-1].anho, p.iloc[-1].mes)`, la Policía pasó de `{python} miles(v17)` a `{python} miles(vu)` vínculos: **`{python} spct((vu / v17 - 1) * 100, 0)`**. Cada nueva promoción suma de inmediato a la masa salarial: lo analizamos en [Fuerzas públicas: policías y militares](../2027-05-13-fuerzas-publicas/).
 
 ::: {.fuente}
 **Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA (vínculos pagados por mes). [Descargar los datos](/datos/).

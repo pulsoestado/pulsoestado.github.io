@@ -1,12 +1,12 @@
 ---
 title: "Bonificaciones: la parte del sueldo que no es sueldo"
 description: "Las bonificaciones y asignaciones complementarias suman más de un octavo de la masa salarial. Cuánto pesan en cada institución, cuáles crecen más y por qué conviene seguirlas."
-date: 2027-09-09
+date: "2026-10-02T14:00:00"
+redes: 2027-09-09
 categories: [Masa salarial, Remuneraciones, Bonificaciones]
 image: social.png
 image-alt: "Peso de las bonificaciones en la masa salarial por institución"
 resources: ["ig_*.png"]
-draft: true  # programada
 ---
 
 ```{python}

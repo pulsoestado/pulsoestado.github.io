@@ -1,12 +1,12 @@
 ---
 title: "¿Cuesta más un contrato o un cargo de planta?"
 description: "Cuánto cuesta en promedio, por mes, un vínculo contratado frente a uno permanente en cada sector del Estado."
-date: 2027-10-25
+date: "2026-10-02T14:45:00"
+redes: 2027-10-25
 categories: [El dato de la semana, Contratados, Remuneraciones]
 image: social.png
 image-alt: "Costo medio mensual de un contrato y de un cargo permanente por sector"
 resources: ["ig_*.png"]
-draft: true  # programada
 ---
 
 ```{python}

@@ -1,12 +1,12 @@
 ---
-title: "1 de mayo: cuántos cargos públicos tienen un sueldo básico por debajo del mínimo"
+title: "Cuántos cargos públicos tienen un sueldo básico por debajo del mínimo"
 description: "En el Día del Trabajador, una mirada a la parte baja de la escala: cuántos cargos públicos permanentes tienen un sueldo básico menor al salario mínimo y dónde están."
-date: 2027-05-03
+date: "2026-10-02T11:25:00"
+redes: 2027-05-03
 categories: [El dato de la semana, Remuneraciones, Salario mínimo]
 image: social.png
 image-alt: "Cargos públicos según su sueldo básico en salarios mínimos"
 resources: ["ig_*.png"]
-draft: true  # programada
 ---
 
 ```{python}

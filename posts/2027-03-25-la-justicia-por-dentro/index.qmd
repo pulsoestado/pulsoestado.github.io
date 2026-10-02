@@ -1,12 +1,12 @@
 ---
 title: "La justicia por dentro"
 description: "La Corte Suprema, la Justicia Electoral, el Ministerio Público y la Defensa Pública suman casi treinta mil vínculos. Cuánto personal tiene cada institución del sistema de justicia, cuánto cuesta y cómo cambió."
-date: 2027-03-25
+date: "2026-10-02T10:35:00"
+redes: 2027-03-25
 categories: [Poder Judicial, Instituciones, Masa salarial]
 image: social.png
 image-alt: "Vínculos y remuneración media de las instituciones del Poder Judicial"
 resources: ["ig_*.png"]
-draft: true  # programada
 ---
 
 ```{python}
@@ -95,7 +95,7 @@ estilo(fig, alto=340).update_yaxes(tickformat=",.0f", rangemode="tozero")
 fig.show(config=CONFIG)
 ```
 
-La **Justicia Electoral** contrata personal en los meses previos a cada elección y lo reduce después: su planta de contratados sube y baja con el calendario electoral. La **Corte Suprema** tenía cada enero un pico de contratos que se reducía durante el año; desde 2023 prácticamente no tiene contratados. Lo contamos en el [dato de la semana del lunes 29](../2027-03-29-la-corte-sin-contratos/).
+La **Justicia Electoral** contrata personal en los meses previos a cada elección y lo reduce después: su planta de contratados sube y baja con el calendario electoral. La **Corte Suprema** tenía cada enero un pico de contratos que se reducía durante el año; desde 2023 prácticamente no tiene contratados. Lo contamos en [la Corte Suprema, casi sin contratados](../2027-03-29-la-corte-sin-contratos/).
 
 ::: {.fuente}
 **Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA. [Descargar los datos](/datos/).

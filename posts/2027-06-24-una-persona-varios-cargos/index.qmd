@@ -1,12 +1,12 @@
 ---
 title: "Una persona, varios cargos"
 description: "En el Estado no es lo mismo una persona, un vínculo y un cargo. En Educación y en las universidades, muchas personas suman varios cargos. Lo que muestran los registros y lo que todavía no se puede medir."
-date: 2027-06-24
+date: "2026-10-02T12:30:00"
+redes: 2027-06-24
 categories: [Dotación, Metodología, Educación]
 image: social.png
 image-alt: "Cargos por vínculo permanente por sector"
 resources: ["ig_*.png"]
-draft: true  # programada
 ---
 
 ```{python}

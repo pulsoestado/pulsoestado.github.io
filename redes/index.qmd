@@ -1,0 +1,70 @@
+---
+title: "Agenda de redes"
+subtitle: "Qué flyer publicar cada día en Instagram y X"
+toc: false
+search: false
+---
+
+```{python}
+#| echo: false
+#| output: asis
+import datetime as dt
+import html
+import pathlib
+from zoneinfo import ZoneInfo
+
+import pandas as pd
+
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+ag = pd.read_csv(raiz / "redes" / "agenda.csv", dtype=str).fillna("")
+hoy = dt.datetime.now(ZoneInfo("America/Asuncion")).date()
+ag["f"] = pd.to_datetime(ag.redes).dt.date
+DIAS = ["lun", "mar", "mié", "jue", "vie", "sáb", "dom"]
+MES = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"]
+fecha = lambda d: f"{DIAS[d.weekday()]} {d.day} {MES[d.month - 1]} {d.year}"
+
+
+def enlaces(r):
+    if r.estado != "en el sitio" or not r.flyers:
+        return "—"
+    return " · ".join(f"[{n.replace('.png', '')}](/{r.ruta}/{n})" for n in r.flyers.split())
+
+
+def nota(r):
+    t = r.titulo.replace("|", "∣")
+    return f"[{t}](/{r.ruta}/)" if r.estado == "en el sitio" else t
+
+
+print("Esta página es para el equipo de Pulso del Estado: el sitio publica todas las notas que ya tienen datos, "
+      "y esta agenda ordena **cuándo compartir cada una en redes**. Cada flyer se abre en tamaño completo para descargarlo "
+      "(`social` es para X y Facebook, 1200 × 630; `ig_1`, `ig_2`… es el carrusel de Instagram, 1080 × 1350).\n")
+
+prox = ag[(ag.f >= hoy) & (ag.f < hoy + dt.timedelta(days=14))]
+print("## Próximos 14 días\n")
+if prox.empty:
+    print("No hay publicaciones programadas en redes para los próximos 14 días.\n")
+else:
+    print('<div class="agenda-grid">')
+    for _, r in prox.iterrows():
+        img = (f'<img src="/{r.ruta}/social.png" alt="" loading="lazy">'
+               if r.estado == "en el sitio" and "social.png" in r.flyers.split() else '<div class="sin-flyer">Flyer al publicarse la nota</div>')
+        print(f'<div class="agenda-item">{img}<div><strong>{fecha(r.f)}</strong><br>{html.escape(r.titulo)}'
+              f'<br><small>{html.escape(r.estado)}</small></div></div>')
+    print("</div>\n")
+
+print("## Calendario completo\n")
+print("| Fecha en redes | Nota | Estado | Flyers |\n|---|---|---|---|")
+for _, r in ag.sort_values("f").iterrows():
+    hito = " **← hoy**" if r.f == hoy else ""
+    print(f"| {fecha(r.f)}{hito} | {nota(r)} | {r.estado} | {enlaces(r)} |")
+```
+
+```{=html}
+<style>
+.agenda-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1rem; margin: 1rem 0 2rem; }
+.agenda-item { border: 1px solid rgba(128,128,128,.25); border-radius: 8px; overflow: hidden; font-size: .9rem; }
+.agenda-item img, .agenda-item .sin-flyer { width: 100%; aspect-ratio: 1200 / 630; object-fit: cover; display: block; }
+.agenda-item .sin-flyer { display: flex; align-items: center; justify-content: center; background: #0f2a44; color: #c9d3df; font-size: .8rem; }
+.agenda-item > div:last-child { padding: .6rem .75rem; }
+</style>
+```

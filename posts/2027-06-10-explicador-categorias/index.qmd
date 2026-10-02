@@ -1,12 +1,12 @@
 ---
 title: "Explicador: las categorías salariales"
 description: "Cada cargo público presupuestado tiene una categoría, un código de letras y números que fija su sueldo básico. Cuántas hay, cuáles son las más comunes y por qué la misma letra no significa el mismo sueldo en todas las instituciones."
-date: 2027-06-10
+date: "2026-10-02T12:15:00"
+redes: 2027-06-10
 categories: [Explicador, Categorías, Remuneraciones]
 image: social.png
 image-alt: "Las categorías salariales con más cargos en el sector público"
 resources: ["ig_*.png"]
-draft: true  # programada
 ---
 
 ```{python}

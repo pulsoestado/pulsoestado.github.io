@@ -68,17 +68,23 @@ Datos manuales que hay que cargar en 2027:
 | Archivo | Qué es | Columnas | Lo necesitan |
 |---|---|---|---|
 | `data/manual/ipc_interanual.csv` | Inflación interanual de cada mes (BCP) | `anho, mes, ipc_interanual, fuente` | cada edición del SITUCAP y "El año en masa salarial" |
-| `data/manual/pgn_2028_servicios_personales.csv` | Proyecto de PGN 2028, grupo 100, por institución (MEF) | `codigo_nivel, codigo_entidad, codigo_oee, proyecto_2028` | "Presupuesto 2028" (2 sep 2027) |
-| `data/manual/pib_nominal.csv` | PIB nominal anual (BCP, cuentas nacionales) | `anho, pib_millones_gs, fuente` | "La masa salarial y el PIB" (27 sep 2027) |
+| `data/manual/pgn_2028_servicios_personales.csv` | Proyecto de PGN 2028, grupo 100, por institución (MEF) | `codigo_nivel, codigo_entidad, codigo_oee, proyecto_2028` | "Presupuesto 2028" (2 sep 2027; sin el archivo sale con estimación provisoria) |
+| `data/manual/pib_nominal.csv` | PIB nominal anual (BCP, cuentas nacionales; cargado hasta 2025 desde el Banco Mundial) | `anho, pib_millones_gs, fuente` | "La masa salarial como porcentaje del PIB" (agregar cada año nuevo) |
 | `data/manual/poblacion_departamentos_2022.csv` | Población por departamento, Censo 2022 (INE) | ya cargado | notas territoriales |
 
 Además, cada mes hay que actualizar los Excel del DW en `data/raw/` y correr los scripts de preparación (ver abajo): las ediciones del SITUCAP piden el mes correspondiente.
 
 > **Importante:** GitHub desactiva las tareas programadas de un repositorio público si pasan **60 días sin ningún cambio** en el repositorio. Mientras subas algo al menos una vez cada dos meses (por ejemplo, una edición del SITUCAP), la publicación automática sigue funcionando. Si alguna vez se desactiva, se reactiva en **Actions → Publicar sitio → Enable workflow**.
 
+### Sitio y redes: dos calendarios
+
+- **`date:`** es la fecha de publicación en el sitio. Las notas que ya tienen datos están publicadas; quedan con fecha futura solo las que dependen de un momento (Presupuesto 2028, año preelectoral, cierre de 2027) y las ediciones mensuales del SITUCAP.
+- **`redes:`** es la fecha en la que conviene compartir la nota en Instagram y X. La página **[/redes/](https://pulsoestado.github.io/redes/)** (no aparece en el menú) muestra la agenda completa, los flyers de los próximos 14 días y los enlaces para descargarlos. Cada mañana, la ejecución de GitHub Actions deja un aviso "Hoy en redes" con la nota del día.
+- **Estimaciones provisorias:** si una nota necesita un dato que todavía no existe y se puede proyectar (el PIB del último año, el proyecto de Presupuesto 2028), sale con una estimación rotulada en el texto, en los gráficos y en los flyers. Al cargar el dato real en `data/manual/`, la nota se recalcula sola en la siguiente ejecución.
+
 ### Calendario cargado
 
-Hay notas cargadas hasta el **30 de diciembre de 2027**: todos los lunes "El dato de la semana", todos los jueves un análisis y el tercer jueves de cada mes una edición del SITUCAP. El plan completo de 2027 está en el documento "Plan editorial 2027". Las primeras:
+El calendario de redes llega hasta el **30 de diciembre de 2027**: todos los lunes "El dato de la semana", todos los jueves un análisis y el tercer jueves de cada mes una edición del SITUCAP. El plan completo está en el documento "Plan editorial 2027". Las primeras fechas de redes:
 
 | Fecha | Nota |
 |---|---|

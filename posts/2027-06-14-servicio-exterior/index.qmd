@@ -1,12 +1,12 @@
 ---
 title: "Cuánto cuesta el servicio exterior"
 description: "Las remuneraciones del personal que trabaja fuera del país se registran aparte. Cuánto suman, quién las paga y cómo cambiaron."
-date: 2027-06-14
+date: "2026-10-02T12:20:00"
+redes: 2027-06-14
 categories: [El dato de la semana, Masa salarial, Instituciones]
 image: social.png
 image-alt: "Remuneraciones por servicios en el exterior por año"
 resources: ["ig_*.png"]
-draft: true  # programada
 ---
 
 ```{python}

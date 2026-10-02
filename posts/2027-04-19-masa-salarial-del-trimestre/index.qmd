@@ -1,12 +1,12 @@
 ---
 title: "La masa salarial del último trimestre"
 description: "Cuánto pagó el Estado en salarios en el último trimestre con datos completos y cuánto creció frente al mismo trimestre del año anterior."
-date: 2027-04-19
+date: "2026-10-02T11:05:00"
+redes: 2027-04-19
 categories: [El dato de la semana, Masa salarial]
 image: social.png
 image-alt: "Masa salarial trimestral del sector público"
 resources: ["ig_*.png"]
-draft: true  # programada
 ---
 
 ```{python}

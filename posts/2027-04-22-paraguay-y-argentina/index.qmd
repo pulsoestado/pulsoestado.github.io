@@ -1,12 +1,12 @@
 ---
 title: "Paraguay y Argentina: dos caminos desde 2023"
 description: "Desde fines de 2023, la dotación del Estado nacional argentino cayó más de 20%. En el mismo período, los vínculos del Estado paraguayo siguieron creciendo. Qué muestran los datos de los dos países y qué no se puede comparar."
-date: 2027-04-22
+date: "2026-10-02T11:10:00"
+redes: 2027-04-22
 categories: [Comparación internacional, Dotación]
 image: social.png
 image-alt: "Índice de empleo público nacional en Paraguay y Argentina, noviembre de 2023 = 100"
 resources: ["ig_*.png"]
-draft: true  # programada
 ---
 
 ```{python}

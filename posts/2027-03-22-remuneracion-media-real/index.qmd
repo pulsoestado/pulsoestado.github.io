@@ -1,12 +1,12 @@
 ---
 title: "La remuneración media pública, en términos reales"
 description: "Cuánto cuesta en promedio cada vínculo del Estado por mes, descontada la inflación, y cuántos salarios mínimos representa."
-date: 2027-03-22
+date: "2026-10-02T10:30:00"
+redes: 2027-03-22
 categories: [El dato de la semana, Remuneraciones, Inflación]
 image: social.png
 image-alt: "Remuneración media mensual real por vínculo público desde 2017"
 resources: ["ig_*.png"]
-draft: true  # programada
 ---
 
 ```{python}

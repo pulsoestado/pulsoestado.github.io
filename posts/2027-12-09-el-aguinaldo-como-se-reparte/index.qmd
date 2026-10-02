@@ -1,12 +1,12 @@
 ---
 title: "El aguinaldo: cuánto cuesta y cómo se reparte"
 description: "Cómo se distribuye el aguinaldo entre sectores e instituciones, cuánto representa por vínculo y por qué crece cada año."
-date: 2027-12-09
+date: "2026-10-02T15:35:00"
+redes: 2027-12-09
 categories: [Aguinaldo, Masa salarial, Sectores]
 image: social.png
 image-alt: "Aguinaldo por sector y por vínculo"
 resources: ["ig_*.png"]
-draft: true  # programada
 ---
 
 ```{python}
@@ -74,7 +74,7 @@ fig.update_xaxes(dtick=1); fig.update_yaxes(range=[0, real.max() / 1e9 * 1.18])
 fig.show(config=CONFIG)
 ```
 
-El aguinaldo sigue a los sueldos: crece cuando entra personal permanente nuevo y cuando hay reajustes. En los últimos años, su aumento en términos reales coincidió con reajustes salariales docentes y con la incorporación de nuevos agentes policiales ([aguinaldo 2027: cuánto costará](../2027-12-06-aguinaldo-2027/)).
+El aguinaldo sigue a los sueldos: crece cuando entra personal permanente nuevo y cuando hay reajustes. En los últimos años, su aumento en términos reales coincidió con reajustes salariales docentes y con la incorporación de nuevos agentes policiales ([aguinaldo: cuánto costará este año](../2027-12-06-aguinaldo-2027/)).
 
 ::: {.fuente}
 **Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA (objeto 114). El aguinaldo de diciembre de 2021 fue corregido por un error de registro (ver la [metodología](/metodologia.qmd)). [Descargar los datos](/datos/).

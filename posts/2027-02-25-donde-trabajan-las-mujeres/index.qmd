@@ -1,12 +1,12 @@
 ---
 title: "Dónde trabajan las mujeres del Estado"
 description: "Siete de cada diez vínculos de mujeres están en Educación y Salud. En las Fuerzas públicas, las empresas del Estado y muchas municipalidades siguen siendo minoría."
-date: 2027-02-25
+date: "2026-10-02T10:00:00"
+redes: 2027-02-25
 categories: [Género, Sectores, Instituciones]
 image: social.png
 image-alt: "Proporción de mujeres en los vínculos públicos por sector"
 resources: ["ig_*.png"]
-draft: true  # programada
 ---
 
 ```{python}
@@ -86,7 +86,7 @@ fig.show(config=CONFIG)
 
 En `{python} fecha_txt(A0, M)` las mujeres eran el `{python} pct(a.FEMENINO.sum() / a[['FEMENINO', 'MASCULINO']].sum().sum() * 100)` de los vínculos. En la mayoría de los sectores los cambios fueron de pocos puntos; el mayor aumento se dio en `{python} cambio.index[-1]`.
 
-¿Ocupan también los cargos mejor pagos? Lo miramos en el próximo análisis, [¿Hay un techo de cristal en el Estado?](../2027-03-04-el-techo-de-cristal/).
+¿Ocupan también los cargos mejor pagos? Lo miramos en [¿Hay un techo de cristal en el Estado?](../2027-03-04-el-techo-de-cristal/).
 
 ::: {.fuente}
 **Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA (vínculos por mes, tipo y sexo). [Descargar los datos](/datos/).

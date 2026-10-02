@@ -1,12 +1,12 @@
 ---
 title: "Fuerzas públicas: policías y militares"
 description: "La Policía Nacional y el Ministerio de Defensa suman más de sesenta mil vínculos. La Policía creció mucho más rápido que Defensa desde 2017. Cuánto cuestan, cuánto pesan las bonificaciones y cuántas mujeres hay."
-date: 2027-05-13
+date: "2026-10-02T11:40:00"
+redes: 2027-05-13
 categories: [Fuerzas públicas, Dotación, Masa salarial]
 image: social.png
 image-alt: "Vínculos de la Policía Nacional y del Ministerio de Defensa desde 2017"
 resources: ["ig_*.png"]
-draft: true  # programada
 ---
 
 ```{python}

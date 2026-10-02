@@ -1,11 +1,11 @@
 ---
 title: "¿Cuántas personas cobran del Estado?"
 description: "Entre 2017 y 2024 la cantidad de personas que cobraron del sector público paraguayo creció 12%. Más de la mitad del aumento de vínculos se explica por contratados."
-date: 2026-10-09
+date: "2026-10-02T08:00:00"
+redes: 2026-10-09
 categories: [Dotación, Contratados, SITUCAP]
 image: social.png
 image-alt: "Gráfico de la evolución de personas que cobran del Estado paraguayo, 2017-2024"
-draft: true  # programada
 ---
 
 ```{python}
@@ -192,7 +192,7 @@ El **Poder Ejecutivo**, que concentra a la mayoría del personal (ministerios, h
 
 ## Qué sigue
 
-Esta nota complementa la [Radiografía del empleo público](../2026-10-02-radiografia-empleo-publico/), que mide **vínculos** mes a mes hasta agosto de 2026. Aquí contamos **personas distintas**, una medida que hoy solo está disponible hasta mayo de 2025. En las próximas notas vamos a pasar de las personas al dinero: cuánto creció la **masa salarial** en términos reales y qué parte se explica por más personas y qué parte por mayores salarios.
+Esta nota complementa la [Radiografía del empleo público](../2026-10-02-radiografia-empleo-publico/), que mide **vínculos** mes a mes hasta agosto de 2026. Aquí contamos **personas distintas**, una medida que hoy solo está disponible hasta mayo de 2025. El paso siguiente es ir de las personas al dinero: cuánto creció la **masa salarial** en términos reales ([¿cuánto paga el Estado en salarios?](../2026-10-16-masa-salarial-real/)) y qué parte se explica por más personas y qué parte por mayores salarios ([¿más gente o mejores sueldos?](../2026-10-30-mas-gente-o-mejores-sueldos/)).
 
 ::: {.fuente}
 **Fuente:** elaboración de Pulso del Estado con datos de SICCA y SINARH (resumen de personas y vínculos por año y OEE, 2015–2025). 2015 se excluye de las comparaciones por un cambio de cobertura en mayo de ese año; 2025 incluye datos hasta `{python} MESES[mes25-1]`. Ver [metodología](/metodologia.qmd) y [descargar los datos](/datos/).

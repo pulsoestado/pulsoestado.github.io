@@ -1,12 +1,12 @@
 ---
 title: "Quién creció y quién se achicó desde 2017"
 description: "Tres instituciones explican buena parte del crecimiento del empleo público: el Ministerio de Salud, la Policía Nacional y el IPS. Del otro lado, la lista de las que tienen menos personal que hace casi una década."
-date: 2027-01-28
+date: "2026-10-02T09:25:00"
+redes: 2027-01-28
 categories: [Dotación, Instituciones]
 image: social.png
 image-alt: "Instituciones con mayor aumento y mayor disminución de vínculos desde 2017"
 resources: ["ig_*.png"]
-draft: true  # programada
 ---
 
 ```{python}

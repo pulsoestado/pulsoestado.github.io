@@ -1,12 +1,12 @@
 ---
 title: "Presupuestado y pagado"
 description: "En servicios personales, las instituciones ejecutan casi todo lo que tienen presupuestado. Dónde la ejecución es más baja y qué significa."
-date: 2027-08-26
+date: "2026-10-02T13:50:00"
+redes: 2027-08-26
 categories: [Presupuesto, Masa salarial, Instituciones]
 image: social.png
 image-alt: "Ejecución del presupuesto de servicios personales por sector"
 resources: ["ig_*.png"]
-draft: true  # programada
 ---
 
 ```{python}

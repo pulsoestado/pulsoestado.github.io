@@ -1,12 +1,12 @@
 ---
 title: "Discapacidad: ¿avanzó la cuota del 5%?"
-description: "En la semana del Día Internacional de las Personas con Discapacidad, el balance anual: cuántas instituciones cumplen la cuota legal, cuáles están más lejos y cómo cambió la cifra en el último año."
-date: 2027-12-02
+description: "El balance de la cuota legal de personas con discapacidad en el Estado: cuántas instituciones cumplen la cuota legal, cuáles están más lejos y cómo cambió la cifra en el último año."
+date: "2026-10-02T15:25:00"
+redes: 2027-12-02
 categories: [Discapacidad, Instituciones, Balance]
 image: social.png
 image-alt: "Instituciones según su proporción de vínculos de personas con discapacidad"
 resources: ["ig_*.png"]
-draft: true  # programada
 ---
 
 ```{python}

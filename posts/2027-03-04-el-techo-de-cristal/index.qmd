@@ -1,12 +1,12 @@
 ---
 title: "¿Hay un techo de cristal en el Estado?"
 description: "En el conjunto del Estado, las mujeres ocupan casi la misma proporción de los cargos mejor pagos que del total. La gran excepción es Salud, donde su presencia cae a medida que sube el sueldo."
-date: 2027-03-04
+date: "2026-10-02T10:10:00"
+redes: 2027-03-04
 categories: [Género, Remuneraciones, Categorías]
 image: social.png
 image-alt: "Proporción de mujeres en todos los cargos y en el 10% mejor pago de cada sector"
 resources: ["ig_*.png"]
-draft: true  # programada
 ---
 
 ```{python}

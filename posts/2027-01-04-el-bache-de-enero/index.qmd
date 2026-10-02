@@ -1,12 +1,12 @@
 ---
 title: "El bache de enero"
 description: "Cada enero el Estado paga miles de vínculos menos que en diciembre y los recupera en los meses siguientes. La mayor parte del bache está en Educación."
-date: 2027-01-04
+date: "2026-10-02T08:55:00"
+redes: 2027-01-04
 categories: [El dato de la semana, Dotación, Educación]
 image: social.png
 image-alt: "Caída de vínculos entre diciembre y enero de cada año"
 resources: ["ig_*.png"]
-draft: true  # programada
 ---
 
 ```{python}

@@ -1,11 +1,11 @@
 ---
 title: "¿Más gente o mejores sueldos?"
 description: "Desde 2017 la masa salarial real creció 14%. Todo el aumento se explica por más vínculos. Pero el promedio esconde dos modelos opuestos: Educación subió sueldos sin sumar personal; Salud sumó personal con sueldos más bajos."
-date: 2026-10-30
+date: "2026-10-02T08:15:00"
+redes: 2026-10-30
 categories: [Masa salarial, Sectores]
 image: social.png
 image-alt: "Descomposición del crecimiento de la masa salarial real en efecto vínculos y efecto sueldo"
-draft: true  # programada
 ---
 
 ```{python}

@@ -2,6 +2,7 @@
 title: "SITUCAP N.º 3 · Octubre de 2026"
 description: "Vínculos, masa salarial, contratos y sectores del Estado paraguayo en octubre de 2026, con la comparación interanual y descontada la inflación."
 date: 2026-12-17
+redes: 2026-12-17
 image: social.png
 image-alt: "SITUCAP octubre de 2026: vínculos y masa salarial del sector público"
 resources: ["ig_*.png"]

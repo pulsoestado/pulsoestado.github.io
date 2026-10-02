@@ -1,12 +1,12 @@
 ---
 title: "¿Cuánto cuesta un punto de reajuste salarial?"
 description: "Una simulación simple: cuánto le cuesta al Estado, por año, subir 1% el sueldo básico de todo su personal permanente, y cuánto si el aumento alcanza también a contratos y bonificaciones."
-date: 2027-07-08
+date: "2026-10-02T12:50:00"
+redes: 2027-07-08
 categories: [Masa salarial, Presupuesto, Simulación]
 image: social.png
 image-alt: "Costo anual de un reajuste salarial de 1% por sector"
 resources: ["ig_*.png"]
-draft: true  # programada
 ---
 
 ```{python}
@@ -72,7 +72,7 @@ print(f"\n: Costo anual estimado de un reajuste, con la masa salarial de {UA}")
 
 Es una cuenta de primer orden: multiplica la masa salarial de `{python} UA` por el porcentaje de aumento. No incluye el crecimiento del personal ni los reajustes ya previstos para algunos grupos. Tampoco supone que todos los grupos reciban el mismo aumento: en la práctica, los reajustes del sector público suelen ser distintos para docentes, médicos, policías y militares o para el resto de la administración.
 
-Sirve como orden de magnitud: cada punto de reajuste general cuesta alrededor del `{python} pct(CT / MT * 100, 1)` de la masa salarial, y la masa salarial es uno de los gastos más grandes del Estado. Es una de las cifras que conviene tener a mano cuando se discute el [Presupuesto 2028](../2027-09-02-presupuesto-2028/).
+Sirve como orden de magnitud: cada punto de reajuste general cuesta alrededor del `{python} pct(CT / MT * 100, 1)` de la masa salarial, y la masa salarial es uno de los gastos más grandes del Estado. Es una de las cifras que conviene tener a mano cuando se discute cada nuevo Presupuesto General de la Nación.
 
 ::: {.fuente}
 **Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA (devengado por componente) e inflación del Banco Central del Paraguay. [Descargar los datos](/datos/).

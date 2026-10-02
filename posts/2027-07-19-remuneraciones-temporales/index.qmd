@@ -1,12 +1,12 @@
 ---
 title: "Pagos extraordinarios: dónde se pagan"
 description: "Además del sueldo, el Estado paga remuneraciones temporales, extraordinarias y adicionales. Cuánto suman y qué instituciones concentran estos pagos."
-date: 2027-07-19
+date: "2026-10-02T13:00:00"
+redes: 2027-07-19
 categories: [El dato de la semana, Masa salarial, Remuneraciones]
 image: social.png
 image-alt: "Remuneraciones temporales y extraordinarias por institución"
 resources: ["ig_*.png"]
-draft: true  # programada
 ---
 
 ```{python}

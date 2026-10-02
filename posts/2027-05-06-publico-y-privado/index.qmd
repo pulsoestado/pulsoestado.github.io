@@ -1,12 +1,12 @@
 ---
 title: "Público y privado: los salarios por rama desde 2001"
 description: "El Índice de Sueldos y Salarios del Banco Central muestra cómo evolucionaron los salarios privados por rama de actividad. Cómo se compara con la remuneración media pública y con el salario mínimo."
-date: 2027-05-06
+date: "2026-10-02T11:30:00"
+redes: 2027-05-06
 categories: [Salarios, Público y privado, Inflación]
 image: social.png
 image-alt: "Salarios reales por rama de actividad y remuneración media pública, índice 2017 = 100"
 resources: ["ig_*.png"]
-draft: true  # programada
 ---
 
 ```{python}

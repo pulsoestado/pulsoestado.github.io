@@ -1,12 +1,12 @@
 ---
-title: "Diez años de datos: el Estado entonces y ahora"
+title: "Desde 2017: el Estado entonces y ahora"
 description: "El último mes con datos frente al mismo mes de 2017: cuántos vínculos más hay, en qué sectores y con qué tipo de contrato."
-date: 2027-12-13
+date: "2026-10-02T15:40:00"
+redes: 2027-12-13
 categories: [El dato de la semana, Dotación, Sectores]
 image: social.png
 image-alt: "Vínculos por sector en 2017 y en el último mes con datos"
 resources: ["ig_*.png"]
-draft: true  # programada
 ---
 
 ```{python}
@@ -59,7 +59,7 @@ print(ficha_html([("", f"**{fecha_txt(A0, M)}** · **{fecha_txt(A1, M)}**"),
                   ("Mujeres", f"{miles(Wa)} ({pct(Wa / Ta * 100, 0)}) · {miles(Wb)} ({pct(Wb / Tb * 100, 0)})")]))
 ```
 
-Los registros de `{python} A0` y de `{python} A1` no cubren exactamente las mismas instituciones: algunas se crearon en este período (como la DNIT o el INE) y otras se fusionaron. Por eso, parte del cambio en algunos sectores refleja reorganizaciones y no contrataciones nuevas ([quién creció y quién se achicó](../2027-01-28-quien-crecio-y-quien-se-achico/)). El jueves repasamos el año en doce gráficos.
+Los registros de `{python} A0` y de `{python} A1` no cubren exactamente las mismas instituciones: algunas se crearon en este período (como la DNIT o el INE) y otras se fusionaron. Por eso, parte del cambio en algunos sectores refleja reorganizaciones y no contrataciones nuevas ([quién creció y quién se achicó](../2027-01-28-quien-crecio-y-quien-se-achico/)).
 
 ::: {.fuente}
 **Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA. [Descargar los datos](/datos/).

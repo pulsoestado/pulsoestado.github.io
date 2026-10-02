@@ -1,12 +1,12 @@
 ---
 title: "Las 20 instituciones más grandes del Estado"
 description: "Veinte instituciones concentran la gran mayoría del empleo público. Una ficha de cada una: cuántos vínculos, cuántos contratos, cuántas mujeres y cuánto cuestan."
-date: 2027-01-14
+date: "2026-10-02T09:10:00"
+redes: 2027-01-14
 categories: [Dotación, Instituciones, Masa salarial]
 image: social.png
 image-alt: "Las 20 instituciones con más vínculos del sector público paraguayo"
 resources: ["ig_*.png"]
-draft: true  # programada
 ---
 
 ```{python}

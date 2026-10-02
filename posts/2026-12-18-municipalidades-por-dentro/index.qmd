@@ -1,11 +1,11 @@
 ---
 title: "Municipalidades por dentro: 7 de cada 10 son contratados"
 description: "Las municipalidades pagan unos 28.000 vínculos, y el 72% son contratos, tres veces más que en el resto del Estado. Ciudad del Este, Encarnación y San Lorenzo encabezan la lista; dietas y gastos de representación pesan el 18% de su masa salarial."
-date: 2026-12-18
+date: "2026-10-02T08:50:00"
+redes: 2026-12-18
 categories: [Municipalidades, Contratados, Dotación]
 image: social.png
 image-alt: "Personal de las municipalidades paraguayas: vínculos y proporción de contratados"
-draft: true  # programada
 ---
 
 ```{python}

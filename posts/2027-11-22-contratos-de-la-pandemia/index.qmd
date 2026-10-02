@@ -1,12 +1,12 @@
 ---
 title: "Los contratos de la pandemia, años después"
 description: "En 2020 y 2021 el sector Salud sumó miles de contratos para enfrentar la emergencia. Cuántos siguen hoy."
-date: 2027-11-22
+date: "2026-10-02T15:15:00"
+redes: 2027-11-22
 categories: [El dato de la semana, Salud, Contratados]
 image: social.png
 image-alt: "Contratados del sector Salud por mes desde 2019"
 resources: ["ig_*.png"]
-draft: true  # programada
 ---
 
 ```{python}

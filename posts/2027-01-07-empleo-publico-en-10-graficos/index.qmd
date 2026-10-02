@@ -1,12 +1,12 @@
 ---
 title: "El empleo público en 10 gráficos"
-description: "Cuánta gente trabaja en el Estado, con qué contratos, en qué sectores, cuánto cuesta y cómo cambió desde 2017: el punto de partida de Pulso del Estado para 2027."
-date: 2027-01-07
+description: "Cuánta gente trabaja en el Estado, con qué contratos, en qué sectores, cuánto cuesta y cómo cambió desde 2017."
+date: "2026-10-02T09:00:00"
+redes: 2027-01-07
 categories: [Dotación, Masa salarial, Balance]
 image: social.png
 image-alt: "Vínculos pagados por el Estado paraguayo por mes desde 2017"
 resources: ["ig_*.png"]
-draft: true  # programada
 ---
 
 ```{python}

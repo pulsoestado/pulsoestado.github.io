@@ -1,11 +1,11 @@
 ---
 title: "La cuota del 5%: personas con discapacidad en el Estado"
 description: "La ley obliga a que al menos el 5% del personal público sean personas con discapacidad. Hoy son el 0,73%: harían falta unas 15.000 personas más para cumplirla. Solo 14 de 372 instituciones llegan al mínimo."
-date: 2026-11-06
+date: "2026-10-02T08:20:00"
+redes: 2026-11-06
 categories: [Inclusión, Discapacidad]
 image: social.png
 image-alt: "Porcentaje de personas con discapacidad en el sector público frente a la cuota legal del 5%"
-draft: true  # programada
 ---
 
 ```{python}

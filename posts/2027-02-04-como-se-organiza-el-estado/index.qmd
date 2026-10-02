@@ -1,12 +1,12 @@
 ---
 title: "Explicador: cómo se organiza el Estado en el presupuesto"
 description: "Niveles, entidades y organismos: la estructura con la que el Presupuesto General de la Nación ordena a las instituciones públicas, y cómo la usamos en Pulso del Estado."
-date: 2027-02-04
+date: "2026-10-02T09:35:00"
+redes: 2027-02-04
 categories: [Explicador, Metodología, Instituciones]
 image: social.png
 image-alt: "Mapa del Estado paraguayo por nivel institucional, según sus vínculos"
 resources: ["ig_*.png"]
-draft: true  # programada
 ---
 
 ```{python}

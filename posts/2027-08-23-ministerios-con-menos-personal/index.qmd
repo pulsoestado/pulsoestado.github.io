@@ -1,12 +1,12 @@
 ---
 title: "Los ministerios con menos personal que en 2017"
 description: "Mientras el Estado creció, varios ministerios del servicio civil del Ejecutivo tienen hoy menos vínculos que hace casi una década."
-date: 2027-08-23
+date: "2026-10-02T13:45:00"
+redes: 2027-08-23
 categories: [El dato de la semana, Servicio civil, Instituciones]
 image: social.png
 image-alt: "Ministerios con menos vínculos que en 2017"
 resources: ["ig_*.png"]
-draft: true  # programada
 ---
 
 ```{python}
