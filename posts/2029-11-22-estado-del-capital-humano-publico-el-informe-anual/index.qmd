@@ -1,0 +1,52 @@
+---
+title: "Estado del capital humano público: el informe anual"
+description: "El informe anual de Pulso del Estado, en web y PDF: dotación, masa salarial, sueldos, género, discapacidad y metodología."
+date: 2029-11-22
+categories: [Productos, Balance]
+image: social.png
+image-alt: "Estado del capital humano público: el informe anual"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import numpy as np
+import plotly.graph_objects as go
+
+```
+
+```{python}
+#| label: datos
+UA = ultimo_anio_completo(); A1, M1 = ultimo_mes()
+ms = leer("masa_anual_sector.csv").groupby("anho").devengado.sum()
+ia = leer("issp_anual.csv").set_index("anho")
+s = serie_mensual(); u = s[s.mes == 6].iloc[-1]
+```
+
+Publicamos el informe anual **[Estado del capital humano público](/informe-anual/)**, en página web y en PDF para descargar y citar. Reúne en un solo documento lo que Pulso del Estado sigue a lo largo del año: dotación, contratos, masa salarial, remuneraciones, el Índice de Sueldos del Sector Público, género, discapacidad y las instituciones más grandes, con la metodología y las correcciones aplicadas.
+
+```{python}
+#| label: kpis
+#| output: asis
+print(kpis([(miles(u.total), f"vínculos en junio de {int(u.anho)}"), (billones(ms[UA]) + " billones", f"de guaraníes de masa salarial en {UA}"),
+            (spct(ia.loc[UA, "var_real"]) if UA in ia.index else "—", "ISSP real en el último año")]))
+```
+
+El informe se regenera solo con cada actualización de los datos (hasta `{python} fecha_txt(A1, M1)` en esta edición) y se publica bajo licencia CC BY 4.0. Para citarlo: Pulso del Estado (`{python} A1`), *Estado del capital humano público, edición `{python} UA`*.
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA e IPC del BCP.
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_portada
+social("Estado del capital\nhumano público", f"Edición {UA}", "el informe anual de Pulso del Estado, en web y PDF")
+ig_portada("Informe anual", "Estado del\ncapital humano\npúblico", f"Edición {UA}: dotación, masa salarial,\nsueldos, género y discapacidad.", deslizar=False)
+```

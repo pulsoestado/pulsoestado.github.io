@@ -1,0 +1,69 @@
+---
+title: "La masa salarial como porcentaje del PIB (2030)"
+description: "Cuánto pesa lo que el Estado paga en salarios en el tamaño de la economía paraguaya y cómo cambió esa proporción desde 2017."
+date: 2030-04-01
+categories: [El dato de la semana, Masa salarial, Economía]
+image: social.png
+image-alt: "La masa salarial como porcentaje del PIB (2030)"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import plotly.graph_objects as go
+
+pib = pd.read_csv(raiz / "data/manual/pib_nominal.csv").set_index("anho").pib_millones_gs * 1e6
+m = leer("masa_anual_sector.csv").groupby("anho").devengado.sum()
+UA = ultimo_anio_completo()
+EST = UA > pib.index.max()        # el PIB del último año todavía no se publicó: se estima
+if EST:
+    g = pib.iloc[-1] / pib.iloc[-2]
+    for a in range(int(pib.index.max()) + 1, UA + 1):
+        pib.loc[a] = pib.loc[a - 1] * g
+r = (m / pib).dropna().loc[2017:UA] * 100
+```
+
+```{python}
+#| label: kpis
+#| output: asis
+print(kpis([(pct(r[UA]), f"del PIB: masa salarial pública de {UA}"), (signo(r[UA] - r.iloc[0], coma) + " puntos", f"frente a {r.index[0]}")]))
+```
+
+```{python}
+#| output: asis
+if EST:
+    print(f"::: {{.callout-warning}}\n**Estimación provisoria.** El PIB de {UA} todavía no está publicado: lo estimamos con el crecimiento nominal del año anterior. La cifra de {UA} se reemplazará automáticamente cuando se publique el dato oficial.\n:::\n")
+```
+
+En `{python} UA`, la masa salarial del sector público registrada en SINARH y SICCA fue el **`{python} pct(r[UA])` del PIB**. En `{python} int(r.index[0])` era el `{python} pct(r.iloc[0])`. La guía del BID sobre nómina pública recuerda que, en América Latina y el Caribe, la masa salarial representa en promedio un tercio del gasto público, y en el mundo las nóminas públicas equivalen a casi el 10% del PIB; medirla en relación con el PIB permite compararla con otros países y seguir su peso en el tiempo.
+
+```{python}
+#| label: fig
+#| fig-cap: "Masa salarial pública como porcentaje del PIB nominal"
+fig = go.Figure(go.Bar(x=r.index, y=r.values, marker_color=AZUL, text=[pct(x) for x in r.values], textposition="outside", cliponaxis=False,
+                       textfont=dict(color=TINTA_GRAF), hovertemplate="%{x}: <b>%{y:.1f}%</b><extra></extra>"))
+if EST: fig.add_annotation(x=UA, y=r[UA], text="estimado", yshift=28, showarrow=False, font=dict(color=TINTA_GRAF, size=11))
+estilo(fig, alto=300, leyenda=False).update_layout(hovermode="closest")
+fig.update_xaxes(dtick=1); fig.update_yaxes(ticksuffix="%", range=[0, r.max() * 1.25])
+fig.show(config=CONFIG)
+```
+
+La cifra no incluye a la Municipalidad de Asunción ni a otras instituciones que no reportan a los sistemas centrales.
+
+::: {.fuente}
+**Fuentes:** elaboración de Pulso del Estado con datos de SINARH y SICCA. PIB a precios corrientes: Banco Central del Paraguay (cuentas nacionales), según la serie NY.GDP.MKTP.CN del [Banco Mundial](https://data.worldbank.org/indicator/NY.GDP.MKTP.CN?locations=PY). [Descargar los datos](/datos/).
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_dato, barras
+social("La masa salarial como\nporcentaje del PIB", pct(r[UA]) + " del PIB", f"masa salarial pública de {UA}" + (" · PIB estimado" if EST else ""), (list(r.index), list(r.values)), tipo="barras")
+ig_dato(1, "El dato de la semana", f"En {UA}, la masa salarial pública fue el", pct(r[UA]), "del PIB" + (" (PIB estimado)" if EST else ""), "% del PIB",
+        barras(list(r.index), list(r.values), [pct(x) for x in r.values]))
+```

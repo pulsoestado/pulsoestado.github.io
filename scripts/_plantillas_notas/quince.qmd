@@ -1,0 +1,75 @@
+```{python}
+#| label: datos
+UA = ultimo_anio_completo()
+s = serie_mensual(SECTOR); sj = s[s.mes == 6].set_index("anho").loc[2015:]
+AU = int(sj.index.max())
+# primer año con cobertura razonable: al menos la mitad de los vínculos de hoy (antes, el sector reportaba de forma incompleta)
+A0 = int(sj.index[sj.total >= 0.5 * sj.total[AU]].min()); INCOMPLETO = A0 > int(sj.index.min())
+sj = sj.loc[A0:]
+ms = leer("masa_anual_sector.csv")
+ms = (ms[ms.sector == SECTOR] if SECTOR else ms).groupby("anho")[["devengado", "devengado_sin_aguinaldo", "vinculos_promedio"]].sum().loc[max(2016, A0):UA]
+D = deflactor(UA).reindex(ms.index)
+ms["real"] = ms.devengado * D; ms["rem_real"] = ms.devengado_sin_aguinaldo / 12 / ms.vinculos_promedio * D
+iss = leer("issp_sector_anual.csv").query("sector == @SECTOR").set_index("anho") if SECTOR else leer("issp_anual.csv").set_index("anho")
+iss = iss.loc[max(int(iss.index.min()), A0):]
+NOMBRE = SECTOR or "el Estado entero"
+ipc = leer("ipc_salarios_bcp.csv").set_index("anho").ipc
+iss_real = iss.fisher / ipc.reindex(iss.index) * ipc.get(UA, 1)
+```
+
+```{python}
+#| output: asis
+if INCOMPLETO:
+    print(f"::: {{.callout-note}}\n**Cobertura.** Antes de {A0}, {NOMBRE} reportaba sus pagos de forma incompleta a los registros centrales (menos de la mitad de los vínculos de hoy). Por eso esta nota empieza en {A0}: comparar con años anteriores mostraría un crecimiento que en buena parte es solo mayor cobertura.\n:::\n")
+```
+
+```{python}
+#| label: kpis
+#| output: asis
+print(kpis([(spct((sj.total[AU] / sj.total[A0] - 1) * 100, 0), f"vínculos, junio de {A0} a junio de {AU}"),
+            (spct((ms.real[UA] / ms.real.iloc[0] - 1) * 100, 0), f"masa salarial real, {int(ms.index[0])}–{UA}"),
+            (spct((iss_real.loc[UA] / iss_real.iloc[0] - 1) * 100, 0) if UA in iss_real.index else "—", f"sueldo básico real de los mismos cargos (ISSP), {int(iss.index[0])}–{UA}")]))
+```
+
+En junio de `{python} A0` **`{python} NOMBRE`** tenía `{python} miles(sj.total[A0])` vínculos; en junio de `{python} AU`, `{python} miles(sj.total[AU])`. La proporción de contratos pasó del `{python} pct(sj.contratado[A0] / sj.total[A0] * 100, 0)` al `{python} pct(sj.contratado[AU] / sj.total[AU] * 100, 0)`, y la de mujeres, del `{python} pct(sj.mujeres[A0] / sj.total[A0] * 100, 0)` al `{python} pct(sj.mujeres[AU] / sj.total[AU] * 100, 0)`.
+
+```{python}
+#| label: fig-v
+#| fig-cap: "Vínculos en junio de cada año, por tipo"
+fig = go.Figure()
+fig.add_trace(go.Bar(x=sj.index, y=sj.permanente, name="Permanentes", marker_color=AZUL))
+fig.add_trace(go.Bar(x=sj.index, y=sj.contratado, name="Contratados", marker_color=NARANJA))
+estilo(fig, alto=300).update_layout(barmode="stack"); fig.update_xaxes(dtick=1); fig.update_yaxes(tickformat=",.0f")
+fig.show(config=CONFIG)
+```
+
+## Masa salarial y sueldos
+
+```{python}
+#| label: fig-m
+#| fig-cap: "Índices de masa salarial real, remuneración media real y sueldo básico real de los mismos cargos (primer año = 100)"
+b = lambda x: x / x.dropna().iloc[0] * 100
+fig = go.Figure()
+fig.add_trace(go.Scatter(x=ms.index, y=b(ms.real), name="Masa salarial real", mode="lines+markers", line=dict(color=AMARILLO, width=2.4)))
+fig.add_trace(go.Scatter(x=ms.index, y=b(ms.rem_real), name="Remuneración media real", mode="lines+markers", line=dict(color=VERDE_AGUA, width=2.2)))
+fig.add_trace(go.Scatter(x=iss_real.index, y=b(iss_real), name="ISSP real", mode="lines+markers", line=dict(color=VIOLETA, width=2.2)))
+fig.add_hline(y=100, line=dict(color=GRIS, width=1))
+estilo(fig, alto=320).update_xaxes(dtick=1)
+fig.show(config=CONFIG)
+```
+
+Cuando la remuneración media real crece menos que el ISSP real, el sector sumó sobre todo cargos de menor remuneración; cuando crece más, los cambios de composición fueron hacia cargos mejor pagos ([¿más gente o mejores sueldos?](/posts/2026-10-30-mas-gente-o-mejores-sueldos/)). Esta nota es parte de la serie **Quince años de datos**.
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA e IPC del BCP. [Explorá el sector](/explorador/).
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_portada, ig_dato, barras
+social(f"Quince años de datos:\n{NOMBRE}", spct((sj.total[AU] / sj.total[A0] - 1) * 100, 0), f"vínculos entre {A0} y {AU} · masa real {spct((ms.real[UA] / ms.real.iloc[0] - 1) * 100, 0)}", (list(sj.index), list(sj.total)))
+ig_portada("Quince años de datos", NOMBRE.replace(" del ", "\ndel ").replace(" y ", "\ny ").replace("el Estado entero", "El Estado\nentero"), f"{miles(sj.total[A0])} vínculos en {A0},\n{miles(sj.total[AU])} en {AU}.", (list(sj.index), list(sj.total)))
+ig_dato(2, "Quince años", f"{NOMBRE[0].upper() + NOMBRE[1:]}: contratos en junio", pct(sj.contratado[AU] / sj.total[AU] * 100, 0), f"de los vínculos en {AU} (en {A0}: {pct(sj.contratado[A0] / sj.total[A0] * 100, 0)})",
+        "% de contratados", barras([str(x) for x in sj.index], list(sj.contratado / sj.total * 100), [coma(x, 0) for x in sj.contratado / sj.total * 100], rot=45))
+```

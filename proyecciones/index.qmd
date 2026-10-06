@@ -1,0 +1,79 @@
+---
+title: "Proyecciones a 2035"
+subtitle: "Cuánto personal y cuánta masa salarial tendría el Estado si siguieran las tendencias actuales"
+image: /assets/img/social-default.png
+toc: true
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import plotly.graph_objects as go
+
+pr = leer("proyecciones_2035.csv"); B = int(pr.base.iloc[0])
+t = pr.groupby(["anho", "escenario_vinculos", "aumento_real_anual"])[["vinculos", "masa_real"]].sum().reset_index()
+ms = leer("masa_anual_sector.csv"); h = ms.groupby("anho").agg(v=("vinculos_promedio", "sum"), m=("devengado", "sum")).loc[2017:B]
+h["m_real"] = h.m * deflactor(B).reindex(h.index)
+ESC = ["Tendencia larga", "Tendencia reciente", "Contención (0,5% anual)"]
+COL = dict(zip(ESC, [NARANJA, AZUL, VERDE_AGUA]))
+v35 = t[(t.anho == 2035) & (t.aumento_real_anual == 0.01)].set_index("escenario_vinculos")
+```
+
+::: {.callout-warning}
+**Escenarios, no pronósticos.** Estas cifras muestran a dónde llevarían las tendencias de los últimos años si se mantuvieran. No incorporan decisiones de política, reformas ni cambios en la economía. Se recalculan solas cada vez que se actualizan los datos.
+:::
+
+```{python}
+#| output: asis
+print(kpis([(miles(v35.loc[e, "vinculos"]), f"vínculos en 2035 · {e.lower()}") for e in ESC]))
+```
+
+## Vínculos
+
+```{python}
+#| label: fig-v
+#| fig-cap: "Vínculos promedio por año: datos hasta el último año completo y tres escenarios hasta 2035"
+fig = go.Figure(go.Scatter(x=h.index, y=h.v, name="Datos", mode="lines+markers", line=dict(color=TINTA_GRAF, width=2.6)))
+for e in ESC:
+    d = t[(t.escenario_vinculos == e) & (t.aumento_real_anual == 0.01)]
+    fig.add_trace(go.Scatter(x=d.anho, y=d.vinculos, name=e, mode="lines", line=dict(color=COL[e], width=2.4, dash="dot")))
+estilo(fig, alto=340).update_xaxes(dtick=2); fig.update_yaxes(tickformat=",.0f")
+fig.show(config=CONFIG)
+```
+
+## Masa salarial real
+
+```{python}
+#| label: fig-m
+#| fig-cap: "Masa salarial anual en billones de guaraníes del último año completo; escenario de tendencia reciente con tres supuestos de aumento real de la remuneración"
+fig = go.Figure(go.Scatter(x=h.index, y=h.m_real / 1e12, name="Datos", mode="lines+markers", line=dict(color=TINTA_GRAF, width=2.6)))
+for r, c in [(0.0, VERDE_AGUA), (0.01, AZUL), (0.02, NARANJA)]:
+    d = t[(t.escenario_vinculos == "Tendencia reciente") & (t.aumento_real_anual == r)]
+    fig.add_trace(go.Scatter(x=d.anho, y=d.masa_real / 1e12, name=f"+{int(r * 100)}% real por año", mode="lines", line=dict(color=c, width=2.4, dash="dot")))
+estilo(fig, alto=340).update_xaxes(dtick=2)
+fig.show(config=CONFIG)
+```
+
+```{python}
+#| label: tbl
+#| output: asis
+d = t[t.anho.isin([2030, 2035])].pivot_table(index=["escenario_vinculos", "aumento_real_anual"], columns="anho", values="masa_real")
+print("| Escenario de vínculos | Aumento real anual | Masa 2030 (billones Gs) | Masa 2035 (billones Gs) |\n|---|--:|--:|--:|")
+for (e, r), x in d.iterrows():
+    print(f"| {e} | {int(r * 100)}% | {billones(x[2030])} | {billones(x[2035])} |")
+print(f"\n: Masa salarial anual con aguinaldo, en guaraníes de {B}")
+```
+
+## Cómo se calcula
+
+- **Tendencia larga:** los vínculos de cada sector crecen a su ritmo promedio anual entre 2017 y `{python} B`.
+- **Tendencia reciente:** crecen a su ritmo de los últimos tres años completos.
+- **Contención:** el total crece 0,5% por año, con el peso actual de cada sector.
+- **Masa salarial real:** vínculos × remuneración media mensual de `{python} B` × 13 (doce meses y aguinaldo), con aumentos reales de 0%, 1% o 2% por año. Está en guaraníes de `{python} B`.
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA e IPC del BCP. Datos: [proyecciones_2035.csv](/data/processed/proyecciones_2035.csv).
+:::

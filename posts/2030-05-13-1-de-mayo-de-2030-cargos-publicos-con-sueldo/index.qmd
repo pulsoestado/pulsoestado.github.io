@@ -1,0 +1,75 @@
+---
+title: "1 de mayo de 2030: cargos públicos con sueldo básico bajo el mínimo"
+description: "En el Día del Trabajador, una mirada a la parte baja de la escala: cuántos cargos públicos permanentes tienen un sueldo básico menor al salario mínimo y dónde están."
+date: 2030-05-13
+categories: [El dato de la semana, Remuneraciones, Salario mínimo]
+image: social.png
+image-alt: "1 de mayo de 2030: cargos públicos con sueldo básico bajo el mínimo"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import numpy as np
+import plotly.graph_objects as go
+
+c = leer("categorias_oee.csv"); c = c[c.mes == 6]
+A = int(c.anho.max())
+u = c[c.anho == A].groupby(K_OEE + ["nivel_categoria"])[["cantidad", "devengado"]].sum().reset_index()
+u["s"] = u.devengado / u.cantidad
+tr = leer("bcp_salario_minimo_tramos.csv")
+tr_a = tr[tr.anho == A]
+sm = tr_a[tr_a.periodo.str.lower().str.startswith("enero")].salario_minimo.iloc[0] if len(tr_a) else tr.salario_minimo.iloc[-1]
+u["veces"] = u.s / sm
+bins = [0, 1, 1.5, 2, 3, 5, np.inf]
+etq = ["Menos de 1", "1 a 1,5", "1,5 a 2", "2 a 3", "3 a 5", "5 o más"]
+u["tramo"] = pd.cut(u.veces, bins, labels=etq, right=False)
+d = u.groupby("tramo", observed=False).cantidad.sum(); d = d / d.sum() * 100
+bajo = u[u.veces < 1]
+n_bajo = bajo.cantidad.sum(); p_bajo = n_bajo / u.cantidad.sum() * 100
+b = bajo.merge(instituciones()[K_OEE + ["sector"]], on=K_OEE).groupby("sector").cantidad.sum().sort_values(ascending=False)
+```
+
+```{python}
+#| label: kpis
+#| output: asis
+print(kpis([
+    (miles(n_bajo), f"cargos con sueldo básico menor al salario mínimo (junio de {A})"),
+    (pct(p_bajo), "de los cargos con sueldo básico"),
+]))
+```
+
+En junio de `{python} A`, el salario mínimo legal era de `{python} millones(sm, 2)` millones de guaraníes. Ese mes, **`{python} miles(n_bajo)` cargos públicos**, el `{python} pct(p_bajo)` de los que tienen sueldo básico, estaban en categorías cuyo sueldo básico medio era menor. La mayor parte está en **`{python} b.index[0]`** (`{python} miles(b.iloc[0])`)`{python} f" y {b.index[1]} ({miles(b.iloc[1])})" if len(b) > 1 else ""`.
+
+```{python}
+#| label: fig-tramos
+#| fig-cap: "Cargos con sueldo básico según su sueldo, en salarios mínimos (junio)"
+fig = go.Figure(go.Bar(x=list(d.index), y=d.values, marker_color=[ROJO] + [AZUL] * (len(d) - 1),
+                       text=[pct(x) for x in d.values], textposition="outside", cliponaxis=False, textfont=dict(color=TINTA_GRAF),
+                       hovertemplate="%{x} salarios mínimos: <b>%{y:.1f}%</b><extra></extra>"))
+estilo(fig, alto=320, leyenda=False).update_layout(hovermode="closest")
+fig.update_yaxes(ticksuffix="%", range=[0, d.max() * 1.2])
+fig.show(config=CONFIG)
+```
+
+No todos estos casos son sueldos de tiempo completo por debajo del mínimo. Muchos son **cargos de jornada parcial o por horas**, y una persona puede sumar varios cargos o cobrar, además del básico, bonificaciones y otros complementos. Pero muestran una parte de la escala salarial pública que suele quedar fuera de la discusión: el tramo con más cargos es el de `{python} d.idxmax()` salarios mínimos.
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA (sueldo básico, objeto 111, por institución y categoría, junio) y salario mínimo legal del Banco Central del Paraguay. [Descargar los datos](/datos/).
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_dato, barras
+social("1 de mayo: cargos con sueldo\nbásico menor al mínimo", miles(n_bajo) + " cargos", f"el {pct(p_bajo)} de los cargos públicos con sueldo básico (junio de {A})", color=ROJO)
+ig_dato(1, "El dato de la semana · 1 de mayo", "Cargos públicos con sueldo básico menor al mínimo:", miles(n_bajo),
+        f"el {pct(p_bajo)} del total (junio de {A})", "% de los cargos según su sueldo básico, en salarios mínimos",
+        barras(list(d.index), list(d.values), [pct(x, 0) for x in d.values], colores=[ROJO] + [AZUL] * (len(d) - 1)), color=ROJO)
+```

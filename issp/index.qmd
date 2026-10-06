@@ -1,0 +1,100 @@
+---
+title: "Índice de Sueldos del Sector Público (ISSP)"
+subtitle: "Cuánto sube el sueldo básico de un mismo cargo, sin el efecto de quién entra y quién sale"
+image: /assets/img/social-default.png
+toc: true
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import plotly.graph_objects as go
+
+q = leer("issp_trimestral.csv"); a = leer("issp_anual.csv"); s = leer("issp_sector_anual.csv")
+q["fecha"] = pd.to_datetime(dict(year=q.anho, month=q.mes, day=1))
+u = q.iloc[-1]; ua = a.dropna(subset=["var"]).iloc[-1]
+TRIM = {3: "primer", 6: "segundo", 9: "tercer", 12: "cuarto"}
+```
+
+```{python}
+#| label: kpis
+#| output: asis
+print(kpis([(coma(u.fisher, 1), f"ISSP del {TRIM[int(u.mes)]} trimestre de {int(u.anho)} (2025 = 100)"),
+            (spct(u.var_interanual), "frente al mismo trimestre del año anterior"),
+            (spct(ua.var_real), f"real entre junio de {int(ua.anho) - 1} y de {int(ua.anho)}")]))
+```
+
+El **ISSP** mide cuánto cambia el sueldo básico de los mismos cargos: compara cada categoría salarial de cada institución consigo misma de un período al siguiente. Así separa los aumentos de sueldo de los cambios en quién trabaja en el Estado, algo que la remuneración media no puede hacer: si entran muchos cargos con sueldos bajos, el promedio baja aunque nadie cobre menos.
+
+## La serie trimestral
+
+```{python}
+#| label: fig-trim
+#| fig-cap: "ISSP nominal, último mes de cada trimestre (promedio 2025 = 100)"
+fig = go.Figure(go.Scatter(x=q.fecha, y=q.fisher, mode="lines+markers", line=dict(color=AZUL, width=2.6),
+                           hovertemplate="%{x|%b %Y}: <b>%{y:.1f}</b><extra></extra>"))
+estilo(fig, alto=320, leyenda=False)
+fig.show(config=CONFIG)
+```
+
+## Cada año, descontada la inflación
+
+```{python}
+#| label: fig-anual
+#| fig-cap: "Variación del ISSP de junio a junio, nominal y real (%)"
+d = a.dropna(subset=["var"])
+fig = go.Figure()
+fig.add_trace(go.Bar(x=d.anho, y=d["var"], name="Nominal", marker_color=AZUL))
+fig.add_trace(go.Bar(x=d.anho, y=d.var_real, name="Real (descontado el IPC)", marker_color=NARANJA))
+estilo(fig, alto=320).update_layout(barmode="group")
+fig.update_xaxes(dtick=1); fig.update_yaxes(ticksuffix="%")
+fig.add_hline(y=0, line=dict(color=GRIS, width=1))
+fig.show(config=CONFIG)
+```
+
+La diferencia entre la variación del sueldo medio y la del ISSP es el **efecto composición**: lo que cambia el promedio solo porque cambió la mezcla de cargos. En `{python} int(ua.anho)` fue de `{python} signo(ua.efecto_composicion_pp, lambda x: coma(x, 1))` puntos.
+
+## Por sector
+
+```{python}
+#| label: tbl-sector
+#| output: asis
+ul = int(s.anho.max())
+t = s[s.anho.isin([ul - 5, ul - 1, ul])].pivot(index="sector", columns="anho", values="fisher")
+t["var5"] = (t[ul] / t[ul - 5] - 1) * 100; t["var1"] = (t[ul] / t[ul - 1] - 1) * 100
+t = t.sort_values("var5", ascending=False)
+print(f"| Sector | ISSP junio {ul} | Último año | Cinco años |\n|---|--:|--:|--:|")
+for k, r in t.iterrows():
+    print(f"| {k} | {coma(r[ul], 1)} | {spct(r.var1)} | {spct(r.var5)} |")
+print(f"\n: ISSP por sector (promedio 2025 = 100) y variaciones nominales")
+```
+
+## Estructura salarial
+
+```{python}
+#| label: tbl-estructura
+#| output: asis
+print("| Año | Categoría B ÷ categoría G (mediana entre instituciones) | Percentil 90 ÷ percentil 10 de los sueldos básicos |\n|---|--:|--:|")
+for _, r in a.iterrows():
+    print(f"| {int(r.anho)} | {coma(r.ratio_b_g, 2)} | {coma(r.p90_p10, 2)} |")
+print("\n: Compresión y dispersión del sueldo básico, junio de cada año")
+```
+
+## Cómo se calcula
+
+Una **celda** es una categoría salarial (la letra del presupuesto) dentro de una institución. Su precio es el sueldo básico medio (devengado del objeto 111 dividido la cantidad de cargos) y su peso, la cantidad de cargos. Cada período se compara con el anterior usando solo las celdas que existen en ambos:
+
+```latex
+L = \frac{\sum p_1 q_0}{\sum p_0 q_0} \qquad P = \frac{\sum p_1 q_1}{\sum p_0 q_1} \qquad F = \sqrt{L \cdot P}
+```
+
+El índice principal es el de **Fisher** (F). Los eslabones se encadenan y el índice se expresa con el promedio de 2025 igual a 100. La cobertura (cargos en celdas presentes en los dos períodos) supera el 98% en todos los trimestres.
+
+Límites: una letra de categoría puede agrupar cargos distintos dentro de una misma institución (en la Policía, por ejemplo, la categoría P reúne a la mayoría de los agentes), así que parte de los cambios de composición dentro de una celda quedan en el índice. Junio de 2017 se reemplaza por mayo de ese año por un pago retroactivo (ver el [registro de correcciones](/correcciones/)). El índice real usa el IPC promedio anual del Banco Central del Paraguay.
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA (DW nivel y categoría) e IPC del BCP. Datos: [issp_trimestral.csv](/data/processed/issp_trimestral.csv), [issp_anual.csv](/data/processed/issp_anual.csv), [issp_sector_anual.csv](/data/processed/issp_sector_anual.csv).
+:::

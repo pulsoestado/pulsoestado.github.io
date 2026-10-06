@@ -1,0 +1,51 @@
+```{python}
+#| label: datos
+AC, MC = ultimo_mes_confiable()
+base = (2028, 7)
+EST = (AC, MC) <= base
+b0 = base if not EST else ((AC - 1, MC))
+v = vin_oee()
+x1 = v[(v.anho == AC) & (v.mes == MC)].set_index(K_OEE); x0 = v[(v.anho == b0[0]) & (v.mes == b0[1])].set_index(K_OEE)
+j = x1[["nombre_largo", "sector", "total", "contratado"]].join(x0[["total", "contratado"]], rsuffix="_0", how="inner")
+j = j[(j.total > 0) & (j.total_0 > 0)]; j["dif"] = j.total - j.total_0; j["adif"] = j.dif.abs()
+top = j.sort_values("adif", ascending=False).head(5)
+```
+
+```{python}
+#| output: asis
+if EST:
+    print(f"::: {{.callout-note}}\nTodavía no hay datos completos posteriores al cambio de gobierno: mientras tanto, la comparación usa {fecha_txt(*b0)} y {fecha_txt(AC, MC)}. La nota se actualiza sola cuando estén los datos.\n:::\n")
+```
+
+```{python}
+#| label: kpis
+#| output: asis
+print(kpis([(signo(r.dif), r.nombre_largo) for _, r in top.head(3).iterrows()]))
+```
+
+Entre `{python} fecha_txt(*b0) + (" —el último mes completo del gobierno saliente—" if not EST else "")` y `{python} fecha_txt(AC, MC)`, estas son las cinco instituciones con el mayor cambio de vínculos, en más o en menos:
+
+```{python}
+#| label: tbl
+#| output: asis
+print(f"| Institución | Sector | {fecha_txt(*b0)} | {fecha_txt(AC, MC)} | Cambio | Contratos |\n|---|---|--:|--:|--:|--:|")
+for _, r in top.iterrows():
+    print(f"| {r.nombre_largo} | {r.sector} | {miles(r.total_0)} | {miles(r.total)} | {signo(r.dif)} | {signo(r.contratado - r.contratado_0)} |")
+```
+
+Los cambios grandes suelen deberse a reorganizaciones —instituciones que se crean, fusionan o reciben funciones de otras— más que a altas y bajas. Cada institución tiene su [ficha](/instituciones/).
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA. Mismas instituciones en los dos meses.
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_dato, barras_h as bh
+r1 = top.iloc[0]
+social("Las instituciones que más\ncambiaron con el nuevo gobierno", signo(r1.dif), f"vínculos en {r1.nombre_largo[:40]}")
+o = top.sort_values("dif")
+ig_dato(1, "El dato de la semana", "La institución que más cambió:", signo(r1.dif), r1.nombre_largo[:40], f"{fecha_txt(*b0)} a {fecha_txt(AC, MC)}",
+        bh([x if len(x) < 30 else x[:28] + "…" for x in o.nombre_largo], list(o.dif), [signo(x) for x in o.dif]))
+```

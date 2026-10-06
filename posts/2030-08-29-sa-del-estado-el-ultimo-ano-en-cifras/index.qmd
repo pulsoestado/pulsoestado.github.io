@@ -1,0 +1,86 @@
+---
+title: "SA del Estado: el último año en cifras"
+description: "Vínculos, contratos, masa salarial real, sueldos de los mismos cargos y las instituciones que más cambiaron en sa del estado."
+date: 2030-08-29
+categories: [Sectores, SA del Estado]
+image: social.png
+image-alt: "SA del Estado: el último año en cifras"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import numpy as np
+import plotly.graph_objects as go
+SECTOR = 'SA del Estado'
+```
+
+```{python}
+#| label: datos
+AC, MC = ultimo_mes_confiable(); UA = ultimo_anio_completo()
+s = serie_mensual(SECTOR).set_index(["anho", "mes"])
+u, a = s.loc[(AC, MC)], s.loc[(AC - 1, MC)]
+ms = leer("masa_anual_sector.csv").set_index(["sector", "anho"])
+D = deflactor(UA)
+m1, m0 = ms.loc[(SECTOR, UA)], ms.loc[(SECTOR, UA - 1)]
+var_masa_real = (m1.devengado * D[UA] / (m0.devengado * D[UA - 1]) - 1) * 100
+rem = m1.devengado_sin_aguinaldo / 12 / m1.vinculos_promedio
+iss = leer("issp_sector_anual.csv"); iss = iss[iss.sector == SECTOR].set_index("anho")
+v = vin_oee(); v = v[v.sector == SECTOR]
+x1 = v[(v.anho == AC) & (v.mes == MC)].set_index(K_OEE); x0 = v[(v.anho == AC - 1) & (v.mes == MC)].set_index(K_OEE)
+j = x1[["nombre_largo", "total"]].join(x0[["total"]], rsuffix="_0", how="inner"); j["dif"] = j.total - j.total_0
+h = serie_mensual(SECTOR); h = h[h.anho >= 2017]
+```
+
+```{python}
+#| label: kpis
+#| output: asis
+print(kpis([(signo(u.total - a.total), f"vínculos entre {fecha_txt(AC - 1, MC)} y {fecha_txt(AC, MC)}"),
+            (spct(var_masa_real), f"masa salarial real de {UA}"),
+            (spct(iss.loc[iss.index.max(), "var"]) if len(iss) else "—", "ISSP: sueldo básico de los mismos cargos, último año")]))
+```
+
+En `{python} fecha_txt(AC, MC)`, el sector **`{python} SECTOR`** pagó `{python} miles(u.total)` vínculos: `{python} signo(u.total - a.total)` en un año (`{python} spct((u.total / a.total - 1) * 100)`). El `{python} pct(u.contratado / u.total * 100, 0)` son contratos y el `{python} pct(u.mujeres / u.total * 100, 0)`, mujeres. Su masa salarial de `{python} UA` fue de `{python} milmillones(m1.devengado)` mil millones de guaraníes, `{python} spct(var_masa_real)` descontada la inflación, con una remuneración media de `{python} millones(rem, 2)` millones por mes.
+
+```{python}
+#| label: fig
+#| fig-cap: "Vínculos por mes del sector: total y contratados"
+fig = go.Figure()
+fig.add_trace(go.Scatter(x=h.fecha, y=h.total, name="Total", mode="lines", line=dict(color=AZUL, width=2.4)))
+fig.add_trace(go.Scatter(x=h.fecha, y=h.contratado, name="Contratados", mode="lines", line=dict(color=NARANJA, width=2)))
+estilo(fig, alto=300).update_yaxes(tickformat=",.0f", rangemode="tozero")
+fig.show(config=CONFIG)
+```
+
+## Quién creció y quién se achicó
+
+```{python}
+#| label: tbl
+#| output: asis
+o = pd.concat([j.sort_values("dif", ascending=False).head(5), j.sort_values("dif").head(3)]).drop_duplicates()
+print(f"| Institución | {MESES[MC - 1].capitalize()} {AC - 1} | {MESES[MC - 1].capitalize()} {AC} | Cambio |\n|---|--:|--:|--:|")
+for _, r in o.iterrows():
+    print(f"| {r.nombre_largo} | {miles(r.total_0)} | {miles(r.total)} | {signo(r.dif)} |")
+print(f"\n: Mismas instituciones en los dos meses")
+```
+
+Usamos el último mes en que reportó casi la misma cantidad de instituciones que un año antes, para no confundir la carga tardía con cambios reales. El ISSP de cada sector está en el [Índice de Sueldos del Sector Público](/issp/).
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA e IPC del BCP. [Explorá el sector](/explorador/).
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_dato, lineas
+hj = h[h.mes == MC]
+social(f"{SECTOR}:\nel último año en cifras", signo(u.total - a.total) + " vínculos", f"entre {fecha_txt(AC - 1, MC)} y {fecha_txt(AC, MC)} · masa real {spct(var_masa_real)}", (list(h.fecha), list(h.total)))
+ig_dato(1, "Sectores", f"{SECTOR}: en un año", signo(u.total - a.total), f"vínculos ({spct((u.total / a.total - 1) * 100)})",
+        f"Vínculos en {MESES[MC - 1]} de cada año", lineas([int(x) for x in hj.anho], {"Total": (list(hj.total), AZUL)}, fmt=lambda x: miles(x)))
+```

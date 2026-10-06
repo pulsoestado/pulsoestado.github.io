@@ -29,6 +29,22 @@ website:
         href: index.qmd
       - text: "SITUCAP"
         href: situcap/index.qmd
+      - text: "Herramientas"
+        menu:
+          - text: "Índice de Sueldos del Sector Público (ISSP)"
+            href: issp/index.qmd
+          - text: "Fichas por institución"
+            href: instituciones/index.qmd
+          - text: "Explorador de datos"
+            href: explorador/index.qmd
+          - text: "Simulador de reajustes"
+            href: simulador/index.qmd
+          - text: "Monitor del ciclo electoral"
+            href: monitor-electoral/index.qmd
+          - text: "Proyecciones a 2035"
+            href: proyecciones/index.qmd
+          - text: "Informe anual (HTML y PDF)"
+            href: informe-anual/index.qmd
       - text: "Datos"
         href: datos/index.qmd
       - text: "Metodología"

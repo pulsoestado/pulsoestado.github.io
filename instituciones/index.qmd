@@ -1,0 +1,133 @@
+---
+title: "Fichas por institución"
+subtitle: "Personal, contratos, mujeres, masa salarial, categorías y discapacidad de cada institución del Estado"
+image: /assets/img/social-default.png
+toc: false
+---
+
+Elegí una institución (podés escribir parte del nombre). Cada ficha tiene un enlace propio para compartir. Los datos se actualizan con cada carga del DW de SINARH y SICCA.
+
+```{ojs}
+//| echo: false
+inst = (await FileAttachment("/data/processed/instituciones.csv").csv({typed: true}))
+  .map(d => ({...d, id: `${d.codigo_nivel}-${d.codigo_entidad}-${d.codigo_oee}`}))
+vin = (await FileAttachment("/data/processed/vinculos_mensual_oee.csv").csv({typed: true}))
+  .map(d => ({...d, id: `${d.codigo_nivel}-${d.codigo_entidad}-${d.codigo_oee}`, fecha: new Date(d.anho, d.mes - 1, 1)}))
+masa = (await FileAttachment("/data/processed/masa_anual_oee.csv").csv({typed: true}))
+  .map(d => ({...d, id: `${d.codigo_nivel}-${d.codigo_entidad}-${d.codigo_oee}`}))
+pcd = (await FileAttachment("/data/processed/pcd_oee_anual.csv").csv({typed: true}))
+  .map(d => ({...d, id: `${d.codigo_nivel}-${d.codigo_entidad}-${d.codigo_oee}`}))
+cats = (await FileAttachment("/data/processed/categorias_oee.csv").csv({typed: true}))
+  .map(d => ({...d, id: `${d.codigo_nivel}-${d.codigo_entidad}-${d.codigo_oee}`}))
+conDatos = new Set(vin.filter(d => d.total > 0).map(d => d.id))
+lista = inst.filter(d => conDatos.has(d.id)).sort((a, b) => a.nombre_largo.localeCompare(b.nombre_largo, "es"))
+inicial = {
+  const p = new URLSearchParams(window.location.search).get("id");
+  return lista.find(d => d.id === p) ?? lista.find(d => d.id === "12-7-1") ?? lista[0];
+}
+```
+
+```{ojs}
+//| echo: false
+viewof sel = Inputs.select(lista, {label: "Institución", format: d => d.nombre_largo, value: inicial})
+```
+
+```{ojs}
+//| echo: false
+//| output: false
+actualizarURL = {
+  const u = new URL(window.location); u.searchParams.set("id", sel.id);
+  window.history.replaceState(null, "", u);
+  return sel.id;
+}
+```
+
+```{ojs}
+//| echo: false
+//| output: false
+fmt = (x, d = 0) => x == null || isNaN(x) ? "—" : x.toLocaleString("es-PY", {maximumFractionDigits: d, minimumFractionDigits: d})
+v = vin.filter(d => d.id === sel.id).sort((a, b) => a.fecha - b.fecha)
+ult = v[v.length - 1]
+anioAnt = v.find(d => d.anho === ult.anho - 1 && d.mes === ult.mes)
+MESES = ["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"]
+mTodo = masa.filter(d => d.id === sel.id)
+anios = [...new Set(mTodo.map(d => d.anho))].sort()
+ua = anios.filter(a => v.filter(d => d.anho === a).length === 12).pop() ?? anios[anios.length - 1]
+m = mTodo.filter(d => d.anho <= ua)
+masaUA = d3.sum(mTodo.filter(d => d.anho === ua), d => d.devengado)
+pc = pcd.filter(d => d.id === sel.id).sort((a, b) => a.anho - b.anho || a.mes - b.mes)
+pu = pc[pc.length - 1]
+```
+
+```{ojs}
+//| echo: false
+html`<div class="kpis">
+  <div class="kpi"><div class="valor">${fmt(ult.total)}</div><div class="etiqueta">vínculos en ${MESES[ult.mes - 1]} de ${ult.anho}${anioAnt ? ` (${ult.total - anioAnt.total >= 0 ? "+" : "−"}${fmt(Math.abs(ult.total - anioAnt.total))} en un año)` : ""}</div></div>
+  <div class="kpi"><div class="valor">${fmt(ult.contratado / ult.total * 100)}%</div><div class="etiqueta">contratados</div></div>
+  <div class="kpi"><div class="valor">${fmt(ult.mujeres / ult.total * 100)}%</div><div class="etiqueta">mujeres</div></div>
+  <div class="kpi"><div class="valor">${fmt(masaUA / 1e9)} mil M</div><div class="etiqueta">guaraníes en salarios en ${ua}</div></div>
+</div>
+<p><strong>${sel.nombre_largo}</strong> · ${sel.sector} · ${sel.descripcion_nivel}</p>`
+```
+
+### Vínculos por mes
+
+```{ojs}
+//| echo: false
+Plot.plot({
+  height: 300, marginLeft: 60, x: {type: "time", label: null}, y: {grid: true, label: "Vínculos", tickFormat: d => fmt(d)},
+  color: {domain: ["Permanentes", "Contratados"], range: ["#2a78d6", "#eb6834"], legend: true},
+  marks: [
+    Plot.areaY(v.flatMap(d => [{fecha: d.fecha, tipo: "Permanentes", n: d.permanente}, {fecha: d.fecha, tipo: "Contratados", n: d.contratado}]),
+      {x: "fecha", y: "n", fill: "tipo", curve: "step", tip: true}),
+    Plot.ruleY([0])
+  ]
+})
+```
+
+### Masa salarial por componente (años completos)
+
+```{ojs}
+//| echo: false
+Plot.plot({
+  height: 320, marginLeft: 60, x: {label: null, tickFormat: d => String(d)}, y: {grid: true, label: "Miles de millones de guaraníes", tickFormat: d => fmt(d)},
+  color: {legend: true, scheme: "tableau10"},
+  marks: [Plot.barY(m, {x: "anho", y: d => d.devengado / 1e9, fill: "componente", tip: true}), Plot.ruleY([0])]
+})
+```
+
+### Categorías salariales (último corte)
+
+```{ojs}
+//| echo: false
+{
+  const c = cats.filter(d => d.id === sel.id);
+  if (!c.length) return html`<p><em>Sin datos de categorías para esta institución.</em></p>`;
+  const a = d3.max(c, d => d.anho * 100 + d.mes);
+  const u = c.filter(d => d.anho * 100 + d.mes === a);
+  const g = d3.rollups(u, r => ({cargos: d3.sum(r, d => d.cantidad), dev: d3.sum(r, d => d.devengado),
+           muj: d3.sum(r.filter(d => d.sexo === "FEMENINO"), d => d.cantidad)}), d => d.nivel_categoria)
+    .map(([k, x]) => ({categoria: k, cargos: x.cargos, sueldo: x.dev / x.cargos, mujeres: x.muj / x.cargos * 100}))
+    .sort((a, b) => b.sueldo - a.sueldo);
+  return Inputs.table(g, {columns: ["categoria", "cargos", "sueldo", "mujeres"],
+    header: {categoria: "Categoría", cargos: "Cargos", sueldo: "Sueldo básico medio (Gs)", mujeres: "% mujeres"},
+    format: {cargos: d => fmt(d), sueldo: d => fmt(d), mujeres: d => fmt(d, 1)}, rows: 12});
+}
+```
+
+### Personas con discapacidad
+
+```{ojs}
+//| echo: false
+pu ? html`<p>En ${MESES[pu.mes - 1]} de ${pu.anho}, <strong>${fmt(pu.pcd)}</strong> de los ${fmt(pu.vinculos)} vínculos registrados en SICCA eran de personas con discapacidad (<strong>${fmt(pu.pcd / pu.vinculos * 100, 2)}%</strong>; la cuota legal es del 5%).</p>`
+   : html`<p><em>Esta institución no registra datos de discapacidad en SICCA.</em></p>`
+```
+
+```{ojs}
+//| echo: false
+html`<p class="small">Descargar los datos de esta institución: ${DOM.download(() => new Blob([d3.csvFormat(v.map(({fecha, id, ...r}) => r))], {type: "text/csv"}), `vinculos_${sel.id}.csv`, "vínculos por mes (CSV)")}</p>`
+```
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA. Los últimos meses pueden estar incompletos si la institución cargó sus datos con atraso. Ver la [metodología](/metodologia.qmd) y el [registro de correcciones](/correcciones/).
+:::

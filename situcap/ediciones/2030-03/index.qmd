@@ -1,0 +1,182 @@
+---
+title: "SITUCAP N.º 44 · Marzo de 2030"
+description: "Vínculos, masa salarial, contratos y sectores del Estado paraguayo en marzo de 2030, con la comparación interanual y descontada la inflación."
+date: 2030-05-16
+image: social.png
+image-alt: "SITUCAP marzo de 2030: vínculos y masa salarial del sector público"
+resources: ["ig_*.png"]
+requiere:
+  datos: "2030-03"
+  ipc: "2030-03"
+draft: true  # programada
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import plotly.graph_objects as go
+
+A1, M = 2030, 3
+A0 = A1 - 1
+IPC = ipc_interanual(A1, M)
+cat_ = instituciones()[K_OEE + ["nombre_largo", "sector"]]
+v = leer("vinculos_mensual_oee.csv")
+mm = leer("masa_mensual_oee.csv")
+def corte(a):
+    x = v[(v.anho == a) & (v.mes == M)].set_index(K_OEE)[["total", "contratado", "mujeres"]]
+    y = mm[(mm.anho == a) & (mm.mes == M)].set_index(K_OEE).devengado.rename("masa")
+    z = mm[(mm.anho == a) & (mm.mes <= M)].groupby(K_OEE).devengado.sum().rename("acum")
+    return x.join(y, how="outer").join(z, how="outer").fillna(0)
+p0, p1 = corte(A0), corte(A1)
+# Panel: instituciones con vínculos y pagos en ambos meses
+com = p0.index[(p0.total > 0) & (p0.masa > 0)].intersection(p1.index[(p1.total > 0) & (p1.masa > 0)])
+a, b = p0.loc[com], p1.loc[com]
+faltan = p0.index[p0.total > 0].difference(p1.index[p1.total > 0])
+V0, V1 = a.total.sum(), b.total.sum(); C0, C1 = a.contratado.sum(), b.contratado.sum()
+M0, M1 = a.masa.sum(), b.masa.sum(); AC0, AC1 = a.acum.sum(), b.acum.sum()
+var_v = (V1 / V0 - 1) * 100; var_m = (M1 / M0 - 1) * 100; var_ac = (AC1 / AC0 - 1) * 100
+var_real = ((1 + var_m / 100) / (1 + IPC / 100) - 1) * 100
+dC, dP = C1 - C0, (V1 - C1) - (V0 - C0)
+rem0, rem1 = M0 / V0, M1 / V1; var_rem = (rem1 / rem0 - 1) * 100
+V_total, M_total = p1.total.sum(), p1.masa.sum()
+pm = p1.mujeres.sum() / V_total * 100; pc = p1.contratado.sum() / V_total * 100
+info = cat_.set_index(K_OEE)
+sec = (b.join(info.sector).groupby("sector")[["total", "masa"]].sum()
+       .join(a.join(info.sector).groupby("sector")[["total", "masa"]].sum(), rsuffix="_0"))
+sec["dif"] = sec.total - sec.total_0; sec["var"] = (sec.total / sec.total_0 - 1) * 100
+sube = sec[sec.dif > 0].sort_values("dif", ascending=False); baja = sec[sec.dif < 0].sort_values("dif")
+s_mas, d_mas = sec.dif.idxmax(), sec.dif.max()
+s_menos, d_menos = sec.dif.idxmin(), sec.dif.min()
+inst = b.join(info).assign(dif=lambda d: d.total - a.total)
+inst_s = inst.sort_values("dif", ascending=False)
+mes = MESES[M - 1]
+serie = serie_mensual()
+s13 = serie[(serie.anho * 100 + serie.mes) <= A1 * 100 + M].tail(13)
+parte = abs(dC) / (abs(dC) + abs(dP)) * 100 if (dC + dP) else 0
+quien = "contratos" if (dC > 0 and dC >= dP) else ("permanentes" if dP > 0 else None)
+```
+
+::: {.en-breve}
+**SITUCAP de `{python} mes` de `{python} A1`, en breve**
+
+- El Estado pagó **`{python} miles(V_total)` vínculos** y **`{python} billones(M_total, 2)` billones de guaraníes** en salarios.
+- Con las mismas `{python} len(com)` instituciones que un año antes, los vínculos `{python} "crecieron" if var_v >= 0 else "bajaron"` **`{python} pct(abs(var_v))`** (`{python} signo(V1 - V0)`): `{python} signo(dC)` contratos y `{python} signo(dP)` permanentes.
+- La masa salarial del mes `{python} "creció" if var_m >= 0 else "bajó"` **`{python} pct(abs(var_m))`**, frente a una inflación interanual de `{python} pct(IPC)`: **`{python} spct(var_real)` en términos reales**.
+- **`{python} s_mas`** (`{python} signo(d_mas)`) es el sector que más vínculos sumó y **`{python} s_menos`** (`{python} signo(d_menos)`), el que más `{python} "perdió" if d_menos < 0 else "creció en menor medida"`.
+:::
+
+```{python}
+#| label: kpis
+#| output: asis
+print(kpis([
+    (miles(V_total), f"vínculos pagados en {mes} de {A1}"),
+    (spct(var_v), "vínculos, interanual (mismas instituciones)"),
+    (billones(M_total, 2) + " bill.", f"masa salarial de {mes}"),
+    (spct(var_real), f"masa salarial real, interanual (IPC {pct(IPC)})"),
+]))
+```
+
+## Indicadores del mes
+
+```{python}
+#| label: tbl-indicadores
+#| output: asis
+filas = [
+    ("Vínculos pagados", miles(V0), miles(V1), spct(var_v)),
+    ("· Permanentes", miles(V0 - C0), miles(V1 - C1), spct(((V1 - C1) / (V0 - C0) - 1) * 100)),
+    ("· Contratados", miles(C0), miles(C1), spct((C1 / C0 - 1) * 100)),
+    ("Masa salarial del mes (mil millones de Gs)", milmillones(M0), milmillones(M1), spct(var_m)),
+    (f"Masa salarial enero–{mes} (mil millones de Gs)", milmillones(AC0), milmillones(AC1), spct(var_ac)),
+    ("Remuneración media por vínculo (millones de Gs)", millones(rem0, 2), millones(rem1, 2), spct(var_rem)),
+]
+print(f"| Indicador (mismas {len(com)} instituciones) | {MES_C[M-1]} {A0} | {MES_C[M-1]} {A1} | Variación |")
+print("|---|--:|--:|--:|")
+for f in filas:
+    print("| " + " | ".join(f) + " |")
+```
+
+La comparación usa solo las instituciones que reportaron vínculos y pagos en ambos meses, para que una institución que todavía no cargó sus datos no se confunda con una caída del empleo. En `{python} mes` de `{python} A1` faltan `{python} len(faltan)` instituciones que sí habían reportado un año antes.
+
+## Los últimos 13 meses
+
+```{python}
+#| label: fig-13
+#| fig-cap: "Vínculos pagados por mes, todo el Estado"
+etq = [f"{MES_C[m - 1]} {str(a)[2:]}" for a, m in zip(s13.anho, s13.mes)]
+fig = go.Figure()
+fig.add_trace(go.Bar(x=etq, y=s13.contratado, name="Contratados", marker_color=NARANJA,
+                     hovertemplate="Contratados: %{y:,.0f}<extra></extra>"))
+fig.add_trace(go.Bar(x=etq, y=s13.permanente, name="Permanentes", marker_color=AZUL,
+                     hovertemplate="Permanentes: %{y:,.0f}<extra></extra>"))
+estilo(fig, alto=340).update_layout(barmode="stack", bargap=0.25)
+fig.update_yaxes(tickformat=",.0f")
+fig.show(config=CONFIG)
+```
+
+Los totales mensuales incluyen a todas las instituciones que reportaron en cada mes; los meses más recientes pueden completarse en próximas actualizaciones.
+
+## ¿Dónde cambió el empleo?
+
+```{python}
+#| label: fig-sectores
+#| fig-cap: "Variación interanual de vínculos por sector (mismas instituciones)"
+o = sec.sort_values("dif")
+lim = max(abs(o.dif).max(), 1)
+fig = barras_h(o.index, o.dif, [f"{signo(d)} ({spct(x)})" for d, x in zip(o.dif, o["var"])],
+               hover="<b>%{y}</b>: %{text}<extra></extra>", rango=[-lim * 1.9, lim * 1.6])
+fig.update_xaxes(tickformat=",.0f")
+fig.show(config=CONFIG)
+```
+
+```{python}
+#| label: tbl-inst
+#| output: asis
+print("| Institución | Vínculos | Cambio en un año |\n|---|--:|--:|")
+for _, r in pd.concat([inst_s.head(5), inst_s.tail(5).iloc[::-1]]).drop_duplicates("nombre_largo").iterrows():
+    print(f"| {r.nombre_largo} | {miles(r.total)} | {signo(r.dif)} |")
+print("\n: Las instituciones con más altas y más bajas netas de vínculos en un año")
+```
+
+## Composición
+
+En `{python} mes` de `{python} A1`, el `{python} pct(pm)` de los vínculos correspondía a **mujeres** y el `{python} pct(pc)` a **contratos**. La remuneración media por vínculo, que incluye sueldos, bonificaciones y contratos (y el aguinaldo, en diciembre), fue de `{python} millones(rem1, 2)` millones de guaraníes, `{python} spct(var_rem)` frente a un año antes.
+
+::: {.callout-note collapse="true"}
+## Cómo se lee el SITUCAP
+
+- **Vínculos** son relaciones laborales pagadas en el mes; una persona con dos cargos cuenta dos veces.
+- **Masa salarial** es el monto devengado en servicios personales (grupo 100) en el mes.
+- **Términos reales:** la variación nominal se descuenta con la inflación interanual del mes publicada por el Banco Central del Paraguay.
+- Los datos de los meses más recientes son **preliminares** y pueden cambiar cuando las instituciones completen su carga.
+- Los sectores siguen la [clasificación de Pulso del Estado](/metodologia.qmd).
+:::
+
+::: {.fuente}
+**Fuentes:** elaboración de Pulso del Estado con datos de SINARH y SICCA (vínculos por mes y devengado por objeto de gasto), marzo de 2030. Inflación interanual: Banco Central del Paraguay. [Descargar los datos](/datos/).
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_portada, ig_dato, barras_h as bh, barras as bb
+xs = list(range(len(s13)))
+social(f"SITUCAP · {mes} de {A1}", f"{miles(V_total)} vínculos",
+       f"{spct(var_v)} en un año · masa real {spct(var_real)}", (xs, list(s13.total)))
+ig_portada(f"SITUCAP N.º 44 · {mes} de {A1}", "Situación del\nCapital Humano\nPúblico",
+           f"{miles(V_total)} vínculos y {billones(M_total, 2)} billones\nde guaraníes en salarios en {mes}.",
+           (xs, list(s13.total)))
+o5 = sec.reindex(sec.dif.abs().sort_values(ascending=False).index[:6]).sort_values("dif")
+ig_dato(2, "Vínculos", f"En un año, con las mismas instituciones,", spct(var_v),
+        f"{signo(V1 - V0)} vínculos: {signo(dC)} contratos y {signo(dP)} permanentes", "Cambio por sector",
+        bh([s.replace("Servicio civil del Ejecutivo", "Servicio civil").replace("Entes autónomos y autárquicos", "Entes autónomos")
+            .replace("Gobiernos departamentales", "Gobernaciones") for s in o5.index], o5.dif,
+           [signo(d) for d in o5.dif], colores=[AZUL if d >= 0 else ROJO for d in o5.dif]), color=NARANJA)
+ig_dato(3, "Masa salarial", f"La masa salarial de {mes}, descontada la inflación,", spct(var_real),
+        f"frente a {mes} de {A0} ({spct(var_m)} nominal; IPC {pct(IPC)})",
+        "Remuneración media por vínculo, millones de Gs",
+        bb([f"{MES_C[M-1]} {A0}", f"{MES_C[M-1]} {A1}"], [rem0 / 1e6, rem1 / 1e6],
+           [millones(rem0, 2), millones(rem1, 2)], colores=["#9db9de", AZUL]), color=AZUL)
+```

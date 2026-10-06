@@ -1,0 +1,93 @@
+---
+title: "Un año de gobierno frente a los dos anteriores"
+description: "Cómo cambiaron los contratos y la planta del Estado con el cambio de gobierno de 2028, frente a los de 2018 y 2023."
+date: 2029-08-02
+categories: [Ciclo electoral, Contratados]
+image: social.png
+image-alt: "Un año de gobierno frente a los dos anteriores"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import numpy as np
+import plotly.graph_objects as go
+K = 12
+ETIQ = 'en el primer año de gestión'
+TITULO_RED = 'Un año de gobierno frente a los dos anteriores'
+```
+
+```{python}
+#| label: datos
+# Gobiernos asumen el 15 de agosto: julio es el último mes completo del gobierno saliente.
+CICLOS = [2018, 2023, 2028]
+KK = max(K, 1)
+fin = pd.Timestamp(year=2028, month=7, day=1) + pd.DateOffset(months=KK)
+s = serie_extendida(fin.year, fin.month).set_index("fecha")
+fil, curvas = [], {}
+for y in CICLOS:
+    b = pd.Timestamp(year=y, month=7, day=1); t = b + pd.DateOffset(months=KK)
+    if t not in s.index or b not in s.index:
+        continue
+    r0, r1 = s.loc[b], s.loc[t]
+    fil.append(dict(anio=y, total=r1.total - r0.total, contr=r1.contratado - r0.contratado, perm=r1.permanente - r0.permanente,
+                    var=(r1.total / r0.total - 1) * 100, est=bool(s.loc[b:t].estimado.any()), mes_t=t))
+    w = s.loc[b - pd.DateOffset(months=6): t]
+    curvas[y] = (list(range(-6, -6 + len(w))), list(w.contratado / r0.contratado * 100), list(w.estimado))
+d = pd.DataFrame(fil).set_index("anio")
+EST28 = 2028 in d.index and d.loc[2028, "est"]
+```
+
+```{python}
+#| output: asis
+if EST28:
+    ac, mc = ultimo_mes_confiable()
+    aviso_estimacion(f"Los datos de 2028 posteriores a {fecha_txt(ac, mc)} son estimaciones de Pulso del Estado (mismo mes del año anterior por el crecimiento de los últimos doce meses), no registros.")
+```
+
+```{python}
+#| label: kpis
+#| output: asis
+print(kpis([(signo(d.loc[y, "contr"]), f"contratos, julio a {MESES[d.loc[y, 'mes_t'].month - 1]} de {y}" + (" (estimado)" if d.loc[y, "est"] else "")) for y in d.index]))
+```
+
+`{python} ETIQ.capitalize()`: entre julio —el último mes completo del gobierno saliente— y `{python} MESES[d.iloc[-1].mes_t.month - 1]`, los contratos del Estado cambiaron `{python} " · ".join(f"{signo(d.loc[y, 'contr'])} en {y}" for y in d.index)`. Los vínculos permanentes, `{python} " · ".join(f"{signo(d.loc[y, 'perm'])} en {y}" for y in d.index)`.
+
+```{python}
+#| label: fig
+#| fig-cap: "Vínculos contratados, julio del año electoral = 100"
+fig = go.Figure()
+for y, c in zip(CICLOS, [GRIS, AZUL, NARANJA]):
+    if y not in curvas:
+        continue
+    x, yy, e = curvas[y]
+    xr = [a for a, b_ in zip(x, e) if not b_]; yr = [a for a, b_ in zip(yy, e) if not b_]
+    fig.add_trace(go.Scatter(x=xr, y=yr, name=str(y), mode="lines+markers", line=dict(color=c, width=2.4)))
+    if any(e):
+        i0 = max(0, e.index(True) - 1)
+        fig.add_trace(go.Scatter(x=x[i0:], y=yy[i0:], name=f"{y} · estimado", mode="lines", line=dict(color=c, width=2, dash="dot")))
+fig.add_vline(x=0, line=dict(color=GRIS, width=1, dash="dash")); fig.add_hline(y=100, line=dict(color=GRIS, width=1))
+estilo(fig, alto=340).update_xaxes(title="Meses desde julio del año electoral", dtick=1)
+fig.show(config=CONFIG)
+```
+
+El cambio de gobierno coincide con la revisión de contratos y con reorganizaciones de instituciones; comparar los mismos meses de cada ciclo evita confundir eso con el calendario propio de los contratos ([el ciclo electoral: cambio de gobierno](/posts/2027-10-14-ciclo-electoral-cambio-de-gobierno/), [monitor del ciclo electoral](/monitor-electoral/)).
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA.
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_dato, barras
+ys = list(d.index)
+social(TITULO_RED, signo(d.iloc[-1].contr) + " contratos", f"julio a {MESES[d.iloc[-1].mes_t.month - 1]} de {ys[-1]}" + (" (estimado)" if d.iloc[-1].est else "") + f" · {ys[0]}: {signo(d.iloc[0].contr)}")
+ig_dato(1, "Cambio de gobierno", ETIQ.capitalize() + ", los contratos cambiaron", signo(d.iloc[-1].contr), f"en {ys[-1]}" + (" (estimado)" if d.iloc[-1].est else ""),
+        "Cambio de contratos por ciclo", barras([str(y) for y in ys], list(d.contr), [signo(x) for x in d.contr], colores=[GRIS, AZUL, NARANJA][:len(ys)]))
+```

@@ -1,0 +1,141 @@
+---
+title: "¿Hay un techo de cristal en el Estado? Medición 2030"
+description: "En el conjunto del Estado, las mujeres ocupan casi la misma proporción de los cargos mejor pagos que del total. La gran excepción es Salud, donde su presencia cae a medida que sube el sueldo."
+date: 2030-03-28
+categories: [Género, Remuneraciones, Categorías]
+image: social.png
+image-alt: "¿Hay un techo de cristal en el Estado? Medición 2030"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import plotly.graph_objects as go
+
+c = leer("categorias_oee.csv"); c = c[c.mes == 6]
+A = int(c.anho.max())
+MEC = (12, 7, 1)
+
+def techo(g, q=0.10):
+    """Categorías de una institución ordenadas por sueldo básico medio. Se toma el q (10%) de cargos
+    mejor pago; la categoría que queda en el corte entra en la proporción que corresponde."""
+    w = g.pivot_table(index="nivel_categoria", columns="sexo", values=["cantidad", "devengado"], aggfunc="sum").fillna(0)
+    cant = w["cantidad"].sum(axis=1)
+    muj = w["cantidad"]["FEMENINO"] if "FEMENINO" in w["cantidad"] else 0 * cant
+    d = pd.DataFrame({"cant": cant, "muj": muj, "s": w["devengado"].sum(axis=1) / cant}).sort_values("s", ascending=False)
+    tot = d.cant.sum(); d["previo"] = d.cant.cumsum().shift(fill_value=0) / tot
+    d["peso"] = ((q - d.previo) / (d.cant / tot)).clip(0, 1)
+    return pd.Series({"tot": tot, "muj": d.muj.sum(), "ttop": (d.peso * d.cant).sum(), "mtop": (d.peso * d.muj).sum()})
+
+def calc(a, q=0.10):
+    r = c[c.anho == a].groupby(K_OEE).apply(techo, q=q, include_groups=False)
+    return r[r.tot >= 100]
+
+def prop(r):
+    return r.muj.sum() / r.tot.sum() * 100, r.mtop.sum() / r.ttop.sum() * 100
+
+r = calc(A).join(instituciones().set_index(K_OEE)[["nombre_largo", "sector"]])
+P, PT = prop(r)
+P2, PT2 = prop(r.drop(index=MEC, errors="ignore"))
+_, PT1 = prop(calc(A, 0.01))
+g = r.groupby("sector")[["tot", "muj", "ttop", "mtop"]].sum(); g = g[g.tot >= 2000]
+g["p"] = g.muj / g.tot * 100; g["pt"] = g.mtop / g.ttop * 100; g["gap"] = g.p - g.pt; g = g.sort_values("p")
+S = g.loc["Salud"]
+serie = pd.DataFrame({a: dict(zip(["p", "pt"], prop(calc(a)))) for a in range(2018, A + 1)}).T
+gr = r[r.tot >= 2000].assign(p=lambda d: d.muj / d.tot * 100, pt=lambda d: d.mtop / d.ttop * 100,
+                             gap=lambda d: d.p - d.pt).sort_values("gap", ascending=False)
+caen = gr[gr.gap >= 5]
+```
+
+::: {.en-breve}
+**En breve**
+
+- En junio de `{python} A`, las mujeres ocupaban el **`{python} pct(P, 0)`** de los cargos con sueldo básico de las `{python} len(r)` instituciones analizadas y el **`{python} pct(PT, 0)`** del 10% mejor pago de cada una. En el 1% mejor pago, el `{python} pct(PT1, 0)`.
+- Es decir: en el conjunto del Estado, **no aparece un techo de cristal en las categorías salariales**.
+- La excepción más clara es **Salud**: las mujeres son el `{python} pct(S.p, 0)` del personal, pero el `{python} pct(S.pt, 0)` de los cargos mejor pagos.
+- En `{python} len(caen)` de las `{python} len(gr)` instituciones con más de 2.000 cargos, la presencia de mujeres cae 5 puntos o más en el tramo mejor pago.
+:::
+
+## Sector por sector
+
+```{python}
+#| label: fig-sector
+#| fig-cap: "Proporción de mujeres en todos los cargos y en el 10% mejor pago de cada institución, por sector"
+fig = go.Figure()
+fig.add_trace(go.Bar(y=g.index, x=g.p, name="Todos los cargos", orientation="h", marker_color="#c5bfe6",
+                     hovertemplate="<b>%{y}</b><br>Todos los cargos: %{x:.0f}%<extra></extra>"))
+fig.add_trace(go.Bar(y=g.index, x=g.pt, name="10% mejor pago", orientation="h", marker_color=VIOLETA,
+                     hovertemplate="<b>%{y}</b><br>10% mejor pago: %{x:.0f}%<extra></extra>"))
+fig.add_vline(x=50, line=dict(color=GRIS, width=1, dash="dot"))
+estilo(fig, alto=460).update_layout(barmode="group", hovermode="closest", bargap=0.25)
+fig.update_xaxes(range=[0, 100], ticksuffix="%", showgrid=True, gridcolor="rgba(128,128,128,.18)")
+fig.update_yaxes(showgrid=False)
+fig.show(config=CONFIG)
+```
+
+En la mayoría de los sectores, la proporción de mujeres en los cargos mejor pagos es parecida a la de todo el personal. En algunos es incluso mayor, como en el servicio civil del Ejecutivo y las empresas públicas, posiblemente porque allí muchos de los cargos de menor sueldo son oficios técnicos o de servicios ocupados en su mayoría por hombres. **Salud** es la excepción: su planta es dos tercios femenina, pero la diferencia en el tramo mejor pago es de `{python} coma(S.gap, 0)` puntos.
+
+## Institución por institución
+
+```{python}
+#| label: tbl-inst
+#| output: asis
+print("| Institución | Mujeres en todos los cargos | Mujeres en el 10% mejor pago | Diferencia (puntos) |\n|---|--:|--:|--:|")
+for _, x in gr.iterrows():
+    print(f"| {x.nombre_largo} | {pct(x.p, 0)} | {pct(x.pt, 0)} | {signo(-x.gap, lambda v: coma(v, 0))} |")
+print(f"\n: Instituciones con al menos 2.000 cargos, junio de {A}. Diferencia negativa: hay menos mujeres en el tramo mejor pago")
+```
+
+## A lo largo del tiempo
+
+```{python}
+#| label: fig-serie
+#| fig-cap: "Proporción de mujeres en todos los cargos y en el 10% mejor pago de cada institución (junio de cada año)"
+fig = go.Figure()
+fig.add_trace(go.Scatter(x=serie.index, y=serie.p, name="Todos los cargos", mode="lines+markers",
+                         line=dict(color="#a99fd6", width=2.4), hovertemplate="Todos: %{y:.1f}%<extra></extra>"))
+fig.add_trace(go.Scatter(x=serie.index, y=serie.pt, name="10% mejor pago", mode="lines+markers",
+                         line=dict(color=VIOLETA, width=2.8), hovertemplate="10% mejor pago: %{y:.1f}%<extra></extra>"))
+estilo(fig, alto=320).update_xaxes(dtick=1)
+fig.update_yaxes(ticksuffix="%", range=[30, 60])
+fig.show(config=CONFIG)
+```
+
+Las dos líneas se mueven juntas desde 2018. Si se excluye al Ministerio de Educación, donde siete de cada diez cargos son de mujeres, la proporción baja para ambas (`{python} pct(P2, 0)` del total y `{python} pct(PT2, 0)` del tramo mejor pago en `{python} A`), pero la conclusión no cambia.
+
+## Lo que este análisis no puede ver
+
+Las categorías salariales no son puestos. Una misma categoría puede corresponder a un cargo directivo o a uno técnico, y muchas jefaturas se pagan con bonificaciones o gastos de representación, que no forman parte del sueldo básico. Por eso, estos datos permiten descartar que las mujeres estén excluidas de las categorías mejor pagas, pero **no permiten medir cuántas mujeres dirigen instituciones o áreas**. Para eso haría falta un registro de cargos directivos, que hoy no se publica en formato de datos abiertos.
+
+::: {.callout-note collapse="true"}
+## Cómo se calculó
+
+- Fuente: sueldo básico (objeto 111) por institución, categoría salarial y sexo, junio de cada año (SINARH y SICCA). Cada registro indica cuántos cargos hay en una categoría y el monto pagado.
+- En cada institución, las categorías se ordenan según su sueldo básico medio y se toma el 10% de los cargos mejor pagos; la categoría que queda en el corte se incluye en la proporción necesaria para completar ese 10%, con su misma composición por sexo.
+- Se analizan las instituciones con al menos 100 cargos.
+:::
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA. [Descargar los datos](/datos/).
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_portada, ig_dato, barras
+social("¿Hay un techo de cristal\nen el Estado?", pct(PT, 0) + " de mujeres", f"en el 10% mejor pago, frente al {pct(P, 0)} del total",
+       color=VIOLETA)
+ig_portada("Género", "¿Hay un\ntecho de\ncristal?", f"Las mujeres son el {pct(P, 0)} de los cargos\ny el {pct(PT, 0)} de los mejor pagos.",
+           color=VIOLETA)
+ig_dato(2, "La excepción: Salud", "En Salud, las mujeres son el", pct(S.p, 0), f"del personal, pero el {pct(S.pt, 0)} del 10% mejor pago",
+        "Mujeres en todos los cargos y en el 10% mejor pago",
+        barras(["Estado\ntodos", "Estado\n10% sup.", "Salud\ntodos", "Salud\n10% sup."], [P, PT, S.p, S.pt],
+               [pct(x, 0) for x in [P, PT, S.p, S.pt]], colores=["#c5bfe6", VIOLETA, "#c5bfe6", VIOLETA], ylim=(0, 85)),
+        color=VIOLETA)
+```

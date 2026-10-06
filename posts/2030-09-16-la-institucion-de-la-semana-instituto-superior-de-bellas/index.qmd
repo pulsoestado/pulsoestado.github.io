@@ -1,0 +1,81 @@
+---
+title: "La institución de la semana: Instituto Superior de Bellas Artes"
+description: "Personal, contratos, mujeres, masa salarial y remuneración media de Instituto Superior de Bellas Artes, con el enlace a su ficha completa."
+date: 2030-09-16
+categories: [La institución de la semana, Instituciones]
+image: social.png
+image-alt: "La institución de la semana: Instituto Superior de Bellas Artes"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import numpy as np
+import plotly.graph_objects as go
+KEY = (23, 33, 1)
+```
+
+```{python}
+#| label: datos
+inf = instituciones().set_index(K_OEE).loc[KEY]
+v = vin_oee()
+v = v[(v.codigo_nivel == KEY[0]) & (v.codigo_entidad == KEY[1]) & (v.codigo_oee == KEY[2]) & (v.total > 0)].sort_values(["anho", "mes"])
+u = v.iloc[-1]; A1, M = int(u.anho), int(u.mes)
+p = v[(v.anho == A1 - 1) & (v.mes == M)]
+dif = (u.total - p.total.iloc[0]) if len(p) else None
+UA = ultimo_anio_completo()
+ma = masa_oee_anual(UA)
+ma = ma[(ma.codigo_nivel == KEY[0]) & (ma.codigo_entidad == KEY[1]) & (ma.codigo_oee == KEY[2])]
+masa = float(ma.masa.sum()); ag = float(ma["Aguinaldo"].sum()) if "Aguinaldo" in ma else 0.0
+vp = v[v.anho == UA].total.mean()
+rem = (masa - ag) / 12 / vp if vp and vp == vp else None
+est = leer("masa_anual_sector.csv").query("anho == @UA")
+rem_e = est.devengado_sin_aguinaldo.sum() / 12 / est.vinculos_promedio.sum()
+v["fecha"] = pd.to_datetime(dict(year=v.anho, month=v.mes, day=1))
+h = v[v.anho >= 2017]
+ID = "-".join(str(x) for x in KEY)
+NOM = inf.nombre_largo
+```
+
+```{python}
+#| label: kpis
+#| output: asis
+print(kpis([(miles(u.total), f"vínculos en {fecha_txt(A1, M)}"),
+            (signo(dif) if dif is not None else "—", "frente al mismo mes del año anterior"),
+            (pct(u.contratado / u.total * 100, 0), "son contratos"),
+            (millones(rem, 1) + " M" if rem else "—", f"de guaraníes por mes: remuneración media de {UA}")]))
+```
+
+**`{python} NOM`** (`{python} inf.sector`) pagó `{python} miles(u.total)` vínculos en `{python} fecha_txt(A1, M)`. El `{python} pct(u.mujeres / u.total * 100, 0)` son mujeres. En `{python} UA` su masa salarial fue de `{python} milmillones(masa)` mil millones de guaraníes, y cada vínculo costó en promedio `{python} millones(rem, 1) if rem else "—"` millones por mes sin aguinaldo: `{python} coma(rem / rem_e, 1) if rem else "—"` veces el promedio del Estado.
+
+```{python}
+#| label: fig
+#| fig-cap: "Vínculos por mes: total y contratados"
+fig = go.Figure()
+fig.add_trace(go.Scatter(x=h.fecha, y=h.total, name="Total", mode="lines", line=dict(color=AZUL, width=2.4)))
+fig.add_trace(go.Scatter(x=h.fecha, y=h.contratado, name="Contratados", mode="lines", line=dict(color=NARANJA, width=2)))
+estilo(fig, alto=300).update_yaxes(tickformat=",.0f", rangemode="tozero")
+fig.show(config=CONFIG)
+```
+
+La ficha completa —masa salarial por componente, categorías salariales y personas con discapacidad— está en [fichas por institución](/instituciones/?id=`{python} ID`). Los últimos meses pueden cambiar si la institución carga datos con atraso.
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA. [Descargar los datos](/datos/).
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_dato, lineas
+corto = NOM if len(NOM) <= 34 else (inf.nombre if isinstance(inf.nombre, str) and len(inf.nombre) <= 34 else NOM[:32] + "…")
+social("La institución de la semana:\n" + corto, miles(u.total) + " vínculos", f"en {fecha_txt(A1, M)} · {pct(u.contratado / u.total * 100, 0)} contratos", (list(h.fecha), list(h.total)))
+hj = h[h.mes == M]
+ig_dato(1, "La institución de la semana", corto, miles(u.total), f"vínculos en {fecha_txt(A1, M)}", f"Vínculos en {MESES[M - 1]} de cada año",
+        lineas([int(a) for a in hj.anho], {"Total": (list(hj.total), AZUL)}, fmt=lambda x: miles(x)))
+```

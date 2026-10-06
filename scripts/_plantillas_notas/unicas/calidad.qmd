@@ -1,0 +1,68 @@
+```{python}
+#| label: datos
+v = leer("vinculos_mensual_oee.csv"); v = v[v.total > 0]
+n = v.groupby(["anho", "mes"]).size().rename("n").reset_index()
+n["n_prev"] = [n[(n.anho == a - 1) & (n.mes == m)].n.sum() or np.nan for a, m in zip(n.anho, n.mes)]
+n["fecha"] = pd.to_datetime(dict(year=n.anho, month=n.mes, day=1))
+AC, MC = ultimo_mes_confiable(); A1, M1 = ultimo_mes()
+cr = pd.read_csv(raiz / "data/manual/correcciones.csv")
+nc = leer("vinculos_completados_sector.csv")
+u = nc[(nc.anho == A1) & (nc.mes == M1)]
+inst = vin_oee(); inst = inst[(inst.anho == A1) & (inst.mes == M1) & (inst.total > 0)]
+```
+
+```{python}
+#| label: kpis
+#| output: asis
+print(kpis([(fecha_txt(AC, MC), "último mes con al menos el 97% de las instituciones"), (miles(u.instituciones_completadas.sum()), f"instituciones todavía sin datos de {fecha_txt(A1, M1)}"), (str(len(cr)), "correcciones documentadas")]))
+```
+
+Este es el primer informe de calidad de datos de Pulso del Estado. Lo publicaremos cada año para que se vea qué tan completos y confiables son los registros con los que trabajamos.
+
+## Cuánto tardan en llegar los datos
+
+```{python}
+#| label: fig
+#| fig-cap: "Instituciones que reportaron vínculos cada mes, frente al mismo mes del año anterior"
+h = n[n.anho >= n.anho.max() - 3]
+fig = go.Figure()
+fig.add_trace(go.Scatter(x=h.fecha, y=h.n, name="Reportaron", mode="lines+markers", line=dict(color=AZUL, width=2.4)))
+fig.add_trace(go.Scatter(x=h.fecha, y=h.n_prev, name="Mismo mes del año anterior", mode="lines", line=dict(color=GRIS, width=2, dash="dot")))
+estilo(fig, alto=300)
+fig.show(config=CONFIG)
+```
+
+Los meses más recientes siempre llegan incompletos: en `{python} fecha_txt(A1, M1)` reportaron `{python} miles(len(inst))` instituciones. Por eso las comparaciones interanuales usan las mismas instituciones en los dos meses, y las estimaciones del último mes completan a quienes todavía no cargaron.
+
+## Por sector, en el último mes
+
+```{python}
+#| label: tbl
+#| output: asis
+print("| Sector | Instituciones que reportaron | Sin datos todavía | Vínculos reportados | Vínculos completados |\n|---|--:|--:|--:|--:|")
+for _, r in u.sort_values("instituciones_completadas", ascending=False).iterrows():
+    print(f"| {r.sector} | {miles(r.instituciones_reportan)} | {miles(r.instituciones_completadas)} | {miles(r.reportado)} | {miles(r.completado)} |")
+```
+
+## Correcciones
+
+```{python}
+#| output: asis
+for _, r in cr.iterrows():
+    print(f"- **{r.periodo} · {r.archivo}.** {r.problema}")
+```
+
+El detalle de cada corrección está en el [registro de correcciones](/correcciones/).
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA.
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_dato, lineas
+social("Calidad de datos:\nel primer informe", miles(u.instituciones_completadas.sum()) + " instituciones", f"todavía sin datos de {fecha_txt(A1, M1)}", (list(h.fecha), list(h.n)))
+ig_dato(1, "Calidad de datos", f"Último mes confiable:", fecha_txt(AC, MC), f"y {miles(u.instituciones_completadas.sum())} instituciones sin datos de {MESES[M1 - 1]}", "Instituciones que reportan",
+        lineas([f"{MES_C[m - 1]}-{str(a)[2:]}" for a, m in zip(h.anho, h.mes)], {"Reportaron": (list(h.n), AZUL)}, fmt=lambda x: miles(x)))
+```

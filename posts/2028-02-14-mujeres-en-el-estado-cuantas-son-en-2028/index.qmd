@@ -1,0 +1,76 @@
+---
+title: "Mujeres en el Estado: cuántas son en 2028"
+description: "Las mujeres son más de la mitad de los vínculos públicos y una proporción todavía mayor de los contratos."
+date: 2028-02-14
+categories: [El dato de la semana, Género, Dotación]
+image: social.png
+image-alt: "Mujeres en el Estado: cuántas son en 2028"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import plotly.graph_objects as go
+
+x = leer("vinculos_tipo_sexo.csv"); x = x[x.anho >= 2017]
+A1, M = ultimo_mes()
+u = x[(x.anho == A1) & (x.mes == M)].groupby(["vinculo", "sexo"]).total.sum().unstack()
+muj = u.FEMENINO.sum(); tot = u.values.sum(); pm = muj / tot * 100
+pm_c = u.loc["CONTRATADO", "FEMENINO"] / u.loc["CONTRATADO"].sum() * 100
+pm_p = u.loc["PERMANENTE", "FEMENINO"] / u.loc["PERMANENTE"].sum() * 100
+pc_m = u.loc["CONTRATADO", "FEMENINO"] / u.FEMENINO.sum() * 100
+pc_h = u.loc["CONTRATADO", "MASCULINO"] / u.MASCULINO.sum() * 100
+s = x.groupby(["anho", "mes", "vinculo", "sexo"]).total.sum().unstack("sexo").reset_index()
+s["p"] = s.FEMENINO / (s.FEMENINO + s.MASCULINO) * 100
+s["fecha"] = pd.to_datetime(dict(year=s.anho, month=s.mes, day=1))
+```
+
+```{python}
+#| label: kpis
+#| output: asis
+print(kpis([
+    (miles(muj), f"vínculos de mujeres en {fecha_txt(A1, M)}"),
+    (pct(pm), "del total"),
+    (pct(pm_c, 0), "de los contratos"),
+]))
+```
+
+En `{python} fecha_txt(A1, M)`, **`{python} miles(muj)` de los `{python} miles(tot)` vínculos** pagados por el Estado eran de mujeres: el `{python} pct(pm)`. La proporción es más alta entre los **contratos** (`{python} pct(pm_c, 0)`) que en la **planta permanente** (`{python} pct(pm_p, 0)`). Dicho de otra forma: el `{python} pct(pc_m, 0)` de los vínculos de mujeres son contratos, frente al `{python} pct(pc_h, 0)` de los de hombres.
+
+```{python}
+#| label: fig-serie
+#| fig-cap: "Proporción de mujeres por tipo de vínculo, por mes"
+fig = go.Figure()
+for t, c, n in [("CONTRATADO", NARANJA, "Contratados"), ("PERMANENTE", AZUL, "Permanentes")]:
+    d = s[s.vinculo == t]
+    fig.add_trace(go.Scatter(x=d.fecha, y=d.p, name=n, mode="lines", line=dict(color=c, width=2.6),
+                             hovertemplate=n + ": %{y:.1f}%<extra></extra>"))
+fig.add_hline(y=50, line=dict(color=GRIS, width=1, dash="dot"))
+estilo(fig, alto=320)
+fig.update_yaxes(ticksuffix="%", range=[40, 65])
+fig.show(config=CONFIG)
+```
+
+La diferencia tiene que ver con dónde trabajan las mujeres. Son mayoría en **Salud**, el sector con más contratos, y en **Educación**, y minoría en las **Fuerzas públicas**, casi todas de planta permanente. El análisis completo está en [dónde trabajan las mujeres del Estado](../2027-02-25-donde-trabajan-las-mujeres/).
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA (vínculos por mes, tipo y sexo). [Descargar los datos](/datos/).
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_dato, barras
+social("Mujeres en el Estado:\ncuántas son", pct(pm), f"de los vínculos públicos · {pct(pm_c, 0)} de los contratos",
+       color=VIOLETA)
+ig_dato(1, "El dato de la semana", f"En {fecha_txt(A1, M)}, las mujeres eran", pct(pm), "de los vínculos del Estado",
+        "Proporción de mujeres por tipo de vínculo",
+        barras(["Permanentes", "Contratados", "Total"], [pm_p, pm_c, pm], [pct(pm_p), pct(pm_c), pct(pm)],
+               colores=[AZUL, NARANJA, VIOLETA], ylim=(0, 75)), color=VIOLETA)
+```

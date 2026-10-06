@@ -1,0 +1,77 @@
+---
+title: "2029 en masa salarial"
+description: "Cuánto pagó el Estado en salarios en lo que va del año, cuánto creció frente al mismo período del año anterior y cuánto de ese aumento se explica por la inflación."
+date: 2029-12-10
+categories: [El dato de la semana, Masa salarial, Inflación]
+image: social.png
+image-alt: "2029 en masa salarial"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+
+A1, M = ultimo_mes()
+mm = leer("masa_mensual_sector.csv")
+mm = mm[(mm.mes <= M) & (mm.componente != "Aguinaldo")]
+t = mm.groupby("anho").devengado.sum()
+nom = (t[A1] / t[A1 - 1] - 1) * 100
+# inflación: interanual del último mes con dato manual (si no está, la más reciente disponible del año)
+ipc_m = next(((mi, ipc_interanual(A1, mi)) for mi in range(M, 0, -1) if ipc_interanual(A1, mi) is not None), (None, None))
+real = ((1 + nom / 100) / (1 + ipc_m[1] / 100) - 1) * 100 if ipc_m[1] is not None else None
+s = mm[mm.anho.isin([A1 - 1, A1])].groupby(["anho", "sector"]).devengado.sum().unstack(0)
+s["var"] = (s[A1] / s[A1 - 1] - 1) * 100; s["dif"] = s[A1] - s[A1 - 1]
+s = s.sort_values("dif")
+c = mm[mm.anho.isin([A1 - 1, A1])].groupby(["anho", "componente"]).devengado.sum().unstack(0)
+c["dif"] = c[A1] - c[A1 - 1]; c = c.sort_values("dif", ascending=False)
+h = t.loc[2017:]
+```
+
+```{python}
+#| label: kpis
+#| output: asis
+print(kpis([(milmillones(t[A1]) + " mil M", f"de guaraníes, enero–{MESES[M - 1]} de {A1}"), (spct(nom), "frente al mismo período de " + str(A1 - 1)),
+            (spct(real) if real is not None else "—", "descontada la inflación")]))
+```
+
+Entre enero y `{python} MESES[M - 1]` de `{python} A1` el Estado pagó **`{python} milmillones(t[A1])` mil millones de guaraníes** en salarios, sin contar el aguinaldo: `{python} spct(nom)` frente a el mismo período de `{python} A1 - 1`. Con una inflación interanual de `{python} pct(ipc_m[1]) if ipc_m[1] is not None else "—"` en `{python} MESES[ipc_m[0] - 1] if ipc_m[0] else "—"`, el aumento en términos reales fue de alrededor de **`{python} spct(real) if real is not None else "—"`**.
+
+```{python}
+#| label: fig
+#| fig-cap: "Cambio de la masa salarial por sector, enero al último mes con datos, frente al mismo período del año anterior (miles de millones de guaraníes)"
+fig = barras_h(s.index, s.dif / 1e9, [f"{signo(x / 1e9)} ({spct(p_)})" for x, p_ in zip(s.dif, s["var"])],
+               colores=[AZUL if x >= 0 else ROJO for x in s.dif], rango=[min(0, s.dif.min() / 1e9) * 1.6, s.dif.max() / 1e9 * 1.6])
+fig.show(config=CONFIG)
+```
+
+## Qué componentes crecieron
+
+```{python}
+#| label: tbl
+#| output: asis
+print(f"| Componente | {A1 - 1} | {A1} | Cambio |\n|---|--:|--:|--:|")
+for k, r in c.iterrows():
+    print(f"| {k} | {milmillones(r[A1 - 1])} | {milmillones(r[A1])} | {spct((r[A1] / r[A1 - 1] - 1) * 100) if r[A1 - 1] else '—'} |")
+print(f"\n: Masa salarial por componente, enero–{MESES[M - 1]}, miles de millones de guaraníes")
+```
+
+La comparación es de guaraníes corrientes contra la inflación interanual de un mes: es una aproximación. El cálculo completo, con el promedio anual del índice de precios, lo haremos cuando cierre el año ([la remuneración media en términos reales](../2027-03-22-remuneracion-media-real/)).
+
+::: {.fuente}
+**Fuentes:** elaboración de Pulso del Estado con datos de SINARH y SICCA. Inflación: Banco Central del Paraguay. [Descargar los datos](/datos/).
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_dato, barras
+social("El año en\nmasa salarial", milmillones(t[A1]) + " mil millones", f"de guaraníes hasta {MESES[M - 1]} · {spct(nom)} interanual", (list(h.index), list(h / 1e9)), tipo="barras")
+ig_dato(1, "El dato de la semana", f"Hasta {MESES[M - 1]}, la masa salarial creció", spct(nom), f"real: {spct(real) if real is not None else '—'}",
+        f"Enero–{MESES[M - 1]}, miles de millones de Gs", barras([str(x) for x in h.index], list(h / 1e9), [miles(x / 1e9) for x in h], rot=45))
+```

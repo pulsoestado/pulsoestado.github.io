@@ -1,0 +1,31 @@
+---
+title: "Lo que falta"
+subtitle: "Datos, notas y productos que esperan información, y cómo los estimamos mientras tanto"
+toc: false
+search: false
+---
+
+Pulso del Estado trabaja con los datos públicos que existen hoy. Esta página lista lo que todavía falta: datos que llegan cada mes, decisiones que dependen de otros organismos y datos que no son públicos. Para cada caso decimos qué hacemos mientras tanto. **Nunca publicamos un dato estimado sin rotularlo**: cuando llega el dato real, la nota se recalcula sola.
+
+```{python}
+#| output: asis
+import pathlib
+import pandas as pd
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+d = pd.read_csv(raiz / "planes" / "pendientes.csv")
+for t, g in d.groupby("tipo", sort=False):
+    print(f"\n## {t}\n")
+    print("| Qué | Qué falta | Mientras tanto | Se completa con | Afecta |\n|---|---|---|---|---|")
+    for _, r in g.iterrows():
+        print(f"| **{r.item}** | {r.que_falta} | {r.mientras_tanto} | {r.se_completa_con} | {r.afecta} |")
+cal = pd.read_csv(raiz / "planes" / "calendario_2028_2030.csv")
+e = cal[~cal.datos.isin(["con los datos disponibles"])]
+print(f"\n## Notas programadas 2028–2030 que estiman o esperan datos\n\nDe las {len(cal)} piezas programadas para 2028–2030, {len(cal[cal.datos == 'con los datos disponibles'])} se calculan con los datos disponibles al publicarse y {len(e)} estiman o esperan algún dato:\n")
+print("| Fecha | Pieza | Qué pasa |\n|---|---|---|")
+for _, r in e.iterrows():
+    print(f"| {r.fecha} | {r.titulo} | {r.datos} |")
+```
+
+::: {.fuente}
+Archivos: [planes/pendientes.csv](https://github.com/pulsoestado/pulsoestado.github.io/blob/main/planes/pendientes.csv) y [planes/calendario_2028_2030.csv](https://github.com/pulsoestado/pulsoestado.github.io/blob/main/planes/calendario_2028_2030.csv). Correcciones a los datos de origen: [registro de correcciones](/correcciones/).
+:::

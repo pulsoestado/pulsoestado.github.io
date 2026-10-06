@@ -1,0 +1,77 @@
+---
+title: "Objeto 125: remuneración adicional, quién lo paga y cuánto"
+description: "Cuánto paga el Estado en el objeto de gasto 125 (remuneración adicional), qué instituciones lo usan y cómo evolucionó."
+date: 2029-04-30
+categories: [Objetos de gasto, Masa salarial]
+image: social.png
+image-alt: "Objeto 125: remuneración adicional, quién lo paga y cuánto"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import numpy as np
+import plotly.graph_objects as go
+OBJ = 125
+NOMBRE = 'Remuneración adicional'
+```
+
+```{python}
+#| label: datos
+UA = ultimo_anio_completo()
+o = leer("masa_anual_objeto.csv")
+s = o[o.objeto_gasto == OBJ].groupby("anho").devengado.sum().loc[2017:UA]
+D = deflactor(UA).reindex(s.index); real = s * D
+g100 = o[o.anho == UA].devengado.sum()
+oo = leer("masa_anual_oee_objeto.csv")
+i = oo[(oo.anho == UA) & (oo.objeto_gasto == OBJ) & (oo.devengado > 0)].merge(instituciones()[K_OEE + ["nombre_largo", "sector"]], on=K_OEE, how="left")
+top = i.sort_values("devengado", ascending=False).head(10)
+sec = i.groupby("sector").devengado.sum().sort_values(ascending=False)
+```
+
+```{python}
+#| label: kpis
+#| output: asis
+print(kpis([(milmillones(s[UA]) + " mil M", f"de guaraníes en {UA}"), (pct(s[UA] / g100 * 100, 1), "de la masa salarial"),
+            (str(len(i)), "instituciones lo pagan"), (spct((real[UA] / real.iloc[0] - 1) * 100, 0), f"real desde {int(real.index[0])}")]))
+```
+
+El objeto de gasto **`{python} OBJ`, `{python} NOMBRE`**, es una de las partidas del grupo 100 (servicios personales) del clasificador presupuestario. En `{python} UA` sumó `{python} milmillones(s[UA])` mil millones de guaraníes en `{python} len(i)` instituciones, el `{python} pct(s[UA] / g100 * 100, 1)` de la masa salarial. `{python} sec.index[0] if len(sec) else "—"` concentra el `{python} pct(sec.iloc[0] / sec.sum() * 100, 0) if len(sec) else "—"`.
+
+```{python}
+#| label: fig
+#| fig-cap: "Devengado anual del objeto, miles de millones de guaraníes del último año completo"
+fig = go.Figure(go.Bar(x=real.index, y=real / 1e9, marker_color=AZUL, text=[miles(x / 1e9) for x in real], textposition="outside", cliponaxis=False,
+                       textfont=dict(color=TINTA_GRAF), hovertemplate="%{x}: <b>%{y:,.0f}</b><extra></extra>"))
+estilo(fig, alto=300, leyenda=False).update_layout(hovermode="closest"); fig.update_xaxes(dtick=1); fig.update_yaxes(range=[0, real.max() / 1e9 * 1.2])
+fig.show(config=CONFIG)
+```
+
+```{python}
+#| label: tbl
+#| output: asis
+print(f"| Institución | Sector | {UA} (mil M Gs) |\n|---|---|--:|")
+for _, r in top.iterrows():
+    print(f"| {r.nombre_largo} | {r.sector} | {milmillones(r.devengado)} |")
+print(f"\n: Las instituciones que más pagaron en el objeto {OBJ}, {UA}")
+```
+
+Los montos son devengados, es decir, lo efectivamente obligado en el año, y salen del registro de presupuesto de SINARH y SICCA. Para el resto de los componentes de la remuneración, ver [de cada 100 guaraníes en salarios](/posts/2027-05-17-de-cada-100-guaranies/) y [bonificaciones](/posts/2027-09-09-bonificaciones/).
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA (devengado del objeto `{python} OBJ`) e IPC del BCP. [Descargar los datos](/datos/).
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_dato, barras
+social(f"Objeto {OBJ}:\n{NOMBRE.lower()}", milmillones(s[UA]) + " mil millones", f"de guaraníes en {UA} · {len(i)} instituciones", (list(real.index), list(real / 1e9)), tipo="barras")
+ig_dato(1, "Objeto de gasto", f"{OBJ} · {NOMBRE}:", milmillones(s[UA]) + " mil M", f"de guaraníes en {UA}", "Miles de millones de Gs (reales)",
+        barras([str(x) for x in real.index], list(real / 1e9), [miles(x / 1e9) for x in real], rot=45))
+```

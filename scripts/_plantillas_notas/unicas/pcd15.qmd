@@ -1,0 +1,38 @@
+```{python}
+#| label: datos
+pc = leer("pcd_mensual.csv"); pj = pc[pc.mes == 6].set_index("anho"); pj["p"] = pj.pcd / pj.vinculos * 100
+A0, A = int(pj.index.min()), int(pj.index.max())
+falta = 0.05 * pj.vinculos[A] - pj.pcd[A]
+```
+
+```{python}
+#| label: kpis
+#| output: asis
+print(kpis([(f"{pct(pj.p[A0], 2)} → {pct(pj.p[A], 2)}", f"vínculos de personas con discapacidad, {A0}–{A}"), (miles(falta), "personas más harían falta para cumplir el 5%")]))
+```
+
+La ley exige que al menos el 5% del personal público sean personas con discapacidad. En junio de `{python} A0` eran el `{python} pct(pj.p[A0], 2)` de los vínculos registrados en SICCA; en junio de `{python} A`, el `{python} pct(pj.p[A], 2)`. Para llegar a la cuota harían falta unas `{python} miles(falta)` personas más.
+
+```{python}
+#| label: fig
+#| fig-cap: "Proporción de vínculos de personas con discapacidad en SICCA, junio de cada año; la línea marca la cuota del 5%"
+fig = go.Figure(go.Scatter(x=pj.index, y=pj.p, mode="lines+markers", line=dict(color=VERDE_AGUA, width=2.6)))
+fig.add_hline(y=5, line=dict(color=ROJO, width=1.5, dash="dash"))
+estilo(fig, alto=300, leyenda=False).update_xaxes(dtick=1); fig.update_yaxes(ticksuffix="%", range=[0, 5.5])
+fig.show(config=CONFIG)
+```
+
+El registro depende de que las personas declaren su discapacidad y de que las instituciones la carguen. El balance institución por institución está en [¿avanzó la cuota del 5%?](/posts/2027-12-02-discapacidad-balance/).
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SICCA.
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_dato, lineas
+social("Quince años de cuota\nde discapacidad", pct(pj.p[A], 2), f"de los vínculos en {A} (cuota legal: 5%; en {A0}: {pct(pj.p[A0], 2)})", (list(pj.index), list(pj.p)), color=VERDE_AGUA)
+ig_dato(1, "El dato de la semana", "Personas con discapacidad en el Estado:", pct(pj.p[A], 2), "de los vínculos (cuota legal: 5%)", "% de vínculos (junio)",
+        lineas(list(pj.index), {"%": (list(pj.p), VERDE_AGUA)}, fmt=lambda x: coma(x, 1), ref=5, ref_txt="Cuota 5%"), color=VERDE_AGUA)
+```

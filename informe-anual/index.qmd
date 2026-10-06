@@ -1,0 +1,125 @@
+---
+title: "Estado del capital humano público"
+subtitle: "Informe anual de Pulso del Estado"
+author: "Pulso del Estado"
+toc: true
+format:
+  html:
+    other-links:
+      - text: "Descargar en PDF"
+        href: index.pdf
+        icon: file-pdf
+  typst:
+    papersize: a4
+    margin:
+      x: 2cm
+      y: 2cm
+    fontsize: 10pt
+    toc: true
+    section-numbering: "1."
+execute:
+  echo: false
+format-links: false
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import matplotlib
+import matplotlib.pyplot as plt
+
+plt.rcParams.update({"font.size": 10, "axes.spines.top": False, "axes.spines.right": False, "axes.edgecolor": "#999",
+                     "axes.labelcolor": "#444", "xtick.color": "#444", "ytick.color": "#444", "figure.dpi": 150})
+UA = ultimo_anio_completo(); A1, M1 = ultimo_mes(); A0 = 2017
+s = serie_mensual(); sj = s[s.mes == 6].set_index("anho").loc[2016:]
+ms = leer("masa_anual_sector.csv")
+mt = ms.groupby("anho").agg(masa=("devengado", "sum"), sa=("devengado_sin_aguinaldo", "sum"), vin=("vinculos_promedio", "sum")).loc[A0:UA]
+D = deflactor(UA).reindex(mt.index); mt["real"] = mt.masa * D; mt["rem_real"] = mt.sa / 12 / mt.vin * D
+ia = leer("issp_anual.csv").set_index("anho")
+g = leer("genero_brecha_anual.csv").set_index("anho")
+pc = leer("pcd_mensual.csv"); pc = pc[pc.mes == 6].set_index("anho").loc[2016:]; pc["p"] = pc.pcd / pc.vinculos * 100
+sec = ms[ms.anho == UA].set_index("sector"); sec0 = ms[ms.anho == A0].set_index("sector")
+top = vin_promedio_oee(UA).sort_values("total", ascending=False).head(10)
+
+
+def linea(x, y, color, etiqueta, fmt=lambda v: miles(v)):
+    fig, ax = plt.subplots(figsize=(6.5, 2.6))
+    ax.plot(x, y, color=color, lw=2.2, marker="o", ms=3)
+    ax.grid(axis="y", color="#ddd", lw=.6); ax.set_ylabel(etiqueta)
+    ax.yaxis.set_major_formatter(matplotlib.ticker.FuncFormatter(lambda v, _: fmt(v)))
+    plt.tight_layout(); plt.show()
+```
+
+**Edición `{python} UA`.** Datos del DW de SINARH y SICCA hasta `{python} fecha_txt(A1, M1)`; los indicadores anuales usan `{python} UA`, el último año completo. Este informe se regenera solo con cada actualización de los datos.
+
+## Resumen
+
+```{python}
+#| output: asis
+vu, v0 = sj.total.iloc[-1], sj.total.loc[A0]
+print(f"- En junio de {int(sj.index[-1])} el Estado pagó **{miles(vu)} vínculos**, {spct((vu / v0 - 1) * 100, 0)} frente a junio de {A0}.")
+print(f"- El {pct(sj.contratado.iloc[-1] / vu * 100, 0)} de los vínculos es de personal contratado y el {pct(sj.mujeres.iloc[-1] / vu * 100, 0)}, de mujeres.")
+print(f"- La masa salarial de {UA} fue de **{billones(mt.masa[UA])} billones de guaraníes**: {spct((mt.real[UA] / mt.real[A0] - 1) * 100, 0)} en términos reales desde {A0}.")
+print(f"- La remuneración media por vínculo, descontada la inflación, cambió {spct((mt.rem_real[UA] / mt.rem_real[A0] - 1) * 100, 0)} desde {A0}.")
+if UA in ia.index:
+    print(f"- El Índice de Sueldos del Sector Público (ISSP) subió {spct(ia.loc[UA, 'var'])} nominal y {spct(ia.loc[UA, 'var_real'])} real entre junio de {UA - 1} y de {UA}.")
+print(f"- En la misma institución y categoría, las mujeres cobran un {pct(g.brecha_misma_categoria_pct.iloc[-1])} menos de sueldo básico.")
+print(f"- El {pct(pc.p.iloc[-1], 2)} de los vínculos registrados en SICCA es de personas con discapacidad (cuota legal: 5%).")
+```
+
+## Dotación
+
+```{python}
+#| fig-cap: "Vínculos pagados en junio de cada año"
+linea(sj.index, sj.total, "#2a78d6", "Vínculos")
+```
+
+```{python}
+#| output: asis
+print(f"| Sector | Vínculos {UA} (promedio) | Cambio desde {A0} | Masa salarial {UA} (mil M Gs) |\n|---|--:|--:|--:|")
+for k, r in sec.sort_values("vinculos_promedio", ascending=False).iterrows():
+    print(f"| {k} | {miles(r.vinculos_promedio)} | {spct((r.vinculos_promedio / sec0.loc[k, 'vinculos_promedio'] - 1) * 100, 0) if k in sec0.index else '—'} | {milmillones(r.devengado)} |")
+print(f"\n: Vínculos y masa salarial por sector, {UA}")
+```
+
+## Masa salarial y remuneraciones
+
+```{python}
+#| fig-cap: "Masa salarial anual en billones de guaraníes del último año completo"
+linea(mt.index, mt.real / 1e12, "#eda100", "Billones de Gs", lambda v: coma(v, 0))
+```
+
+```{python}
+#| fig-cap: "Índice de Sueldos del Sector Público, junio de cada año (2025 = 100)"
+linea(ia.index, ia.fisher, "#1baf7a", "Índice", lambda v: coma(v, 0))
+```
+
+## Género y discapacidad
+
+```{python}
+#| fig-cap: "Proporción de vínculos de mujeres (junio de cada año)"
+linea(sj.index, sj.mujeres / sj.total * 100, "#4a3aa7", "%", lambda v: coma(v, 1))
+```
+
+```{python}
+#| fig-cap: "Proporción de vínculos de personas con discapacidad (junio de cada año); la cuota legal es del 5%"
+linea(pc.index, pc.p, "#1baf7a", "%", lambda v: coma(v, 1))
+```
+
+## Las diez instituciones más grandes
+
+```{python}
+#| output: asis
+print(f"| Institución | Vínculos promedio {UA} | % contratados |\n|---|--:|--:|")
+for _, r in top.iterrows():
+    print(f"| {r.nombre_largo} | {miles(r.total)} | {pct(r.contratado / r.total * 100, 0)} |")
+```
+
+## Metodología y fuentes
+
+Vínculos: relaciones laborales pagadas en el mes (DW SICCA-SINARH). Masa salarial: devengado del grupo 100 (servicios personales). Valores reales con el IPC promedio anual del Banco Central del Paraguay. ISSP: índice de Fisher encadenado sobre categorías salariales de cada institución. Correcciones aplicadas a los datos de origen: ver el [registro de correcciones](https://pulsoestado.github.io/correcciones/). Metodología completa: [pulsoestado.github.io/metodologia](https://pulsoestado.github.io/metodologia.html).
+
+*Cómo citar:* Pulso del Estado (`{python} A1`). *Estado del capital humano público, edición `{python} UA`*. https://pulsoestado.github.io/informe-anual/. Licencia CC BY 4.0.

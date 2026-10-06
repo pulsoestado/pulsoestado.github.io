@@ -1,0 +1,80 @@
+---
+title: "Presupuesto 2029: qué cambió el Congreso en personal"
+description: "Cuánto modificó el Congreso el proyecto del Ejecutivo para servicios personales en el Presupuesto 2029, sector por sector."
+date: 2028-11-09
+categories: [Presupuesto, PGN 2029]
+image: social.png
+image-alt: "Presupuesto 2029: qué cambió el Congreso en personal"
+resources: ["ig_*.png"]
+requiere:
+  archivo:
+    - "data/manual/pgn_2029_servicios_personales.csv"
+    - "data/manual/pgn_2029_aprobado.csv"
+draft: true  # programada
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import numpy as np
+import plotly.graph_objects as go
+
+```
+
+<!--
+DATOS: data/manual/pgn_2029_servicios_personales.csv (proyecto del Ejecutivo) y
+       data/manual/pgn_2029_aprobado.csv (ley aprobada), ambos con columnas
+       codigo_nivel,codigo_entidad,codigo_oee,monto  (grupo 100, en guaraníes).
+La nota espera la ley aprobada: no se puede estimar qué cambia el Congreso.
+-->
+
+```{python}
+#| label: datos
+UA = ultimo_anio_completo()
+pr = pd.read_csv(raiz / "data/manual/pgn_2029_servicios_personales.csv")
+ap = pd.read_csv(raiz / "data/manual/pgn_2029_aprobado.csv")
+col = lambda d: "monto" if "monto" in d else [c for c in d.columns if c not in K_OEE][0]
+j = pr.set_index(K_OEE)[[col(pr)]].rename(columns={col(pr): "proyecto"}).join(ap.set_index(K_OEE)[[col(ap)]].rename(columns={col(ap): "aprobado"}), how="outer").fillna(0)
+j = j.join(instituciones().set_index(K_OEE)[["nombre_largo", "sector"]]); j["dif"] = j.aprobado - j.proyecto
+s = j.groupby("sector")[["proyecto", "aprobado", "dif"]].sum().sort_values("dif")
+top = j.sort_values("dif", ascending=False)
+```
+
+```{python}
+#| label: kpis
+#| output: asis
+print(kpis([(billones(j.aprobado.sum()) + " billones", "de guaraníes aprobados para servicios personales"), (signo(j.dif.sum() / 1e9, miles) + " mil M", "frente al proyecto del Ejecutivo")]))
+```
+
+El Congreso aprobó **`{python} billones(j.aprobado.sum())` billones de guaraníes** para servicios personales en el Presupuesto 2029, `{python} signo(j.dif.sum() / 1e9, miles)` mil millones frente al proyecto del Ejecutivo (`{python} spct((j.aprobado.sum() / j.proyecto.sum() - 1) * 100)`).
+
+```{python}
+#| label: fig
+#| fig-cap: "Cambio introducido por el Congreso, por sector (miles de millones de guaraníes)"
+fig = barras_h(s.index, s.dif / 1e9, [signo(x / 1e9, miles) for x in s.dif], rango=[min(0, s.dif.min() / 1e9) * 1.4, max(1, s.dif.max() / 1e9) * 1.4])
+fig.show(config=CONFIG)
+```
+
+```{python}
+#| label: tbl
+#| output: asis
+print("| Institución | Proyecto (mil M Gs) | Aprobado (mil M Gs) | Cambio |\n|---|--:|--:|--:|")
+for k, r in pd.concat([top.head(6), top.tail(4)]).iterrows():
+    print(f"| {r.nombre_largo} | {milmillones(r.proyecto)} | {milmillones(r.aprobado)} | {signo(r.dif / 1e9, miles)} |")
+```
+
+Cada cambio del Congreso se puede traducir en reajustes o en cargos con el [simulador](/simulador/).
+
+::: {.fuente}
+**Fuentes:** Ministerio de Economía y Finanzas, proyecto y ley del Presupuesto General de la Nación 2029. Elaboración de Pulso del Estado.
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social
+social("Presupuesto 2029: qué\ncambió el Congreso", signo(j.dif.sum() / 1e9, miles) + " mil M", "de guaraníes en servicios personales frente al proyecto")
+```

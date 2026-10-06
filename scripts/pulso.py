@@ -286,3 +286,77 @@ def serie_mensual(sector=None):
 def ficha_html(filas):
     """Tabla compacta de dos columnas: [(etiqueta, valor), …]."""
     return "| | |\n|---|--:|\n" + "\n".join(f"| {a} | {b} |" for a, b in filas)
+
+
+# --- Estimaciones rotuladas (para notas sobre meses que todavía no tienen datos) ---------------------
+def _proyectar(s, hasta):
+    """s: Serie mensual indexada por Timestamp (primer día del mes). Extiende hasta `hasta` con el
+    mismo mes del año anterior × el crecimiento interanual de los últimos 12 meses observados."""
+    s = s.sort_index().copy()
+    ult = s.index.max()
+    if hasta <= ult:
+        return s, pd.Series(False, index=s.index)
+    base = s.loc[ult - pd.DateOffset(months=11):ult].sum()
+    prev = s.loc[ult - pd.DateOffset(months=23):ult - pd.DateOffset(months=12)].sum()
+    g = base / prev if prev else 1.0
+    est = pd.Series(False, index=s.index)
+    f = ult
+    while f < hasta:
+        f = f + pd.DateOffset(months=1)
+        s.loc[f] = s.loc[f - pd.DateOffset(months=12)] * g
+        est.loc[f] = True
+    return s.sort_index(), est.sort_index()
+
+
+def ultimo_mes_confiable(umbral=0.97):
+    """Último mes en que reportó al menos el 97% de las instituciones que reportaron el mismo mes del año
+    anterior (antes de eso, la carga tardía —sobre todo de municipalidades— achica los totales)."""
+    v = leer("vinculos_mensual_oee.csv")
+    n = v[v.total > 0].groupby(["anho", "mes"]).size()
+    for a, m in sorted(n.index, reverse=True):
+        if (a - 1, m) in n.index and n[(a, m)] >= umbral * n[(a - 1, m)]:
+            return int(a), int(m)
+    return ultimo_mes()
+
+
+def serie_extendida(anho, mes, sector=None):
+    """Vínculos por mes (total, permanente, contratado, mujeres) hasta (anho, mes). Los meses posteriores
+    al último mes confiable se estiman y quedan marcados en la columna `estimado`."""
+    s = serie_mensual(sector)
+    ac, mc = ultimo_mes_confiable()
+    s = s[(s.anho * 100 + s.mes) <= ac * 100 + mc].set_index("fecha")
+    hasta = pd.Timestamp(year=int(anho), month=int(mes), day=1)
+    out, est = {}, None
+    for c in ["total", "permanente", "contratado", "mujeres"]:
+        out[c], e = _proyectar(s[c].astype(float), hasta)
+        est = e if est is None else est
+    d = pd.DataFrame(out)
+    d["estimado"] = est.reindex(d.index).fillna(False).astype(bool)
+    d["anho"], d["mes"] = d.index.year, d.index.month
+    return d.reset_index().rename(columns={"index": "fecha"})
+
+
+def masa_extendida(anho, mes, sector=None):
+    """Masa salarial devengada por mes hasta (anho, mes), con meses estimados marcados."""
+    m = leer("masa_mensual_sector.csv")
+    if sector:
+        m = m[m.sector == sector]
+    m = m.groupby(["anho", "mes"]).devengado.sum().reset_index()
+    ac, mc = ultimo_mes_confiable()
+    m = m[(m.anho * 100 + m.mes) <= ac * 100 + mc]
+    m["fecha"] = pd.to_datetime(dict(year=m.anho, month=m.mes, day=1))
+    s, e = _proyectar(m.set_index("fecha").devengado.astype(float), pd.Timestamp(year=int(anho), month=int(mes), day=1))
+    d = pd.DataFrame({"devengado": s, "estimado": e.reindex(s.index).fillna(False).astype(bool)})
+    d["anho"], d["mes"] = d.index.year, d.index.month
+    return d.reset_index().rename(columns={"index": "fecha"})
+
+
+def aviso_estimacion(texto):
+    """Recuadro visible de estimación provisoria (usar con #| output: asis)."""
+    print(f"::: {{.callout-warning}}\n**Estimación provisoria.** {texto} La nota se recalcula sola con los datos reales "
+          "cuando estén cargados.\n:::\n")
+
+
+def hay_datos(anho, mes):
+    a, m = ultimo_mes()
+    return (a, m) >= (int(anho), int(mes))

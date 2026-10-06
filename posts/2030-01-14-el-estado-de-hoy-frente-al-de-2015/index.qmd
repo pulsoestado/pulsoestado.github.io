@@ -1,0 +1,63 @@
+---
+title: "El Estado de hoy frente al de 2015"
+description: "Cuántos vínculos más paga el Estado que en 2015, en qué sectores y con qué contratos."
+date: 2030-01-14
+categories: [El dato de la semana, Dotación]
+image: social.png
+image-alt: "El Estado de hoy frente al de 2015"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import numpy as np
+import plotly.graph_objects as go
+
+```
+
+```{python}
+#| label: datos
+AC, MC = ultimo_mes_confiable()
+s = serie_mensual().set_index(["anho", "mes"])
+a, b = s.loc[(2015, MC)], s.loc[(AC, MC)]
+v = leer("vinculos_mensual_sector.csv")
+d = v[(v.mes == MC) & v.anho.isin([2015, AC])].groupby(["sector", "anho"]).total.sum().unstack().fillna(0)
+d["dif"] = d[AC] - d[2015]; d = d.sort_values("dif")
+```
+
+```{python}
+#| label: kpis
+#| output: asis
+print(kpis([(signo(b.total - a.total), f"vínculos entre {MESES[MC - 1]} de 2015 y de {AC}"), (spct((b.total / a.total - 1) * 100, 0), "de crecimiento"),
+            (f"{pct(a.contratado / a.total * 100, 0)} → {pct(b.contratado / b.total * 100, 0)}", "proporción de contratos")]))
+```
+
+En `{python} MESES[MC - 1]` de 2015, el primer año de la serie, el Estado pagaba `{python} miles(a.total)` vínculos; en `{python} fecha_txt(AC, MC)`, `{python} miles(b.total)`. Las mujeres pasaron del `{python} pct(a.mujeres / a.total * 100, 0)` al `{python} pct(b.mujeres / b.total * 100, 0)`. Este año repasamos esa evolución sector por sector en la serie **Quince años de datos**.
+
+```{python}
+#| label: fig
+#| fig-cap: "Cambio de vínculos por sector desde el mismo mes de 2015"
+fig = barras_h(d.index, d.dif, [signo(x) for x in d.dif], colores=[AZUL if x >= 0 else ROJO for x in d.dif], rango=[min(0, d.dif.min()) * 1.5, d.dif.max() * 1.4])
+fig.update_xaxes(tickformat=",.0f"); fig.show(config=CONFIG)
+```
+
+Los registros de 2015 cubren algunas instituciones menos que los actuales, así que parte del cambio refleja una mejor cobertura y reorganizaciones, no solo contrataciones.
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA.
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_dato, barras
+h = s.xs(MC, level=1)
+social("El Estado de hoy\nfrente al de 2015", signo(b.total - a.total), f"vínculos entre {MESES[MC - 1]} de 2015 y de {AC}", (list(h.index), list(h.total)))
+ig_dato(1, "El dato de la semana", f"Entre 2015 y {AC}, el Estado sumó", miles(b.total - a.total), f"vínculos ({spct((b.total / a.total - 1) * 100, 0)})", f"Vínculos en {MESES[MC - 1]} (miles)",
+        barras([str(x) for x in h.index], list(h.total / 1000), [coma(x / 1000, 0) for x in h.total], rot=45))
+```

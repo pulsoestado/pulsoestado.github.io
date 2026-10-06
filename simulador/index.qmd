@@ -1,0 +1,62 @@
+---
+title: "Simulador de reajustes"
+subtitle: "Cuánto cuesta por año un aumento salarial, según a quién alcanza y sobre qué base se aplica"
+toc: false
+---
+
+```{ojs}
+//| echo: false
+//| output: false
+mm = (await FileAttachment("/data/processed/masa_mensual_sector.csv").csv({typed: true}))
+vs = (await FileAttachment("/data/processed/vinculos_mensual_sector.csv").csv({typed: true}))
+completos = d3.rollups(mm, v => new Set(v.map(d => d.mes)).size, d => d.anho).filter(([, n]) => n === 12).map(([a]) => a)
+UA = d3.max(completos)
+base = mm.filter(d => d.anho === UA)
+sectores = [...new Set(base.map(d => d.sector))].sort((a, b) => a.localeCompare(b, "es"))
+fmt = (x, d = 0) => x == null || isNaN(x) ? "—" : x.toLocaleString("es-PY", {maximumFractionDigits: d, minimumFractionDigits: d})
+COMP = ({"Solo el sueldo básico": ["Sueldo básico"],
+        "Sueldo básico y bonificaciones": ["Sueldo básico", "Bonificaciones y asignaciones"],
+        "Toda la remuneración (sin aguinaldo)": ["Sueldo básico", "Bonificaciones y asignaciones", "Gastos de representación", "Personal contratado", "Remuneraciones temporales", "Dietas", "Servicio exterior", "Otros gastos del personal"]})
+```
+
+```{ojs}
+//| echo: false
+viewof pct = Inputs.range([0, 20], {label: "Reajuste (%)", step: 0.5, value: 5})
+viewof alcance = Inputs.checkbox(sectores, {label: "Sectores alcanzados", value: sectores})
+viewof sobre = Inputs.radio(Object.keys(COMP), {label: "Se aplica sobre", value: "Solo el sueldo básico"})
+viewof meses = Inputs.range([1, 12], {label: "Meses del año con el reajuste", step: 1, value: 12})
+```
+
+```{ojs}
+//| echo: false
+calc = {
+  const S = new Set(alcance), C = new Set(COMP[sobre]);
+  const porSector = d3.rollups(base.filter(d => S.has(d.sector) && C.has(d.componente)), v => d3.sum(v, d => d.devengado), d => d.sector)
+    .map(([s, b]) => ({sector: s, base: b, costo: b * pct / 100 * meses / 12 * (13 / 12)}))
+    .sort((a, b) => b.costo - a.costo);
+  const total = d3.sum(porSector, d => d.costo);
+  const masaTotal = d3.sum(base, d => d.devengado);
+  const vin = d3.mean(d3.rollups(vs.filter(d => d.anho === UA && S.has(d.sector)), v => d3.sum(v, d => d.total), d => d.mes), d => d[1]);
+  return {porSector, total, masaTotal, vin};
+}
+html`<div class="kpis">
+  <div class="kpi"><div class="valor">${fmt(calc.total / 1e9)} mil M</div><div class="etiqueta">guaraníes de costo anual, con aguinaldo</div></div>
+  <div class="kpi"><div class="valor">${fmt(calc.total / calc.masaTotal * 100, 1)}%</div><div class="etiqueta">de la masa salarial de ${UA}</div></div>
+  <div class="kpi"><div class="valor">${fmt(calc.total / calc.vin / 12)}</div><div class="etiqueta">guaraníes por mes por vínculo alcanzado (promedio)</div></div>
+</div>`
+```
+
+```{ojs}
+//| echo: false
+Plot.plot({
+  height: 40 + 28 * calc.porSector.length, marginLeft: 210, x: {grid: true, label: "Costo anual (miles de millones de Gs)", tickFormat: d => fmt(d)}, y: {label: null},
+  marks: [Plot.barX(calc.porSector, {y: "sector", x: d => d.costo / 1e9, fill: "#2a78d6", sort: {y: "-x"}, tip: true}),
+          Plot.text(calc.porSector, {y: "sector", x: d => d.costo / 1e9, text: d => fmt(d.costo / 1e9), dx: 4, textAnchor: "start"}), Plot.ruleX([0])]
+})
+```
+
+**Cómo se calcula.** Costo = base anual del componente elegido en ${UA} × reajuste × meses con el reajuste ÷ 12 × 13/12 (el aguinaldo es un doceavo de lo cobrado en el año). Usa los montos devengados del último año completo, en guaraníes de ese año. No incluye aportes patronales ni el efecto sobre jubilaciones, y supone que la cantidad de personal no cambia.
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA (presupuesto por objeto de gasto). Ver también [¿cuánto cuesta un punto de reajuste?](/posts/2027-07-08-cuanto-cuesta-un-punto/).
+:::

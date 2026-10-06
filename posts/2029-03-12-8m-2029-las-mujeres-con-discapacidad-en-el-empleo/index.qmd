@@ -1,0 +1,77 @@
+---
+title: "8M 2029: las mujeres con discapacidad en el empleo público"
+description: "Las mujeres son la mayoría del personal público, pero una minoría entre las personas con discapacidad que trabajan en el Estado."
+date: 2029-03-12
+categories: [El dato de la semana, Discapacidad, Género]
+image: social.png
+image-alt: "8M 2029: las mujeres con discapacidad en el empleo público"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import plotly.graph_objects as go
+
+p = leer("pcd_mensual.csv"); p = p[(p.mes == 6) & (p.anho >= 2017)].copy()
+p["f"] = p.pcd_contratado_femenino + p.pcd_permanente_femenino
+p["pf"] = p.f / p.pcd * 100
+o = leer("pcd_oee_anual.csv"); o = o[o.mes == 6].groupby("anho")[["vinculos", "mujeres"]].sum()
+o["pm"] = o.mujeres / o.vinculos * 100
+A = int(p.anho.max()); u = p[p.anho == A].iloc[0]; a0 = p.iloc[0]
+pm = o.loc[A, "pm"]
+```
+
+```{python}
+#| label: kpis
+#| output: asis
+print(kpis([
+    (miles(u.f), f"mujeres con discapacidad con vínculo público (junio de {A})"),
+    (pct(u.pf, 0), "de los vínculos de personas con discapacidad"),
+    (pct(pm, 0), "de todos los vínculos son de mujeres"),
+]))
+```
+
+En junio de `{python} A`, las instituciones que reportan en SICCA registraron **`{python} miles(u.pcd)` vínculos de personas con discapacidad**. De ellos, **`{python} miles(u.f)` eran de mujeres: el `{python} pct(u.pf, 0)`**, frente al `{python} pct(pm, 0)` de mujeres en el total del personal de esas instituciones. La proporción viene subiendo: en `{python} int(a0.anho)` era del `{python} pct(a0.pf, 0)`.
+
+```{python}
+#| label: fig-pf
+#| fig-cap: "Proporción de mujeres entre los vínculos de personas con discapacidad y en el total (junio de cada año)"
+fig = go.Figure()
+fig.add_trace(go.Scatter(x=p.anho, y=p.pf, name="Personas con discapacidad", mode="lines+markers",
+                         line=dict(color=VIOLETA, width=2.8), hovertemplate="PcD: %{y:.1f}%<extra></extra>"))
+fig.add_trace(go.Scatter(x=o.loc[2017:].index, y=o.loc[2017:].pm, name="Todo el personal", mode="lines+markers",
+                         line=dict(color="#a99fd6", width=2.2, dash="dot"), hovertemplate="Total: %{y:.1f}%<extra></extra>"))
+estilo(fig, alto=320).update_xaxes(dtick=1)
+fig.update_yaxes(ticksuffix="%", range=[20, 70])
+fig.show(config=CONFIG)
+```
+
+Los datos muestran una doble brecha. La cuota legal del 5% de personas con discapacidad en el sector público sigue lejos de cumplirse ([la cuota del 5%](../2026-11-06-discapacidad-cuota-5/)); dentro de ese grupo, las mujeres están todavía menos representadas.
+
+::: {.callout-note collapse="true"}
+## Notas
+
+- Datos de las instituciones que reportan personas con discapacidad en SICCA (vínculos permanentes y contratados).
+- El registro depende de que la persona haya declarado su discapacidad y de que la institución la cargue en el sistema.
+:::
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SICCA. [Descargar los datos](/datos/).
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_dato, barras
+social("8M: las mujeres con\ndiscapacidad en el Estado", pct(u.pf, 0), f"de los vínculos de personas con discapacidad son de mujeres",
+       (list(p.anho), list(p.pf)), color=VIOLETA)
+ig_dato(1, "El dato de la semana · 8M", "Entre las personas con discapacidad que trabajan en el Estado,", pct(u.pf, 0),
+        f"son mujeres (en el total del personal: {pct(pm, 0)})", "Mujeres entre los vínculos de personas con discapacidad",
+        barras(list(p.anho), list(p.pf), [pct(x, 0) for x in p.pf], colores=[VIOLETA] * len(p), ylim=(0, 60)), color=VIOLETA)
+```

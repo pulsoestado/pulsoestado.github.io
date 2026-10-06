@@ -1,0 +1,53 @@
+```{python}
+#| label: datos
+v = leer("vinculos_mensual_sector.csv"); AC, MC = ultimo_mes_confiable()
+def periodo(a0, m0, a1, m1):
+    x = v.assign(t=v.anho * 12 + v.mes)
+    t0, t1 = a0 * 12 + m0, a1 * 12 + m1
+    g = x[(x.t == t0) | (x.t == t1)].groupby(["t", "sector"])[["permanente", "contratado"]].sum()
+    return g.loc[t1] - g.loc[t0]
+an = periodo(2024, 7, 2025, 7)
+de = periodo(AC - 1, MC, AC, MC) if (AC, MC) > (2025, 7) else None
+c = leer("categorias_oee.csv"); c = c[c.mes == 6]
+ncat = c[c.cantidad > 0].groupby("anho").apply(lambda g: g.groupby(K_OEE).nivel_categoria.nunique().median(), include_groups=False)
+ia = leer("issp_anual.csv").set_index("anho")
+```
+
+```{python}
+#| label: kpis
+#| output: asis
+print(kpis([(signo(an.permanente.sum()), "permanentes, julio 2024 a julio 2025 (antes de la ley)"),
+            (signo(de.permanente.sum()) if de is not None else "—", f"permanentes en el último año, hasta {fecha_txt(AC, MC)}"),
+            (signo(de.contratado.sum()) if de is not None else "—", "contratos en el último año")]))
+```
+
+Si la ley empuja a profesionalizar la planta, debería verse en el tiempo más ingresos permanentes por concurso y menos peso de los contratos. En el año previo a la ley, el Estado sumó `{python} signo(an.permanente.sum())` permanentes y `{python} signo(an.contratado.sum())` contratos; en el último año con datos, `{python} signo(de.permanente.sum()) if de is not None else "—"` y `{python} signo(de.contratado.sum()) if de is not None else "—"`.
+
+```{python}
+#| label: fig
+#| fig-cap: "Cambio de vínculos permanentes y contratados por sector, en el año previo a la ley y en el último año con datos"
+if de is not None:
+    d = pd.DataFrame({"Permanentes, antes": an.permanente, "Contratos, antes": an.contratado, "Permanentes, último año": de.permanente, "Contratos, último año": de.contratado}).fillna(0)
+    d = d.loc[d.abs().sum(axis=1).sort_values(ascending=False).index[:8]]
+    fig = go.Figure()
+    for col, c_ in zip(d.columns, ["#9fc5f0", "#f5b89f", AZUL, NARANJA]):
+        fig.add_trace(go.Bar(y=d.index, x=d[col], name=col, orientation="h", marker_color=c_))
+    estilo(fig, alto=420).update_layout(barmode="group"); fig.update_xaxes(tickformat=",.0f")
+    fig.show(config=CONFIG)
+```
+
+Otra señal posible es la escala salarial: si la política salarial se centraliza, las escalas de las instituciones deberían parecerse más. La compresión (categoría B ÷ G, mediana entre instituciones) pasó de `{python} coma(ia.ratio_b_g.get(2025, float("nan")), 2)` en 2025 a `{python} coma(ia.ratio_b_g.iloc[-1], 2)` en `{python} int(ia.index[-1])`. Son movimientos de pocos años: la tendencia se podrá leer con más años de datos ([primera parte](../[[SLUG:ley1]]/)).
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA.
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_dato, barras
+social("La ley de la función pública\nen los datos (II)", signo(de.permanente.sum()) if de is not None else "—", "vínculos permanentes en el último año" + (f" · contratos {signo(de.contratado.sum())}" if de is not None else ""))
+ig_dato(1, "Ley 7445", "En el último año, los permanentes cambiaron", signo(de.permanente.sum()) if de is not None else "—", "y los contratos " + (signo(de.contratado.sum()) if de is not None else "—"),
+        "Cambio en un año", barras(["Perm. antes", "Contr. antes", "Perm. último", "Contr. último"], [an.permanente.sum(), an.contratado.sum(), de.permanente.sum() if de is not None else 0, de.contratado.sum() if de is not None else 0],
+                                  [signo(x) for x in [an.permanente.sum(), an.contratado.sum(), de.permanente.sum() if de is not None else 0, de.contratado.sum() if de is not None else 0]], colores=["#9fc5f0", "#f5b89f", AZUL, NARANJA]))
+```

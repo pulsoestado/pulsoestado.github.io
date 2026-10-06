@@ -1,0 +1,57 @@
+```{python}
+#| label: datos
+fin = pd.Timestamp(2029, 10, 1)
+s_m = serie_extendida(fin.year, fin.month, "Municipalidades").set_index("fecha")
+s_g = serie_extendida(fin.year, fin.month, "Gobiernos departamentales").set_index("fecha")
+AC, MC = ultimo_mes_confiable()
+t1 = min(pd.Timestamp(AC, MC, 1), fin) if (AC, MC) >= (2027, 1) else fin
+EST = bool(s_m.loc[:t1].estimado.any() and t1 > pd.Timestamp(AC, MC, 1)) or t1 > pd.Timestamp(AC, MC, 1)
+b = pd.Timestamp(2026, 10, 1)
+def ch(s):
+    return s.loc[t1, "total"] - s.loc[b, "total"], s.loc[t1, "contratado"] - s.loc[b, "contratado"], (s.loc[t1, "total"] / s.loc[b, "total"] - 1) * 100
+m, g = ch(s_m), ch(s_g)
+```
+
+```{python}
+#| output: asis
+if EST:
+    aviso_estimacion(f"Los meses posteriores a {fecha_txt(AC, MC)} son estimaciones (mismo mes del año anterior por el crecimiento de los últimos doce meses). Las municipalidades cargan sus datos con atraso, así que el dato real puede tardar en completarse.")
+```
+
+```{python}
+#| label: kpis
+#| output: asis
+print(kpis([(signo(m[0]), "vínculos municipales desde octubre de 2026" + (" (est.)" if EST else "")), (signo(m[1]), "de ellos, contratos"), (signo(g[0]), "vínculos en las gobernaciones")]))
+```
+
+Las elecciones municipales de octubre de 2026 eligieron a las autoridades que gobiernan hasta 2031. A mitad del mandato, entre octubre de 2026 y `{python} MESES[t1.month - 1]` de `{python} t1.year`, las municipalidades cambiaron `{python} signo(m[0])` vínculos (`{python} spct(m[2])`), `{python} signo(m[1])` de ellos contratos; las gobernaciones, `{python} signo(g[0])` (`{python} spct(g[2])`).
+
+```{python}
+#| label: fig
+#| fig-cap: "Vínculos de municipalidades y gobernaciones por mes (las líneas punteadas son estimaciones)"
+fig = go.Figure()
+for s_, nom, c_ in [(s_m, "Municipalidades", AZUL), (s_g, "Gobernaciones", NARANJA)]:
+    h = s_.loc["2021-01-01":t1]
+    r = h[~h.estimado]; e = h[h.estimado]
+    fig.add_trace(go.Scatter(x=r.index, y=r.total, name=nom, mode="lines", line=dict(color=c_, width=2.4)))
+    if len(e):
+        fig.add_trace(go.Scatter(x=pd.concat([r.tail(1), e]).index, y=pd.concat([r.tail(1), e]).total, name=nom + " · estimado", mode="lines", line=dict(color=c_, width=2, dash="dot")))
+fig.add_vline(x=b, line=dict(color=GRIS, width=1, dash="dash"))
+estilo(fig, alto=320).update_yaxes(tickformat=",.0f")
+fig.show(config=CONFIG)
+```
+
+El detalle departamento por departamento está en la serie sobre el Estado local, y el comportamiento alrededor de las elecciones, en el [monitor del ciclo electoral](/monitor-electoral/).
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA.
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_dato, barras
+social("Gobernaciones y municipalidades\na mitad de mandato", signo(m[0]) + " vínculos", "municipales desde octubre de 2026" + (" (estimado)" if EST else ""))
+ig_dato(1, "Estado local", "Desde octubre de 2026, las municipalidades cambiaron", signo(m[0]), "vínculos" + (" (estimado)" if EST else ""), "Cambio desde octubre de 2026",
+        barras(["Municipalidades", "Gobernaciones"], [m[0], g[0]], [signo(m[0]), signo(g[0])], colores=[AZUL, NARANJA]))
+```

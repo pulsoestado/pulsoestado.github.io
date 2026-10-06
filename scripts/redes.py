@@ -51,7 +51,7 @@ def social(titulo, grande, bajada, serie=None, color=NARANJA, tipo="linea", carp
     fig.text(0.05, 0.62, titulo, fontfamily=SERIF, fontsize=42 if n < 3 else 36, color="white",
              va="center", linespacing=1.08)
     fig.text(0.05, 0.355, grande, fontfamily=SERIF, fontsize=58, color=color, va="center")
-    fig.text(0.05, 0.22, bajada, fontfamily=SANS_SB, fontsize=20, color="white", va="center")
+    _ajustar(fig, 0.05, 0.22, bajada, 20, ancho=0.9, minimo=0.7, dos_lineas=False, fontfamily=SANS_SB, color="white", va="center")
     fig.text(0.05, 0.08, URL, fontfamily=SANS_SB, fontsize=17, color="#ffd2bf", va="center")
     if serie is not None:
         _mini(fig.add_axes([0.60, 0.20, 0.36, 0.50]), serie, color, NAVY, tipo)
@@ -76,17 +76,40 @@ def ig_portada(kicker, titulo, bajada, serie=None, color=NARANJA, tipo="linea", 
     _guardar(fig, "ig_1.png", NAVY, carpeta)
 
 
+def _ajustar(fig, x, y, texto, size, ancho=0.87, minimo=0.72, dos_lineas=True, **kw):
+    """Escribe el texto achicando la letra (hasta `minimo` del tamaño) o partiéndolo en dos líneas
+    para que no se salga de la lámina. Con dos líneas, la primera sube y la segunda queda en `y`."""
+    W = fig.get_figwidth() * fig.dpi * ancho
+    r = fig.canvas.get_renderer()
+    t = fig.text(x, y, texto, fontsize=size, **kw)
+    s = size
+    while t.get_window_extent(r).width > W and s > size * minimo:
+        s -= 1; t.set_fontsize(s)
+    if t.get_window_extent(r).width <= W or not dos_lineas or "\n" in texto:
+        return t
+    pal = texto.split(" ")
+    corte = min(range(1, len(pal)), key=lambda i: abs(len(" ".join(pal[:i])) - len(" ".join(pal[i:]))))
+    t.set_text(" ".join(pal[:corte]) + "\n" + " ".join(pal[corte:]))
+    t.set_va("bottom"); t.set_linespacing(1.1)
+    t.set_position((x, y - 0.012))
+    s = size * 0.85; t.set_fontsize(s)
+    while t.get_window_extent(r).width > W and s > 14:
+        s -= 1; t.set_fontsize(s)
+    return t
+
+
 def ig_dato(n, etiqueta, l1, grande, l2, l3, dibujar, color=NARANJA, fuente_txt=FUENTE, carpeta="."):
     """Lámina con una cifra grande y un gráfico (1080 x 1350)."""
     fig = lienzo(1080, 1350)
     cabecera(fig, etiqueta)
-    fig.text(0.065, 0.835, l1, fontfamily=SANS_SB, fontsize=32, color=TINTA)
-    fig.text(0.065, 0.745, grande, fontfamily=SERIF, fontsize=100 if len(grande) < 12 else 78,
-             color=color, va="center")
-    fig.text(0.065, 0.665, l2, fontfamily=SANS_SB, fontsize=28, color=TINTA)
+    _ajustar(fig, 0.065, 0.835, l1, 32, fontfamily=SANS_SB, color=TINTA)
+    _ajustar(fig, 0.065, 0.745, grande, 100 if len(grande) < 12 else 78, minimo=0.5, dos_lineas=False,
+             fontfamily=SERIF, color=color, va="center")
+    _ajustar(fig, 0.065, 0.665, l2, 28, minimo=0.6, dos_lineas=False, fontfamily=SANS_SB, color=TINTA)
     if l3:
-        fig.text(0.065, 0.618, l3, fontfamily=SANS_SB, fontsize=20, color=GRIS)
-    ax = fig.add_axes([0.065, 0.16, 0.87, 0.40])
+        _ajustar(fig, 0.065, 0.618, l3, 20, minimo=0.7, dos_lineas=False, fontfamily=SANS_SB, color=GRIS)
+    izq = getattr(dibujar, "izq", 0.065)
+    ax = fig.add_axes([izq, 0.16, 0.935 - izq, 0.40])
     dibujar(ax)
     fuente(fig, fuente_txt)
     pie(fig)
@@ -115,8 +138,12 @@ def barras_h(etq, val, txt, colores=None, ref=None):
 
 
 def lineas(x, series, ylim=None, ref=None, fmt=lambda v: coma(v, 0), ref_txt=None):
-    """series = {nombre: (valores, color)}"""
+    """series = {nombre: (valores, color)}. x puede ser numérico o una lista de etiquetas."""
     x = list(x)
+    etiquetas = None
+    import numbers
+    if x and not all(isinstance(v, numbers.Real) and not isinstance(v, bool) for v in x):
+        etiquetas, x = [str(v) for v in x], list(range(len(x)))
 
     def f(ax):
         todos = [v for y, _ in series.values() for v in y]
@@ -139,7 +166,11 @@ def lineas(x, series, ylim=None, ref=None, fmt=lambda v: coma(v, 0), ref_txt=Non
         ax.set_xlim(x[0] - (x[-1] - x[0]) * 0.02, x[-1] + (x[-1] - x[0]) * 0.3)
         paso = max(1, len(x) // 6)
         ax.set_xticks(x[::paso])
+        if etiquetas:
+            ax.set_xticklabels(etiquetas[::paso])
         ejes_limpios(ax, grilla_y=True)
+    if max(abs(v) for y, _ in series.values() for v in y) >= 1000:
+        f.izq = 0.10
     return f
 
 

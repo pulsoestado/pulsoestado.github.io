@@ -1,0 +1,55 @@
+```{python}
+#| label: datos
+mm = leer("masa_mensual_sector.csv")
+UA = ultimo_anio_completo()
+COMPL = ["Bonificaciones y asignaciones", "Gastos de representación", "Remuneraciones temporales", "Otros gastos del personal"]
+a = mm[mm.anho <= UA].groupby(["anho", "sector", "componente"]).devengado.sum().unstack().fillna(0)
+a["compl"] = a[[c for c in COMPL if c in a]].sum(axis=1)
+a["deriva"] = a.compl / a["Sueldo básico"] * 100
+tot = a.groupby(level=0)[["compl", "Sueldo básico"]].sum(); tot["deriva"] = tot.compl / tot["Sueldo básico"] * 100
+sec = a.xs(UA, level=0).sort_values("deriva", ascending=False)
+A0 = 2017
+```
+
+```{python}
+#| label: kpis
+#| output: asis
+print(kpis([(pct(tot.deriva[UA], 0), f"se paga en complementos por cada 100 de sueldo básico ({UA})"), (pct(tot.deriva[A0], 0), f"en {A0}"),
+            (sec.index[0], f"el sector con más complementos ({pct(sec.deriva.iloc[0], 0)})")]))
+```
+
+Además del sueldo básico, el Estado paga **complementos**: bonificaciones y asignaciones, gastos de representación, remuneraciones temporales y otros gastos del personal. En `{python} UA`, por cada 100 guaraníes de sueldo básico se pagaron `{python} coma(tot.deriva[UA], 0)` en complementos; en `{python} A0`, `{python} coma(tot.deriva[A0], 0)`. Cuando esa proporción crece, la remuneración se aleja de la escala salarial del presupuesto: es lo que se llama **deriva salarial**.
+
+```{python}
+#| label: fig
+#| fig-cap: "Complementos por cada 100 guaraníes de sueldo básico, por sector, último año completo"
+o = sec.sort_values("deriva")
+fig = barras_h(o.index, o.deriva, [coma(x, 0) for x in o.deriva], colores=[AZUL] * len(o), rango=[0, o.deriva.max() * 1.2])
+fig.show(config=CONFIG)
+```
+
+```{python}
+#| label: fig-h
+#| fig-cap: "Complementos por cada 100 guaraníes de sueldo básico, todo el Estado"
+h = tot.loc[2016:UA]
+fig = go.Figure(go.Scatter(x=h.index, y=h.deriva, mode="lines+markers", line=dict(color=NARANJA, width=2.6), hovertemplate="%{x}: <b>%{y:.1f}</b><extra></extra>"))
+estilo(fig, alto=280, leyenda=False).update_xaxes(dtick=1)
+fig.show(config=CONFIG)
+```
+
+Los complementos no son en sí mismos un problema: varios compensan riesgos, horarios o funciones. Pero cuanto más pesan, menos dice la categoría salarial sobre lo que cobra cada persona, y más difícil es comparar cargos entre instituciones. El detalle por objeto de gasto está en [bonificaciones](/posts/2027-09-09-bonificaciones/).
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA (presupuesto por objeto de gasto). No incluye el personal contratado ni el aguinaldo.
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_dato, barras_h as bh
+cort = lambda x: x.replace("Servicio civil del Ejecutivo", "Servicio civil").replace("Entes autónomos y autárquicos", "Entes autónomos").replace("Gobiernos departamentales", "Gobernaciones")
+social("La deriva salarial", coma(tot.deriva[UA], 0) + " de cada 100", f"guaraníes de sueldo básico se pagan además en complementos ({UA})", (list(h.index), list(h.deriva)))
+o = sec.head(7).sort_values("deriva")
+ig_dato(1, "Deriva salarial", "Por cada 100 Gs de sueldo básico, el Estado paga en complementos", coma(tot.deriva[UA], 0), f"guaraníes ({UA})", "Por sector",
+        bh([cort(x) for x in o.index], list(o.deriva), [coma(x, 0) for x in o.deriva]))
+```

@@ -1,0 +1,51 @@
+```{python}
+#| label: datos
+c = leer("categorias_oee.csv"); c = c[c.mes == 6]
+A = int(c.anho.max())
+u = c[c.anho == A].groupby(K_OEE + ["nivel_categoria"])[["cantidad", "devengado"]].sum().reset_index()
+u = u[u.cantidad >= 10]; u["p"] = u.devengado / u.cantidad
+r = u.groupby(K_OEE).agg(alto=("p", "max"), bajo=("p", "min"), cats=("p", "size"), cargos=("cantidad", "sum"))
+r = r[(r.cats >= 3) & (r.cargos >= 200)]; r["ratio"] = r.alto / r.bajo
+r = r.join(instituciones().set_index(K_OEE)[["nombre_largo", "sector"]])
+a = leer("issp_anual.csv").set_index("anho")
+```
+
+```{python}
+#| label: kpis
+#| output: asis
+print(kpis([(coma(r.ratio.median(), 1) + " veces", f"gana la categoría mejor paga frente a la peor paga, institución mediana (junio de {A})"),
+            (coma(a.ratio_b_g.iloc[-1], 1), "veces la categoría B frente a la G (mediana)"), (coma(a.p90_p10.iloc[-1], 1), "veces el percentil 90 frente al 10 de todos los cargos")]))
+```
+
+¿Cuánto más gana el cargo mejor pago que el peor pago de una misma institución? En la institución mediana, la categoría con sueldo básico más alto (con al menos 10 cargos) cobra `{python} coma(r.ratio.median(), 1)` veces lo que la más baja. A esa distancia se la llama **compresión salarial**: cuanto más chica, menos diferencia hay entre los cargos de entrada y los de dirección.
+
+```{python}
+#| label: fig
+#| fig-cap: "Categoría mejor paga ÷ categoría peor paga, instituciones con al menos 200 cargos y 3 categorías (junio)"
+o = pd.concat([r.sort_values("ratio").head(6), r.sort_values("ratio").tail(6)]).drop_duplicates().sort_values("ratio")
+fig = barras_h(o.nombre_largo, o.ratio, [coma(x, 1) for x in o.ratio], colores=[VERDE_AGUA] * 6 + [NARANJA] * (len(o) - 6), rango=[0, o.ratio.max() * 1.2])
+fig.show(config=CONFIG)
+```
+
+```{python}
+#| label: fig-h
+#| fig-cap: "Dispersión del sueldo básico entre todos los cargos del Estado: percentil 90 ÷ percentil 10"
+fig = go.Figure(go.Scatter(x=a.index, y=a.p90_p10, mode="lines+markers", line=dict(color=AZUL, width=2.6)))
+estilo(fig, alto=280, leyenda=False).update_xaxes(dtick=1)
+fig.show(config=CONFIG)
+```
+
+Una escala muy comprimida puede dificultar retener personal calificado; una muy abierta puede reflejar desigualdades difíciles de justificar. La comparación solo toma el sueldo básico: los complementos, que pesan distinto en cada institución, pueden ampliar o achicar las distancias ([la deriva salarial]([[LINK:deriva]])).
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA (nivel y categoría, objeto 111).
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_dato, lineas
+social("Compresión salarial", coma(r.ratio.median(), 1) + " veces", f"gana la categoría más alta frente a la más baja en la institución mediana ({A})", (list(a.index), list(a.p90_p10)))
+ig_dato(1, "Compresión salarial", "En la institución mediana, la categoría mejor paga gana", coma(r.ratio.median(), 1) + " veces", "lo de la peor paga", "Percentil 90 ÷ percentil 10, todo el Estado",
+        lineas([int(x) for x in a.index], {"P90/P10": (list(a.p90_p10), AZUL)}, fmt=lambda x: coma(x, 1)))
+```

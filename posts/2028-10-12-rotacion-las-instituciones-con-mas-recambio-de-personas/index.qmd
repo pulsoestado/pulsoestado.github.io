@@ -1,0 +1,74 @@
+---
+title: "Rotación: las instituciones con más recambio de personas"
+description: "Cuántas personas distintas pasan por cada institución en un año frente a las que tiene en un mes promedio: una aproximación al recambio de personal."
+date: 2028-10-12
+categories: [Dotación, Personas, Instituciones]
+image: social.png
+image-alt: "Rotación: las instituciones con más recambio de personas"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import numpy as np
+import plotly.graph_objects as go
+
+```
+
+```{python}
+#| label: datos
+pv = leer("personas_vinculos_oee.csv")
+ok = pv[(pv.mes == 12) & (pv.personas_acumuladas > 0)].groupby("anho").size()
+A = int(ok.index.max())
+y = pv[(pv.anho == A) & (pv.personas > 0)]
+r = y.groupby(K_OEE).agg(acum=("personas_acumuladas", "max"), prom=("personas", "mean"))
+r = r[r.prom >= 200]; r["rot"] = (r.acum / r.prom - 1) * 100
+r = r.join(instituciones().set_index(K_OEE)[["nombre_largo", "sector"]])
+T = y.groupby(["mes"]).personas.sum().mean(); TA = y[y.mes == y.mes.max()].personas_acumuladas.sum()
+h = pd.Series({a: (pv[(pv.anho == a) & (pv.mes == 12)].personas_acumuladas.sum() / pv[(pv.anho == a) & (pv.personas > 0)].groupby("mes").personas.sum().mean() - 1) * 100 for a in ok.index})
+```
+
+```{python}
+#| label: kpis
+#| output: asis
+print(kpis([(pct((TA / T - 1) * 100, 0), f"más personas distintas en {A} que en un mes promedio"), (r.sort_values("rot").nombre_largo.iloc[-1], f"la institución con más recambio ({pct(r.rot.max(), 0)})")]))
+```
+
+Si una institución tiene 1.000 personas en un mes promedio pero en todo el año cobraron 1.300 personas distintas, al menos 300 entraron o salieron: un **recambio** de 30%. En `{python} A`, el Estado entero tuvo `{python} pct((TA / T - 1) * 100, 0)` más personas distintas en el año que en un mes promedio. El indicador mide recambio, no despidos: incluye jubilaciones, renuncias, contratos de pocos meses y reemplazos.
+
+```{python}
+#| label: fig
+#| fig-cap: "Recambio anual: personas distintas en el año sobre el promedio mensual, instituciones con al menos 200 personas"
+o = r.sort_values("rot").tail(12)
+fig = barras_h(o.nombre_largo, o.rot, [pct(x, 0) for x in o.rot], colores=[NARANJA] * len(o), rango=[0, o.rot.max() * 1.25])
+fig.show(config=CONFIG)
+```
+
+```{python}
+#| label: fig-h
+#| fig-cap: "Recambio anual de todo el Estado"
+fig = go.Figure(go.Bar(x=h.index, y=h.values, marker_color=AZUL, text=[pct(x, 0) for x in h], textposition="outside", cliponaxis=False))
+estilo(fig, alto=280, leyenda=False).update_layout(hovermode="closest"); fig.update_xaxes(dtick=1); fig.update_yaxes(ticksuffix="%", range=[0, h.max() * 1.2])
+fig.show(config=CONFIG)
+```
+
+Es una aproximación: sin un identificador de persona en los registros mensuales no se puede saber quién entró y quién salió, solo cuántas personas distintas cobraron. Con ese identificador, seudonimizado, se podrían medir altas, bajas y permanencia ([qué datos faltan](/pendientes/)).
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con el resumen de personas y vínculos por institución (SINARH y SICCA).
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_dato, barras_h as bh
+social("Rotación: las instituciones\ncon más recambio", pct((TA / T - 1) * 100, 0), f"más personas distintas en {A} que en un mes promedio", (list(h.index), list(h.values)), tipo="barras")
+o = r.sort_values("rot").tail(6)
+ig_dato(1, "Recambio", f"En {A}, el Estado tuvo", pct((TA / T - 1) * 100, 0), "más personas distintas que en un mes promedio", "Instituciones con más recambio",
+        bh([n if len(n) < 32 else n[:30] + "…" for n in o.nombre_largo], list(o.rot), [pct(x, 0) for x in o.rot]))
+```

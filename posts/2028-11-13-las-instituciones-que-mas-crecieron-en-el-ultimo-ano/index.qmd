@@ -1,0 +1,65 @@
+---
+title: "Las instituciones que más crecieron en el último año (2028)"
+description: "Con el mismo mes de dos años consecutivos, qué instituciones del Estado sumaron más vínculos en el último año."
+date: 2028-11-13
+categories: [El dato de la semana, Instituciones, Dotación]
+image: social.png
+image-alt: "Las instituciones que más crecieron en el último año (2028)"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+
+A1, M = ultimo_mes()
+v = vin_oee()
+n = v[v.total > 0].groupby(["anho", "mes"]).size()
+ref = n.loc[(A1 - 1, M)]
+cand = [(a, m) for (a, m) in n.index if (a * 100 + m) <= A1 * 100 + M and n.loc[(a, m)] >= ref * 0.97 and (a - 1, m) in n.index]
+AA, MM = cand[-1]
+x1 = v[(v.anho == AA) & (v.mes == MM)].set_index(K_OEE); x0 = v[(v.anho == AA - 1) & (v.mes == MM)].set_index(K_OEE)
+j = x1[["nombre_largo", "total", "contratado"]].join(x0[["total", "contratado"]], rsuffix="_0", how="inner")
+j = j[(j.total > 0) & (j.total_0 > 0)]
+j["dif"] = j.total - j.total_0; j["dc"] = j.contratado - j.contratado_0; j["var"] = (j.total / j.total_0 - 1) * 100
+sube = j.sort_values("dif", ascending=False).head(10); r1 = sube.iloc[0]
+part = sube.head(3).dif.sum() / j.dif[j.dif > 0].sum() * 100
+```
+
+```{python}
+#| label: kpis
+#| output: asis
+print(kpis([(signo(r1.dif), f"vínculos en {r1.nombre_largo}"), (pct(part, 0), "de todos los aumentos, en las tres primeras")]))
+```
+
+Si se compara **`{python} fecha_txt(AA, MM)`** con el mismo mes del año anterior, la institución que más vínculos sumó fue: **`{python} r1.nombre_largo`**: `{python} signo(r1.dif)` (`{python} spct(r1['var'])`). Las tres primeras explican el `{python} pct(part, 0)` de todos los aumentos.
+
+```{python}
+#| label: fig
+#| fig-cap: "Las 10 instituciones con mayor aumento de vínculos en un año (mismo mes)"
+o = sube.iloc[::-1]
+fig = barras_h(o.nombre_largo, o.dif, [f"{signo(d)} ({spct(p_)})" for d, p_ in zip(o.dif, o["var"])], colores=[AZUL] * len(o), rango=[0, o.dif.max() * 1.5])
+fig.update_xaxes(tickformat=",.0f"); fig.show(config=CONFIG)
+```
+
+Es la contracara de [las que más personal perdieron](../2027-05-31-las-que-mas-se-achicaron/). Como allí, usamos el mes más reciente en el que reportó casi la misma cantidad de instituciones que un año antes, para no confundir la carga tardía de datos con cambios reales.
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA. [Descargar los datos](/datos/).
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_dato, barras_h as bh
+cort = lambda x: x.replace("Ministerio de Salud Pública y Bienestar Social", "Min. de Salud").replace("Ministerio de", "Min. de").replace("Municipalidad de", "Munic. de")
+o = sube.head(7).iloc[::-1]
+social("Las que más crecieron\nen el último año", signo(r1.dif) + " vínculos", f"en {cort(r1.nombre_largo)} ({fecha_txt(AA, MM)})")
+ig_dato(1, "El dato de la semana", f"En un año, {cort(r1.nombre_largo)} sumó", signo(r1.dif), "vínculos, más que ninguna otra institución",
+        f"Cambio en vínculos, {fecha_txt(AA, MM)} frente a un año antes", bh([cort(x) for x in o.nombre_largo], o.dif, [signo(d) for d in o.dif]))
+```

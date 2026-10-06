@@ -1,0 +1,87 @@
+---
+title: "Cuánto costó el aguinaldo de 2029"
+description: "El aguinaldo del sector público se paga casi entero en diciembre y equivale a algo menos de un mes de sueldo básico. Cuánto costó el último año completo y cómo cambió."
+date: 2030-01-21
+categories: [El dato de la semana, Masa salarial, Aguinaldo]
+image: social.png
+image-alt: "Cuánto costó el aguinaldo de 2029"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import plotly.graph_objects as go
+
+UA = ultimo_anio_completo()
+m = leer("masa_mensual_sector.csv")
+m = m[m.anho.between(2017, UA)]
+y = m.pivot_table(index="anho", columns="componente", values="devengado", aggfunc="sum").fillna(0)
+ag = y["Aguinaldo"]; total = y.sum(axis=1)
+dic = m[(m.componente == "Aguinaldo") & (m.mes == 12)].groupby("anho").devengado.sum()
+real = ag * deflactor(UA).reindex(ag.index)
+var_real = (real[UA] / real[2017] - 1) * 100
+var_nom = (ag[UA] / ag[UA - 1] - 1) * 100
+part = ag[UA] / total[UA] * 100
+meses_sb = ag[UA] / (y.loc[UA, "Sueldo básico"] / 12)
+en_dic = dic[UA] / ag[UA] * 100
+s = m[(m.anho == UA) & (m.componente == "Aguinaldo")].groupby("sector").devengado.sum().sort_values()
+```
+
+```{python}
+#| label: kpis
+#| output: asis
+print(kpis([
+    (milmillones(ag[UA]) + " mil M", f"de guaraníes en aguinaldo, {UA}"),
+    (pct(part), "de la masa salarial del año"),
+    (spct(var_nom), f"frente a {UA - 1}, en guaraníes corrientes"),
+]))
+```
+
+En `{python} UA` el sector público pagó **`{python} milmillones(ag[UA])` mil millones de guaraníes** de aguinaldo, `{python} 'prácticamente todo' if en_dic > 99 else 'el ' + pct(en_dic, 0)` en diciembre. Es el `{python} pct(part)` de toda la masa salarial del año y equivale a `{python} coma(meses_sb, 2)` meses del sueldo básico pagado en el año: casi exactamente un mes más de sueldo, como corresponde a un aguinaldo.
+
+```{python}
+#| label: fig-real
+#| fig-cap: "Aguinaldo pagado cada año, en miles de millones de guaraníes de cada año y del último año completo"
+fig = go.Figure()
+fig.add_trace(go.Bar(x=ag.index, y=ag / 1e9, name="Guaraníes de cada año", marker_color="#9db9de",
+                     hovertemplate="%{x}: %{y:,.0f} mil millones<extra></extra>"))
+fig.add_trace(go.Scatter(x=real.index, y=real / 1e9, name=f"Guaraníes de {UA}", mode="lines+markers",
+                         line=dict(color=NARANJA, width=2.6),
+                         hovertemplate=f"%{{x}}: %{{y:,.0f}} mil millones de {UA}<extra></extra>"))
+estilo(fig, alto=360)
+fig.update_yaxes(tickformat=",.0f", rangemode="tozero")
+fig.update_xaxes(dtick=1)
+fig.show(config=CONFIG)
+```
+
+Descontada la inflación, el aguinaldo de `{python} UA` fue `{python} pct(abs(var_real), 0)` `{python} "mayor" if var_real >= 0 else "menor"` que el de 2017. Crece al mismo ritmo que los sueldos que le dan origen: más vínculos y reajustes salariales se traducen, en diciembre, en un aguinaldo más grande. **`{python} s.index[-1]`** pagó el mayor monto (`{python} milmillones(s.iloc[-1])` mil millones), seguido por **`{python} s.index[-2]`** (`{python} milmillones(s.iloc[-2])` mil millones).
+
+::: {.callout-note collapse="true"}
+## Notas
+
+- Aguinaldo = objeto de gasto 114, devengado en el año (SINARH y SICCA).
+- El aguinaldo de diciembre de 2021 fue corregido por un error de registro (ver la [metodología](/metodologia.qmd)).
+- Términos reales: IPC promedio anual del Banco Central del Paraguay.
+:::
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA y del Banco Central del Paraguay. [Descargar los datos](/datos/).
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_dato, barras
+social("¿Cuánto cuesta\nel aguinaldo?", milmillones(ag[UA]) + " mil millones",
+       f"de guaraníes en {UA} · {pct(part)} de la masa salarial", (list(ag.index), list(real)),
+       tipo="barras")
+ig_dato(1, "El dato de la semana", f"En {UA}, el aguinaldo del sector público costó",
+        milmillones(ag[UA]) + " mil M", "de guaraníes", f"En miles de millones de guaraníes de {UA}",
+        barras(list(real.index), list(real / 1e9), [miles(x / 1e9) for x in real]))
+```

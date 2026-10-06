@@ -1,0 +1,56 @@
+---
+title: "El explorador de datos: tres preguntas en un minuto"
+description: "Vínculos, contratos, mujeres y masa salarial por sector desde 2015, para graficar y descargar."
+date: 2029-05-03
+categories: [Productos, Datos abiertos]
+image: social.png
+image-alt: "El explorador de datos: tres preguntas en un minuto"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import numpy as np
+import plotly.graph_objects as go
+
+```
+
+```{python}
+#| label: datos
+v = leer("vinculos_mensual_sector.csv"); AC, MC = ultimo_mes_confiable()
+u = v[(v.anho == AC) & (v.mes == MC)].groupby("sector")[["total", "contratado", "mujeres"]].sum()
+u["pc"] = u.contratado / u.total * 100; u["pm"] = u.mujeres / u.total * 100
+```
+
+El **[explorador de datos](/explorador/)** de Pulso del Estado sirve para responder preguntas propias en un minuto: elegís uno o varios sectores, un indicador —vínculos, contratos, mujeres, masa salarial nominal o real— y el período, y obtenés el gráfico y los datos para descargar. Es la misma información que usamos en cada nota, abierta para que cualquiera haga sus propias preguntas.
+
+Tres ejemplos de lo que se puede ver en un minuto, con datos de `{python} fecha_txt(AC, MC)`:
+
+```{python}
+#| output: asis
+print(f"1. **{u.pc.idxmax()}** es el sector con más contratos: {pct(u.pc.max(), 0)} de sus vínculos.")
+print(f"2. **{u.pm.idxmax()}** es el sector con más mujeres: {pct(u.pm.max(), 0)}; **{u.pm.idxmin()}**, el que menos ({pct(u.pm.min(), 0)}).")
+print(f"3. **{u.total.idxmax()}** es el sector más grande, con {miles(u.total.max())} vínculos.")
+```
+
+Para una institución en particular, están las [fichas por institución](/instituciones/); para el costo de un reajuste, el [simulador](/simulador/).
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA.
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_dato, barras_h as bh
+cort = lambda x: x.replace("Servicio civil del Ejecutivo", "Servicio civil").replace("Entes autónomos y autárquicos", "Entes autónomos").replace("Gobiernos departamentales", "Gobernaciones")
+social("El explorador\nde datos", "12 sectores", "vínculos, contratos, mujeres y masa salarial desde 2015, para descargar")
+o = u.sort_values("pc").tail(7)
+ig_dato(1, "Explorador de datos", f"{cort(u.pc.idxmax())}: contratos", pct(u.pc.max(), 0), f"de sus vínculos ({fecha_txt(AC, MC)})", "% de contratos por sector",
+        bh([cort(x) for x in o.index], list(o.pc), [coma(x, 0) for x in o.pc]))
+```

@@ -1,0 +1,70 @@
+---
+title: "El Estado en un año: cuántos vínculos sumó (2030)"
+description: "Con las mismas instituciones y el mismo mes, cuántos vínculos más (o menos) paga el Estado que hace un año, y cuántos de ellos son contratos."
+date: 2030-08-12
+categories: [El dato de la semana, Dotación]
+image: social.png
+image-alt: "El Estado en un año: cuántos vínculos sumó (2030)"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import plotly.graph_objects as go
+
+v = leer("vinculos_mensual_oee.csv")
+A1, M = ultimo_mes()
+def cambio(a, m):
+    x1 = v[(v.anho == a) & (v.mes == m)].set_index(K_OEE); x0 = v[(v.anho == a - 1) & (v.mes == m)].set_index(K_OEE)
+    com = x1.index[x1.total > 0].intersection(x0.index[x0.total > 0])
+    return (x1.loc[com, ["total", "contratado", "permanente"]].sum() - x0.loc[com, ["total", "contratado", "permanente"]].sum()), len(com)
+d, n = cambio(A1, M)
+serie = []
+for a in range(2018, A1 + 1):
+    for m in range(1, 13):
+        if (a * 100 + m) <= A1 * 100 + M and ((v.anho == a) & (v.mes == m)).any():
+            c, _ = cambio(a, m); serie.append((pd.Timestamp(a, m, 1), c.total, c.contratado, c.permanente))
+s = pd.DataFrame(serie, columns=["fecha", "total", "contratado", "permanente"])
+```
+
+```{python}
+#| label: kpis
+#| output: asis
+print(kpis([(signo(d.total), f"vínculos en un año ({fecha_txt(A1, M)})"), (signo(d.contratado), "contratados"), (signo(d.permanente), "permanentes")]))
+```
+
+En `{python} fecha_txt(A1, M)`, las `{python} n` instituciones que reportaron ese mes y el mismo mes del año anterior pagaban **`{python} miles(abs(d.total))` vínculos `{python} "más" if d.total >= 0 else "menos"`** que un año antes: `{python} signo(d.contratado)` contratados y `{python} signo(d.permanente)` permanentes.
+
+```{python}
+#| label: fig
+#| fig-cap: "Cambio en los vínculos frente al mismo mes del año anterior (mismas instituciones)"
+fig = go.Figure()
+fig.add_trace(go.Bar(x=s.fecha, y=s.permanente, name="Permanentes", marker_color=AZUL, hovertemplate="Permanentes: %{y:+,.0f}<extra></extra>"))
+fig.add_trace(go.Bar(x=s.fecha, y=s.contratado, name="Contratados", marker_color=NARANJA, hovertemplate="Contratados: %{y:+,.0f}<extra></extra>"))
+estilo(fig, alto=340).update_layout(barmode="relative", bargap=0.1)
+fig.update_yaxes(tickformat=",.0f")
+fig.show(config=CONFIG)
+```
+
+Cada barra compara un mes con el mismo mes del año anterior, con las mismas instituciones. El crecimiento del Estado es casi continuo desde 2018; los picos de la serie coinciden con la pandemia, cuando Salud sumó miles de contratos, y con las promociones policiales.
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA. [Descargar los datos](/datos/).
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_dato, barras
+u = s.tail(24)
+social("El Estado en un año", signo(d.total) + " vínculos", f"frente a {fecha_txt(A1 - 1, M)} · mismas instituciones", (list(range(len(u))), list(u.total)), tipo="barras")
+ig_dato(1, "El dato de la semana", f"En un año, el Estado sumó", signo(d.total), f"vínculos: {signo(d.contratado)} contratados y {signo(d.permanente)} permanentes",
+        f"Cambio interanual, {fecha_txt(A1, M)}", barras(["Permanentes", "Contratados", "Total"], [d.permanente, d.contratado, d.total],
+                                                         [signo(x) for x in [d.permanente, d.contratado, d.total]], colores=[AZUL, NARANJA, NAVY]))
+```

@@ -1,0 +1,71 @@
+---
+title: "Las promociones policiales de 2029"
+description: "Cada mayo, la Policía Nacional incorpora a sus nuevas promociones de agentes. En los últimos años, cada una sumó varios miles de vínculos de una sola vez."
+date: 2029-05-14
+categories: [El dato de la semana, Fuerzas públicas, Dotación]
+image: social.png
+image-alt: "Las promociones policiales de 2029"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import plotly.graph_objects as go
+
+v = vin_oee()
+p = v[v.nombre == "Policía Nacional"].groupby(["anho", "mes"])[["total", "mujeres"]].sum().reset_index()
+p = p[p.anho >= 2017]; p["fecha"] = pd.to_datetime(dict(year=p.anho, month=p.mes, day=1))
+p["dif"] = p.total.diff(); p["dm"] = p.mujeres.diff()
+saltos = p[p.dif >= 1500].copy()
+ult = saltos.iloc[-1] if len(saltos) else p.loc[p.dif.idxmax()]
+A1 = int(p.anho.iloc[-1])
+v17 = p[p.anho == 2017].total.mean(); vu = p.iloc[-1].total
+may = p[p.mes == 5].set_index("anho")
+```
+
+```{python}
+#| label: kpis
+#| output: asis
+print(kpis([
+    (signo(ult.dif), f"vínculos en {fecha_txt(ult.anho, ult.mes)}, en un solo mes"),
+    (pct(ult.dm / ult.dif * 100, 0), "de los nuevos vínculos eran de mujeres"),
+    (miles(vu), f"vínculos en {fecha_txt(p.iloc[-1].anho, p.iloc[-1].mes)}"),
+]))
+```
+
+La Policía Nacional crece a saltos. En **`{python} fecha_txt(ult.anho, ult.mes)`** sumó **`{python} miles(ult.dif)` vínculos en un solo mes**, con el egreso de una nueva promoción de agentes. `{python} f"Fue el {len(saltos)}.º mes desde 2017 con un aumento de más de 1.500 vínculos." if len(saltos) > 1 else ""` De los nuevos vínculos, el `{python} pct(ult.dm / ult.dif * 100, 0)` eran de mujeres, más que su proporción en el total de la institución.
+
+```{python}
+#| label: fig-pn
+#| fig-cap: "Vínculos de la Policía Nacional por mes"
+fig = go.Figure(go.Scatter(x=p.fecha, y=p.total, mode="lines", line=dict(color=NAVY, width=2.6), line_shape="hv",
+                           hovertemplate="%{x|%b %Y}: <b>%{y:,.0f}</b><extra></extra>"))
+for _, r in saltos.tail(3).iterrows():
+    fig.add_annotation(x=r.fecha, y=r.total, text=signo(r.dif), showarrow=True, arrowhead=0, ay=-28,
+                       font=dict(color=NARANJA, size=12))
+estilo(fig, alto=340, leyenda=False).update_yaxes(tickformat=",.0f")
+fig.show(config=CONFIG)
+```
+
+Entre el promedio de 2017 y `{python} fecha_txt(p.iloc[-1].anho, p.iloc[-1].mes)`, la Policía pasó de `{python} miles(v17)` a `{python} miles(vu)` vínculos: **`{python} spct((vu / v17 - 1) * 100, 0)`**. Cada nueva promoción suma de inmediato a la masa salarial: lo analizamos en [Fuerzas públicas: policías y militares](../2027-05-13-fuerzas-publicas/).
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA (vínculos pagados por mes). [Descargar los datos](/datos/).
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_dato, lineas
+social("Las promociones\npoliciales de mayo", signo(ult.dif) + " vínculos", f"sumó la Policía Nacional en {fecha_txt(ult.anho, ult.mes)}",
+       (list(range(len(p))), list(p.total)), color=NARANJA)
+ig_dato(1, "El dato de la semana", f"En {fecha_txt(ult.anho, ult.mes)}, la Policía Nacional sumó", signo(ult.dif),
+        "vínculos en un solo mes", "Vínculos de la Policía en mayo de cada año, en miles",
+        lineas(list(may.index), {"Policía": (list(may.total / 1000), NAVY)}, fmt=lambda x: coma(x, 1) + " mil"))
+```

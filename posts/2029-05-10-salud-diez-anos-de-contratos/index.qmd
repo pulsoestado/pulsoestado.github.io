@@ -1,0 +1,72 @@
+---
+title: "Salud: diez años de contratos"
+description: "Cómo cambió la planta del Ministerio de Salud y del IPS antes, durante y después de la pandemia."
+date: 2029-05-10
+categories: [Salud, Contratados]
+image: social.png
+image-alt: "Salud: diez años de contratos"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import numpy as np
+import plotly.graph_objects as go
+
+```
+
+```{python}
+#| label: datos
+s = serie_mensual("Salud"); sj = s[s.mes == 6].set_index("anho")
+A0 = 2019; A = int(sj.index.max())
+v = vin_oee(); v = v[(v.sector == "Salud") & (v.mes == 6)]
+por = v.groupby(["anho", "nombre_largo"]).contratado.sum().unstack().fillna(0).loc[2017:]
+```
+
+```{python}
+#| label: kpis
+#| output: asis
+print(kpis([(miles(sj.contratado[A]), f"contratos en Salud en junio de {A}"), (signo(sj.contratado[A] - sj.contratado[A0]), f"frente a junio de {A0}"),
+            (pct(sj.contratado[A] / sj.total[A] * 100, 0), f"de sus vínculos (en {A0}: {pct(sj.contratado[A0] / sj.total[A0] * 100, 0)})")]))
+```
+
+En junio de `{python} A0`, antes de la pandemia, el sector Salud —Ministerio de Salud e IPS— tenía `{python} miles(sj.contratado[A0])` contratos. En junio de `{python} A` tenía `{python} miles(sj.contratado[A])`. La planta permanente pasó de `{python} miles(sj.permanente[A0])` a `{python} miles(sj.permanente[A])`.
+
+```{python}
+#| label: fig
+#| fig-cap: "Vínculos del sector Salud en junio de cada año, por tipo"
+fig = go.Figure()
+fig.add_trace(go.Bar(x=sj.loc[2017:].index, y=sj.loc[2017:].permanente, name="Permanentes", marker_color=AZUL))
+fig.add_trace(go.Bar(x=sj.loc[2017:].index, y=sj.loc[2017:].contratado, name="Contratados", marker_color=NARANJA))
+estilo(fig, alto=320).update_layout(barmode="stack"); fig.update_xaxes(dtick=1); fig.update_yaxes(tickformat=",.0f")
+fig.show(config=CONFIG)
+```
+
+```{python}
+#| label: tbl
+#| output: asis
+print(f"| Institución | Contratos junio {A0} | Contratos junio {A} |\n|---|--:|--:|")
+for k in por.columns:
+    print(f"| {k} | {miles(por.loc[A0, k]) if A0 in por.index else '—'} | {miles(por.loc[A, k])} |")
+```
+
+Los contratos sumados en la emergencia no se revirtieron, y el sistema de salud sigue apoyándose en personal contratado ([los contratos de la pandemia, años después](/posts/2027-11-22-contratos-de-la-pandemia/); [Salud: dos sistemas, dos plantas](/posts/2027-04-01-salud-dos-sistemas/)).
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA.
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_dato, barras
+social("Salud: diez años\nde contratos", miles(sj.contratado[A]) + " contratos", f"en junio de {A} · {signo(sj.contratado[A] - sj.contratado[A0])} frente a {A0}", (list(sj.index), list(sj.contratado)), tipo="barras")
+h = sj.loc[2017:]
+ig_dato(1, "Salud", f"Contratos en Salud, junio de {A}:", miles(sj.contratado[A]), f"({pct(sj.contratado[A] / sj.total[A] * 100, 0)} de sus vínculos)", "Contratos en junio (miles)",
+        barras([str(x) for x in h.index], list(h.contratado / 1000), [coma(x / 1000, 0) for x in h.contratado], rot=45))
+```

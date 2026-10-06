@@ -1,0 +1,38 @@
+```{python}
+#| label: datos
+fin = pd.Timestamp(year=2028, month=1, day=1)
+s = serie_extendida(2028, 1).set_index("fecha")
+fil = []
+for y, me in [(2018, 1), (2023, 1), (2028, 1)]:
+    t = pd.Timestamp(year=y, month=me, day=1); b = t - pd.DateOffset(months=12)
+    fil.append(dict(anio=y, total=s.loc[t, "total"], contr=s.loc[t, "contratado"], dif=s.loc[t, "total"] - s.loc[b, "total"], est=bool(s.loc[t, "estimado"])))
+d = pd.DataFrame(fil).set_index("anio")
+```
+
+```{python}
+#| output: asis
+if d.loc[2028, "est"]:
+    ac, mc = ultimo_mes_confiable()
+    aviso_estimacion(f"Enero de 2028 todavía no tiene datos completos: es una estimación a partir de {fecha_txt(ac, mc)}.")
+```
+
+```{python}
+#| label: kpis
+#| output: asis
+print(kpis([(miles(r.total), f"vínculos en enero de {y}" + (" (est.)" if r.est else "")) for y, r in d.iterrows()]))
+```
+
+A tres meses de las elecciones generales, el Estado pagaba `{python} miles(d.loc[2028, "total"])` vínculos`{python} " según nuestra estimación" if d.loc[2028, "est"] else ""`, `{python} signo(d.loc[2028, "dif"])` en un año. En enero de 2023, antes de la elección anterior, el cambio interanual había sido de `{python} signo(d.loc[2023, "dif"])`; en enero de 2018, de `{python} signo(d.loc[2018, "dif"])`. El seguimiento mes a mes está en el [monitor del ciclo electoral](/monitor-electoral/).
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA. Fecha de las elecciones de 2028: a confirmar por el TSJE (en 2018 y 2023 fueron en abril).
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_dato, barras
+social("El Estado a tres\nmeses de votar", signo(d.loc[2028, "dif"]) + " vínculos", "en un año, enero de 2028" + (" (estimado)" if d.loc[2028, "est"] else "") + f" · 2023: {signo(d.loc[2023, 'dif'])}")
+ig_dato(1, "El dato de la semana", "A tres meses de votar, el cambio de vínculos en un año fue", signo(d.loc[2028, "dif"]), "en enero de 2028" + (" (est.)" if d.loc[2028, "est"] else ""),
+        "Cambio interanual en enero", barras([str(y) for y in d.index], list(d.dif), [signo(x) for x in d.dif], colores=[GRIS, AZUL, NARANJA]))
+```

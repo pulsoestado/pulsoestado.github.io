@@ -1,0 +1,91 @@
+---
+title: "Discapacidad 2030: ¿avanzó la cuota del 5%?"
+description: "El balance de la cuota legal de personas con discapacidad en el Estado: cuántas instituciones cumplen la cuota legal, cuáles están más lejos y cómo cambió la cifra en el último año."
+date: 2030-12-05
+categories: [Discapacidad, Instituciones, Balance]
+image: social.png
+image-alt: "Discapacidad 2030: ¿avanzó la cuota del 5%?"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import numpy as np
+import plotly.graph_objects as go
+
+o = leer("pcd_oee_anual.csv")
+A, M = int(o.anho.max()), int(o[o.anho == o.anho.max()].mes.max())
+u = o[(o.anho == A) & (o.mes == M)].copy(); u["p"] = u.pcd / u.vinculos * 100
+u = u.merge(instituciones()[K_OEE + ["nombre_largo"]], on=K_OEE, how="left")
+g = u[u.vinculos >= 100]
+cumple = g[g.p >= 5]; cero = g[g.pcd == 0]
+P = u.pcd.sum() / u.vinculos.sum() * 100
+a0 = o[(o.anho == A - 1) & (o.mes == M)] if ((o.anho == A - 1) & (o.mes == M)).any() else o[(o.anho == A - 1) & (o.mes == 6)]
+P0 = a0.pcd.sum() / a0.vinculos.sum() * 100
+bins = [0, 0.0001, 1, 2, 5, 100]; et = ["0%", "Hasta 1%", "1% a 2%", "2% a 5%", "5% o más"]
+g = g.assign(tramo=pd.cut(g.p, bins, labels=et, right=False, include_lowest=True))
+d = g.groupby("tramo", observed=False).size()
+top = g.sort_values("p", ascending=False).head(10)
+grandes = g[g.vinculos >= 5000].sort_values("p")
+s = leer("pcd_mensual.csv"); s = s[s.mes == 6]; s["p"] = s.pcd / s.vinculos * 100
+```
+
+::: {.en-breve}
+**En breve**
+
+- En `{python} fecha_txt(A, M)`, el **`{python} pct(P, 2)`** de los vínculos registrados en SICCA era de personas con discapacidad (un año antes, `{python} pct(P0, 2)`). La cuota legal es del 5%.
+- De las `{python} len(g)` instituciones con al menos 100 vínculos, **`{python} len(cumple)` cumplen la cuota** y `{python} len(cero)` no registran ninguna persona con discapacidad.
+- Entre las instituciones con más de 5.000 vínculos, la proporción más alta corresponde a `{python} grandes.nombre_largo.iloc[-1] if len(grandes) else "—"`: `{python} pct(grandes.p.iloc[-1], 2) if len(grandes) else "—"`.
+:::
+
+```{python}
+#| label: fig
+#| fig-cap: "Instituciones con al menos 100 vínculos según su proporción de personas con discapacidad"
+fig = go.Figure(go.Bar(x=list(d.index), y=d.values, marker_color=[ROJO, "#f5b89f", "#f5b89f", "#9fe0c8", VERDE_AGUA], text=d.values,
+                       textposition="outside", cliponaxis=False, textfont=dict(color=TINTA_GRAF), hovertemplate="%{x}: <b>%{y} instituciones</b><extra></extra>"))
+estilo(fig, alto=320, leyenda=False).update_layout(hovermode="closest")
+fig.update_yaxes(range=[0, d.max() * 1.2])
+fig.show(config=CONFIG)
+```
+
+```{python}
+#| label: tbl
+#| output: asis
+print("| Institución | Vínculos | Personas con discapacidad | % |\n|---|--:|--:|--:|")
+for _, r in top.iterrows():
+    print(f"| {r.nombre_largo if isinstance(r.nombre_largo, str) else nombre(r.descripcion_oee)} | {miles(r.vinculos)} | {miles(r.pcd)} | {pct(r.p, 1)} |")
+print(f"\n: Las 10 instituciones con mayor proporción, entre las que tienen al menos 100 vínculos ({fecha_txt(A, M)})")
+```
+
+## Una década
+
+```{python}
+#| label: fig-serie
+#| fig-cap: "Proporción de vínculos de personas con discapacidad, junio de cada año"
+fig = go.Figure(go.Scatter(x=s.anho, y=s.p, mode="lines+markers", line=dict(color=VERDE_AGUA, width=2.8), hovertemplate="%{x}: <b>%{y:.2f}%</b><extra></extra>"))
+fig.add_hline(y=5, line=dict(color=ROJO, width=1.5, dash="dash"))
+estilo(fig, alto=300, leyenda=False).update_yaxes(ticksuffix="%", range=[0, 5.6])
+fig.show(config=CONFIG)
+```
+
+La proporción creció en la segunda mitad de la década pasada, pero en los últimos años se estancó por debajo del 1%. A este ritmo, la cuota legal sigue lejos para casi todas las instituciones. El registro depende de que las personas declaren su discapacidad y de que las instituciones la carguen en SICCA, por lo que la cifra real podría ser algo mayor.
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SICCA. [Descargar los datos](/datos/).
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_portada, ig_dato, barras
+social("Discapacidad: ¿avanzó\nla cuota del 5%?", pct(P, 2), f"de los vínculos · {len(cumple)} instituciones cumplen la cuota", (list(s.anho), list(s.p)), color=VERDE_AGUA)
+ig_portada("3 de diciembre", "¿Avanzó la\ncuota del 5%?", f"El {pct(P, 2)} de los vínculos públicos\nes de personas con discapacidad.", (list(s.anho), list(s.p)), color=VERDE_AGUA)
+ig_dato(2, "Las instituciones", "Cumplen la cuota del 5%:", f"{len(cumple)} de {len(g)}", "instituciones con al menos 100 vínculos",
+        "Instituciones según su proporción", barras(list(d.index), list(d.values), [str(x) for x in d.values], colores=[ROJO, "#f5b89f", "#f5b89f", "#9fe0c8", VERDE_AGUA]), color=VERDE_AGUA)
+```

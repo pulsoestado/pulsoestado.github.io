@@ -1,0 +1,101 @@
+---
+title: "Monitor del ciclo electoral"
+subtitle: "Los contratos del Estado en los meses alrededor de cada elección, comparados con los ciclos anteriores"
+image: /assets/img/social-default.png
+toc: true
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import plotly.graph_objects as go
+
+# Fechas: Tribunal Superior de Justicia Electoral. Las futuras son referencias hasta que el TSJE las fije.
+ELEC = [
+    ("Elecciones generales", "2018-04-22", True), ("Elecciones generales", "2023-04-30", True), ("Elecciones generales", "2028-04-01", False),
+    ("Elecciones municipales", "2021-10-10", True), ("Elecciones municipales", "2026-10-04", True), ("Elecciones municipales", "2031-10-01", False),
+]
+VENT = range(-12, 13)
+fin = pd.Timestamp.today().normalize().replace(day=1) + pd.DateOffset(months=13)
+s = serie_extendida(fin.year, fin.month).set_index("fecha")
+s_mun = serie_extendida(fin.year, fin.month, "Municipalidades").set_index("fecha")
+ACT = s.index[~s.estimado].max()
+
+
+def ciclo(serie, fecha):
+    f0 = pd.Timestamp(fecha).replace(day=1)
+    if f0 - pd.DateOffset(months=12) > serie.index.max():
+        return None
+    filas = []
+    for k in VENT:
+        f = f0 + pd.DateOffset(months=k)
+        if f in serie.index:
+            filas.append((k, serie.loc[f, "contratado"], bool(serie.loc[f, "estimado"])))
+    d = pd.DataFrame(filas, columns=["k", "c", "est"])
+    if d.empty or 0 not in set(d.k):
+        base = d.c.iloc[-1] if len(d) else None
+    else:
+        base = d.loc[d.k == 0, "c"].iloc[0]
+    d["i"] = d.c / base * 100 if base else None
+    return d
+```
+
+Antes y después de cada elección, ¿cambia la cantidad de contratos del Estado? Este monitor pone cada ciclo en la misma escala: el mes de la elección vale 100 y la línea muestra los doce meses anteriores y los doce siguientes. Último mes con datos completos: **`{python} fecha_txt(ACT.year, ACT.month)`**.
+
+```{python}
+#| output: asis
+if s.estimado.any():
+    aviso_estimacion(f"Los meses posteriores a {fecha_txt(ACT.year, ACT.month)} (líneas punteadas) son estimaciones de Pulso del Estado: el mismo mes del año anterior por el crecimiento de los últimos doce meses. Las fechas de las elecciones de 2028 y 2031 son referencias hasta que el Tribunal Superior de Justicia Electoral las fije.")
+```
+
+## Elecciones generales
+
+```{python}
+#| label: fig-gen
+#| fig-cap: "Vínculos contratados de todo el Estado, mes de la elección = 100"
+COL = [GRIS, AZUL, NARANJA]
+fig = go.Figure()
+for (nom, f, conf), c in zip([e for e in ELEC if e[0].endswith("generales")], COL):
+    d = ciclo(s, f)
+    if d is None:
+        continue
+    et = f[:4] + ("" if conf else " (fecha de referencia)")
+    r, e_ = d[~d.est], d[d.est]
+    fig.add_trace(go.Scatter(x=r.k, y=r.i, name=et, mode="lines", line=dict(color=c, width=2.6)))
+    if len(e_):
+        e2 = pd.concat([r.tail(1), e_])
+        fig.add_trace(go.Scatter(x=e2.k, y=e2.i, name=et + " · estimado", mode="lines", line=dict(color=c, width=2.2, dash="dot")))
+fig.add_vline(x=0, line=dict(color=GRIS, width=1, dash="dash")); fig.add_hline(y=100, line=dict(color=GRIS, width=1))
+estilo(fig, alto=360).update_xaxes(title="Meses desde la elección", dtick=3)
+fig.show(config=CONFIG)
+```
+
+## Elecciones municipales
+
+```{python}
+#| label: fig-mun
+#| fig-cap: "Vínculos contratados de las municipalidades, mes de la elección = 100"
+fig = go.Figure()
+for (nom, f, conf), c in zip([e for e in ELEC if e[0].endswith("municipales")], COL):
+    d = ciclo(s_mun, f)
+    if d is None:
+        continue
+    et = f[:4] + ("" if conf else " (fecha de referencia)")
+    r, e_ = d[~d.est], d[d.est]
+    fig.add_trace(go.Scatter(x=r.k, y=r.i, name=et, mode="lines", line=dict(color=c, width=2.6)))
+    if len(e_):
+        e2 = pd.concat([r.tail(1), e_])
+        fig.add_trace(go.Scatter(x=e2.k, y=e2.i, name=et + " · estimado", mode="lines", line=dict(color=c, width=2.2, dash="dot")))
+fig.add_vline(x=0, line=dict(color=GRIS, width=1, dash="dash")); fig.add_hline(y=100, line=dict(color=GRIS, width=1))
+estilo(fig, alto=360).update_xaxes(title="Meses desde la elección", dtick=3)
+fig.show(config=CONFIG)
+```
+
+Los contratos tienen su propio calendario —caen en enero y se recuperan en el primer semestre—, así que una suba antes de una elección de abril puede ser solo esa recuperación. Las municipalidades, además, cargan sus datos con atraso: los últimos meses pueden subir cuando se completen. Lo analizamos en detalle en [¿se contrata más antes de votar?](/posts/2027-10-07-ciclo-electoral-antes-de-votar/) y [el cambio de gobierno](/posts/2027-10-14-ciclo-electoral-cambio-de-gobierno/).
+
+::: {.fuente}
+**Fuentes:** elaboración de Pulso del Estado con datos de SINARH y SICCA. Fechas electorales: Tribunal Superior de Justicia Electoral. [Descargar los datos](/datos/).
+:::

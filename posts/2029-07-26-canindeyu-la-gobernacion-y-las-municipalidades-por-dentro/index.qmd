@@ -1,0 +1,93 @@
+---
+title: "Canindeyú: la gobernación y las municipalidades por dentro"
+description: "Cuánto personal tienen la gobernación y las municipalidades de Canindeyú, cuántos son contratos y cuánto representa por habitante."
+date: 2029-07-26
+categories: [Territorio, Municipalidades, Gobernaciones]
+image: social.png
+image-alt: "Canindeyú: la gobernación y las municipalidades por dentro"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import numpy as np
+import plotly.graph_objects as go
+DEP = 14
+DEPNOMBRE = 'Canindeyú'
+```
+
+```{python}
+#| label: datos
+UA = ultimo_anio_completo()
+p = vin_promedio_oee(UA)
+pob = pd.read_csv(raiz / "data/manual/poblacion_departamentos_2022.csv").set_index("codigo_departamento")
+P = pob.loc[DEP, "poblacion_2022"]
+loc = p[p.sector.isin(["Municipalidades", "Gobiernos departamentales"])]
+por_dep = loc.groupby("codigo_entidad").total.sum()
+por_dep = (por_dep / pob.poblacion_2022.reindex(por_dep.index) * 1000).dropna()
+por_dep = por_dep[por_dep.index > 0].sort_values(ascending=False)
+pos = list(por_dep.index).index(DEP) + 1
+X = loc[loc.codigo_entidad > 0].total.sum() / pob[pob.index > 0].poblacion_2022.sum() * 1000
+mu = p[(p.sector == "Municipalidades") & (p.codigo_entidad == DEP)].copy()
+gb = p[(p.sector == "Gobiernos departamentales") & (p.codigo_entidad == DEP)]
+ma = masa_oee_anual(UA)
+mu = mu.merge(ma[K_OEE + ["masa"]], on=K_OEE, how="left").sort_values("total", ascending=False)
+T = mu.total.sum() + gb.total.sum(); C = mu.contratado.sum() + gb.contratado.sum()
+masa_loc = mu.masa.sum() + ma.merge(gb[K_OEE], on=K_OEE).masa.sum()
+x1000 = T / P * 1000
+v = vin_oee(); v = v[v.sector.isin(["Municipalidades", "Gobiernos departamentales"]) & (v.codigo_entidad == DEP) & (v.mes == 6)]
+h = v.groupby(["anho", "sector"]).total.sum().unstack().fillna(0).loc[2017:]
+```
+
+```{python}
+#| label: kpis
+#| output: asis
+print(kpis([(miles(T), f"vínculos de la gobernación y {len(mu)} municipalidades ({UA})"),
+            (coma(x1000, 1), f"por cada mil habitantes (promedio del país: {coma(X, 1)})"),
+            (pct(C / T * 100, 0) if T else "—", "son contratos")]))
+```
+
+En **`{python} DEPNOMBRE`** viven `{python} miles(P)` personas, según el Censo 2022. Su gobernación y sus `{python} len(mu)` municipalidades sumaron en promedio `{python} miles(T)` vínculos en `{python} UA`: `{python} coma(x1000, 1)` por cada mil habitantes, el puesto `{python} pos` de `{python} len(por_dep)` departamentos. Su masa salarial fue de `{python} milmillones(masa_loc)` mil millones de guaraníes.
+
+```{python}
+#| label: fig
+#| fig-cap: "Vínculos de la gobernación y de las municipalidades del departamento, junio de cada año"
+fig = go.Figure()
+for s_, c_ in [("Municipalidades", AZUL), ("Gobiernos departamentales", NARANJA)]:
+    if s_ in h:
+        fig.add_trace(go.Bar(x=h.index, y=h[s_], name="Gobernación" if s_.startswith("Gob") else s_, marker_color=c_))
+estilo(fig, alto=300).update_layout(barmode="stack"); fig.update_xaxes(dtick=1); fig.update_yaxes(tickformat=",.0f")
+fig.show(config=CONFIG)
+```
+
+## Municipalidad por municipalidad
+
+```{python}
+#| label: tbl
+#| output: asis
+print(f"| Municipalidad | Vínculos ({UA}) | % contratados | Masa salarial (mil M Gs) |\n|---|--:|--:|--:|")
+for _, r in mu.iterrows():
+    print(f"| {r.nombre_largo} | {miles(r.total)} | {pct(r.contratado / r.total * 100, 0) if r.total else '—'} | {milmillones(r.masa) if r.masa == r.masa else '—'} |")
+print(f"\n: Promedio mensual de vínculos y masa salarial de {UA}. Solo municipalidades que reportan al SICCA.")
+```
+
+Los datos cubren a las municipalidades que cargan su personal en el SICCA; algunas lo hacen con atraso o de forma incompleta ([cuántas instituciones reportan](/posts/2027-02-22-cuantas-instituciones-reportan/)). La comparación por habitante usa la población del Censo 2022 del INE. Ver también [el Estado en el territorio](/posts/2027-07-29-el-estado-en-el-territorio/).
+
+::: {.fuente}
+**Fuentes:** elaboración de Pulso del Estado con datos de SINARH y SICCA; población: INE, Censo Nacional de Población y Viviendas 2022. [Descargar los datos](/datos/).
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_dato, barras_h as bh
+social(f"{DEPNOMBRE}: el Estado\nlocal por dentro", coma(x1000, 1) + " por mil hab.", f"{miles(T)} vínculos en la gobernación y {len(mu)} municipalidades ({UA})")
+o = mu.head(6).sort_values("total")
+ig_dato(1, "Departamento", f"En {DEPNOMBRE}, el Estado local tiene", coma(x1000, 1), "vínculos por cada mil habitantes", "Municipalidades con más vínculos",
+        bh(list(o.nombre), list(o.total), [miles(x) for x in o.total]))
+```

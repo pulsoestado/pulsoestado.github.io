@@ -1,0 +1,83 @@
+---
+title: "Cinco años de gobierno, sector por sector"
+description: "Qué sectores sumaron y cuáles perdieron personal entre 2023 y 2028, con contratos y masa salarial real."
+date: 2028-07-06
+categories: [Ciclo electoral, Sectores]
+image: social.png
+image-alt: "Cinco años de gobierno, sector por sector"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import numpy as np
+import plotly.graph_objects as go
+
+```
+
+```{python}
+#| label: datos
+AC, MC = ultimo_mes_confiable(); UA = ultimo_anio_completo()
+v = leer("vinculos_mensual_sector.csv")
+fin = (2028, 7) if (AC, MC) >= (2028, 7) else (AC, MC)
+EST = fin != (2028, 7)
+b = v[(v.anho == 2023) & (v.mes == fin[1])].groupby("sector")[["total", "contratado"]].sum()
+u = v[(v.anho == fin[0]) & (v.mes == fin[1])].groupby("sector")[["total", "contratado"]].sum()
+d = u.join(b, rsuffix="_23"); d["dif"] = d.total - d.total_23; d["var"] = (d.total / d.total_23 - 1) * 100
+d["dc"] = (d.contratado / d.total - d.contratado_23 / d.total_23) * 100
+ms = leer("masa_anual_sector.csv").set_index(["sector", "anho"]); D = deflactor(UA)
+d["masa_var"] = [((ms.loc[(s_, UA), "devengado"] * D[UA]) / (ms.loc[(s_, 2023), "devengado"] * D[2023]) - 1) * 100 if (s_, 2023) in ms.index else np.nan for s_ in d.index]
+d = d.sort_values("dif")
+```
+
+```{python}
+#| output: asis
+if EST:
+    print(f"::: {{.callout-note}}\nJulio de 2028 todavía no tiene datos completos: la comparación usa {fecha_txt(*fin)} frente al mismo mes de 2023. Se actualizará sola cuando estén los datos de julio.\n:::\n")
+```
+
+```{python}
+#| label: kpis
+#| output: asis
+top = d.sort_values("dif", ascending=False)
+print(kpis([(top.index[0], f"el sector que más vínculos sumó ({signo(top.dif.iloc[0])})"), (d.index[0], f"el que más perdió ({signo(d.dif.iloc[0])})")]))
+```
+
+Entre `{python} MESES[fin[1] - 1]` de 2023 y `{python} fecha_txt(*fin)`, el sector que más vínculos sumó fue **`{python} top.index[0]`** (`{python} signo(top.dif.iloc[0])`, `{python} spct(top['var'].iloc[0], 0)`), seguido de `{python} top.index[1]` (`{python} signo(top.dif.iloc[1])`). La masa salarial real de `{python} UA` frente a 2023 subió más en `{python} d.masa_var.idxmax()` (`{python} spct(d.masa_var.max(), 0)`).
+
+```{python}
+#| label: fig
+#| fig-cap: "Cambio de vínculos por sector desde el mismo mes de 2023"
+fig = barras_h(d.index, d.dif, [f"{signo(x)} ({spct(p_, 0)})" for x, p_ in zip(d.dif, d["var"])], colores=[AZUL if x >= 0 else ROJO for x in d.dif],
+               rango=[min(0, d.dif.min()) * 1.5, d.dif.max() * 1.5])
+fig.update_xaxes(tickformat=",.0f"); fig.show(config=CONFIG)
+```
+
+```{python}
+#| label: tbl
+#| output: asis
+print(f"| Sector | Vínculos 2023 | Vínculos {fin[0]} | Contratos (cambio en puntos) | Masa real {UA} vs 2023 |\n|---|--:|--:|--:|--:|")
+for k, r in d.sort_values("dif", ascending=False).iterrows():
+    print(f"| {k} | {miles(r.total_23)} | {miles(r.total)} | {signo(r.dc, lambda x: coma(x, 1))} | {spct(r.masa_var, 0) if r.masa_var == r.masa_var else '—'} |")
+```
+
+Parte de los cambios refleja reorganizaciones, como la creación de la DNIT, y no altas o bajas de personal ([quién creció y quién se achicó](/posts/2027-01-28-quien-crecio-y-quien-se-achico/)).
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA e IPC del BCP.
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_dato, barras_h as bh
+cort = lambda x: x.replace("Servicio civil del Ejecutivo", "Servicio civil").replace("Entes autónomos y autárquicos", "Entes autónomos").replace("Gobiernos departamentales", "Gobernaciones")
+social("Cinco años de gobierno,\nsector por sector", signo(top.dif.iloc[0]), f"vínculos en {cort(top.index[0])} desde 2023, el sector que más creció")
+o = top.head(7).sort_values("dif")
+ig_dato(1, "2023–2028", f"Desde 2023, {cort(top.index[0])} sumó", signo(top.dif.iloc[0]), "vínculos", "Cambio de vínculos por sector", bh([cort(x) for x in o.index], list(o.dif), [signo(x) for x in o.dif]))
+```

@@ -1,0 +1,71 @@
+---
+title: "Quince años de datos: género"
+description: "La participación de las mujeres y la brecha de sueldo básico en el Estado, de 2015 a hoy."
+date: 2030-03-07
+categories: [Quince años, Género]
+image: social.png
+image-alt: "Quince años de datos: género"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import numpy as np
+import plotly.graph_objects as go
+
+```
+
+```{python}
+#| label: datos
+s = serie_mensual(); sj = s[s.mes == 6].set_index("anho").loc[2015:]
+g = leer("genero_brecha_anual.csv").set_index("anho").loc[2018:]
+A0, A = int(sj.index.min()), int(sj.index.max())
+pm = sj.mujeres / sj.total * 100
+tv = leer("vinculos_tipo_sexo.csv"); tv = tv[(tv.mes == 6) & (tv.anho == A)]
+```
+
+```{python}
+#| label: kpis
+#| output: asis
+print(kpis([(f"{pct(pm[A0], 0)} → {pct(pm[A], 0)}", f"mujeres en los vínculos, {A0}–{A}"), (pct(g.brecha_misma_categoria_pct.iloc[-1], 1), "brecha de sueldo básico en la misma categoría"), (pct(g.brecha_bruta_pct.iloc[-1], 1), "brecha bruta")]))
+```
+
+En quince años, la participación de las mujeres en los vínculos públicos pasó del `{python} pct(pm[A0], 1)` al `{python} pct(pm[A], 1)`. La diferencia de sueldo básico entre mujeres y hombres en la misma institución y categoría es de `{python} pct(g.brecha_misma_categoria_pct.iloc[-1], 1)`; la brecha bruta, que mezcla dónde trabaja cada uno, es de `{python} pct(g.brecha_bruta_pct.iloc[-1], 1)`.
+
+```{python}
+#| label: fig
+#| fig-cap: "Proporción de mujeres en los vínculos del Estado, junio de cada año"
+fig = go.Figure(go.Scatter(x=pm.index, y=pm, mode="lines+markers", line=dict(color=VIOLETA, width=2.6)))
+estilo(fig, alto=280, leyenda=False).update_xaxes(dtick=1); fig.update_yaxes(ticksuffix="%")
+fig.show(config=CONFIG)
+```
+
+```{python}
+#| label: fig-b
+#| fig-cap: "Brecha de sueldo básico entre mujeres y hombres: bruta y en la misma institución y categoría (%)"
+fig = go.Figure()
+fig.add_trace(go.Bar(x=g.index, y=g.brecha_bruta_pct, name="Bruta", marker_color=GRIS))
+fig.add_trace(go.Bar(x=g.index, y=g.brecha_misma_categoria_pct, name="Misma institución y categoría", marker_color=VIOLETA))
+estilo(fig, alto=300).update_layout(barmode="group"); fig.update_xaxes(dtick=1); fig.update_yaxes(ticksuffix="%")
+fig.show(config=CONFIG)
+```
+
+Las series de sueldo básico empiezan en 2018 por un pago retroactivo en junio de 2017 ([registro de correcciones](/correcciones/)). El techo de cristal está en [¿se movió en diez años?](../2029-03-01-techo-de-cristal-se-movio-en-diez-anos/).
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA.
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_dato, lineas
+social("Quince años de datos:\ngénero", pct(pm[A], 0), f"de los vínculos son de mujeres (en {A0}: {pct(pm[A0], 0)})", (list(pm.index), list(pm)), color=VIOLETA)
+ig_dato(1, "Quince años", "Las mujeres en los vínculos públicos:", pct(pm[A], 0), f"en {A} (en {A0}: {pct(pm[A0], 0)})", "% de mujeres (junio)",
+        lineas(list(pm.index), {"%": (list(pm), VIOLETA)}, fmt=lambda x: coma(x, 0)), color=VIOLETA)
+```

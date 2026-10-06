@@ -1,0 +1,68 @@
+---
+title: "El Estado que recibe el próximo gobierno, en cinco cifras"
+description: "Vínculos, contratos, masa salarial, remuneración media y sueldo de los mismos cargos: el punto de partida del gobierno que asume el 15 de agosto de 2028."
+date: 2028-04-03
+categories: [El dato de la semana, Ciclo electoral]
+image: social.png
+image-alt: "El Estado que recibe el próximo gobierno, en cinco cifras"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import numpy as np
+import plotly.graph_objects as go
+
+```
+
+```{python}
+#| label: datos
+AC, MC = ultimo_mes_confiable(); UA = ultimo_anio_completo()
+s = serie_mensual().set_index(["anho", "mes"])
+u = s.loc[(AC, MC)]; b = s.loc[(2023, MC)] if (2023, MC) in s.index else s.loc[(2023, 7)]
+ms = leer("masa_anual_sector.csv").groupby("anho").agg(m=("devengado", "sum"), sa=("devengado_sin_aguinaldo", "sum"), v=("vinculos_promedio", "sum"))
+D = deflactor(UA); ms["real"] = ms.m * D.reindex(ms.index); ms["rem"] = ms.sa / 12 / ms.v * D.reindex(ms.index)
+ia = leer("issp_anual.csv").set_index("anho")
+cifras = [
+    (miles(u.total), f"vínculos en {fecha_txt(AC, MC)} ({spct((u.total / b.total - 1) * 100, 0)} frente al mismo mes de 2023)"),
+    (pct(u.contratado / u.total * 100, 0), f"son contratos (en 2023: {pct(b.contratado / b.total * 100, 0)})"),
+    (billones(ms.m[UA]) + " billones", f"de guaraníes de masa salarial en {UA} ({spct((ms.real[UA] / ms.real[2023] - 1) * 100, 0)} real frente a 2023)"),
+    (spct((ms.rem[UA] / ms.rem[2023] - 1) * 100, 0), f"cambió la remuneración media real por vínculo entre 2023 y {UA}"),
+    (spct((ia.fisher_real[UA] / ia.fisher_real[2023] - 1) * 100, 0) if UA in ia.index else "—", f"cambió el sueldo básico real de los mismos cargos (ISSP), junio 2023–{UA}"),
+]
+```
+
+```{python}
+#| label: kpis
+#| output: asis
+print(kpis(cifras[:3]))
+```
+
+Cinco cifras para saber qué Estado recibe el gobierno que asume el 15 de agosto:
+
+```{python}
+#| output: asis
+for i, (v_, t_) in enumerate(cifras, 1):
+    print(f"{i}. **{v_}** {t_}.")
+```
+
+El análisis completo, con la comparación frente al período 2018–2023, es el [informe de traspaso](../2028-04-06-informe-de-traspaso-el-estado-de-2023-a-2028/). Usamos el último mes en que reportó casi la misma cantidad de instituciones que un año antes.
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA e IPC del BCP.
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_dato, barras
+social("El Estado que recibe\nel próximo gobierno", miles(u.total) + " vínculos", f"{pct(u.contratado / u.total * 100, 0)} contratos · {billones(ms.m[UA])} billones de Gs en salarios ({UA})")
+h = s.xs(MC, level=1).loc[2017:AC]
+ig_dato(1, "El dato de la semana", "El Estado que recibe el próximo gobierno:", miles(u.total), f"vínculos en {fecha_txt(AC, MC)}", f"Vínculos en {MESES[MC - 1]} de cada año (miles)",
+        barras([str(x) for x in h.index], list(h.total / 1000), [coma(x / 1000, 0) for x in h.total], rot=45))
+```

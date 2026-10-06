@@ -1,0 +1,38 @@
+```{python}
+#| label: datos
+mm = leer("masa_mensual_sector.csv"); UA = ultimo_anio_completo()
+b = mm[(mm.anho == UA) & (mm.componente == "Sueldo básico")].groupby("sector").devengado.sum().sort_values()
+costo = b * 0.01 * 13 / 12
+```
+
+```{python}
+#| label: kpis
+#| output: asis
+print(kpis([(milmillones(costo.sum()) + " mil M", "de guaraníes por año cuesta cada 1% de aumento del sueldo básico"), (costo.index[-1], f"el sector donde más cuesta ({milmillones(costo.iloc[-1])} mil M)")]))
+```
+
+El **[simulador de reajustes](/simulador/)** traduce cualquier anuncio de aumento en guaraníes: elegís el porcentaje, a qué sectores alcanza, sobre qué parte de la remuneración se aplica y desde qué mes, y el simulador calcula el costo anual con aguinaldo. Con los datos de `{python} UA`, cada punto de aumento del sueldo básico para todo el Estado cuesta unos **`{python} milmillones(costo.sum())` mil millones de guaraníes** por año.
+
+```{python}
+#| label: fig
+#| fig-cap: "Costo anual de un aumento de 1% del sueldo básico, por sector (miles de millones de guaraníes, con aguinaldo)"
+fig = barras_h(costo.index, costo / 1e9, [coma(x / 1e9, 1) for x in costo], colores=[AZUL] * len(costo), rango=[0, costo.max() / 1e9 * 1.25])
+fig.show(config=CONFIG)
+```
+
+Sirve para seguir el debate del Presupuesto: cada anuncio de reajuste puede traducirse en guaraníes. No incluye aportes ni efectos sobre jubilaciones, y supone que la cantidad de personal no cambia ([cuánto cuesta un punto de reajuste](/posts/2027-07-08-cuanto-cuesta-un-punto/)).
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA (presupuesto por objeto de gasto).
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_dato, barras_h as bh
+cort = lambda x: x.replace("Servicio civil del Ejecutivo", "Servicio civil").replace("Entes autónomos y autárquicos", "Entes autónomos").replace("Gobiernos departamentales", "Gobernaciones")
+social("El simulador\nde reajustes", milmillones(costo.sum()) + " mil millones", "de guaraníes por año cuesta cada 1% de aumento del sueldo básico")
+o = costo.tail(6)
+ig_dato(1, "Simulador de reajustes", "Cada 1% de aumento del sueldo básico cuesta", milmillones(costo.sum()) + " mil M", "de guaraníes por año", "Por sector (mil M Gs)",
+        bh([cort(x) for x in o.index], list(o / 1e9), [coma(x / 1e9, 0) for x in o]))
+```

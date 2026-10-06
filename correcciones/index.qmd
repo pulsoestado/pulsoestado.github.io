@@ -1,0 +1,22 @@
+---
+title: "Registro de correcciones"
+subtitle: "Cada corrección que hacemos a los datos de origen, con su motivo y su alcance"
+toc: false
+---
+
+Los registros administrativos tienen errores de carga y pagos atípicos. Cuando encontramos uno, lo documentamos aquí antes de corregirlo, para que cualquiera pueda reproducir nuestros números o discutir el criterio. Si encontrás otro, escribinos a [pulsoestado@gmail.com](mailto:pulsoestado@gmail.com).
+
+```{python}
+#| output: asis
+import pathlib
+import pandas as pd
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+c = pd.read_csv(raiz / "data/manual/correcciones.csv").sort_values("fecha", ascending=False)
+for _, r in c.iterrows():
+    print(f"### {r.periodo} · {r.archivo}\n")
+    print(f"**Alcance:** {r.alcance}  \n**Qué pasa:** {r.problema}  \n**Qué hacemos:** {r.correccion}  \n**Qué afecta:** {r.afecta}  \n*Registrada el {pd.to_datetime(r.fecha).strftime('%d/%m/%Y')}.*\n")
+```
+
+::: {.fuente}
+Detalle de la revisión, institución por institución: [data/manual/correcciones.csv](https://github.com/pulsoestado/pulsoestado.github.io/blob/main/data/manual/correcciones.csv) y la [metodología](/metodologia.qmd).
+:::

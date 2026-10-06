@@ -1,0 +1,68 @@
+---
+title: "Proyecciones 2030–2035: cuánto personal y cuánta masa salarial"
+description: "Tres escenarios de vínculos y masa salarial real hasta 2035 según las tendencias actuales. No son pronósticos."
+date: 2030-08-01
+categories: [Proyecciones, Dotación, Masa salarial]
+image: social.png
+image-alt: "Proyecciones 2030–2035: cuánto personal y cuánta masa salarial"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import numpy as np
+import plotly.graph_objects as go
+
+```
+
+```{python}
+#| label: datos
+pr = leer("proyecciones_2035.csv"); B = int(pr.base.iloc[0])
+t = pr.groupby(["anho", "escenario_vinculos", "aumento_real_anual"])[["vinculos", "masa_real"]].sum().reset_index()
+r35 = t[(t.anho == 2035) & (t.aumento_real_anual == 0.01)].set_index("escenario_vinculos")
+b = t[(t.anho == B) & (t.aumento_real_anual == 0.01)].iloc[0]
+ESC = ["Tendencia larga", "Tendencia reciente", "Contención (0,5% anual)"]
+```
+
+::: {.callout-warning}
+**Escenarios, no pronósticos.** Muestran a dónde llevarían las tendencias de los últimos años si se mantuvieran; no incorporan decisiones de política ni cambios en la economía.
+:::
+
+```{python}
+#| label: kpis
+#| output: asis
+print(kpis([(miles(r35.loc[e, "vinculos"]), f"vínculos en 2035 · {e.lower()}") for e in ESC]))
+```
+
+Con `{python} miles(b.vinculos)` vínculos en `{python} B`, el Estado llegaría a 2035 con entre `{python} miles(r35.vinculos.min())` y `{python} miles(r35.vinculos.max())` vínculos según el escenario. Con un aumento real de la remuneración de 1% por año, la masa salarial pasaría de `{python} billones(b.masa_real)` a entre `{python} billones(r35.masa_real.min())` y `{python} billones(r35.masa_real.max())` billones de guaraníes de `{python} B`.
+
+```{python}
+#| label: fig
+#| fig-cap: "Vínculos proyectados por escenario"
+fig = go.Figure()
+for e, c_ in zip(ESC, [NARANJA, AZUL, VERDE_AGUA]):
+    d = t[(t.escenario_vinculos == e) & (t.aumento_real_anual == 0.01)]
+    fig.add_trace(go.Scatter(x=d.anho, y=d.vinculos, name=e, mode="lines", line=dict(color=c_, width=2.4)))
+estilo(fig, alto=320).update_xaxes(dtick=1); fig.update_yaxes(tickformat=",.0f")
+fig.show(config=CONFIG)
+```
+
+La diferencia entre escenarios en 2035 equivale a `{python} miles(r35.vinculos.max() - r35.vinculos.min())` vínculos: ese es el margen que dejan las decisiones de contratación de los próximos años. El detalle por sector, los tres supuestos de aumento real y los datos para descargar están en la página de [proyecciones a 2035](/proyecciones/).
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA e IPC del BCP.
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_dato, barras
+social("Proyecciones 2030–2035", f"{miles(r35.vinculos.min())}–{miles(r35.vinculos.max())}", "vínculos en 2035 según el escenario (no son pronósticos)")
+ig_dato(1, "Proyecciones", "En 2035, el Estado tendría entre", f"{coma(r35.vinculos.min() / 1000, 0)} y {coma(r35.vinculos.max() / 1000, 0)} mil", "vínculos, según el escenario", "Vínculos en 2035 (miles)",
+        barras(["Larga", "Reciente", "Contención"], [r35.loc[e, "vinculos"] / 1000 for e in ESC], [coma(r35.loc[e, "vinculos"] / 1000, 0) for e in ESC], colores=[NARANJA, AZUL, VERDE_AGUA]))
+```

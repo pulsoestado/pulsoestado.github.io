@@ -1,0 +1,124 @@
+---
+title: "Contratados 2030: quiénes son y dónde están"
+description: "Casi uno de cada cuatro vínculos públicos es un contrato. En qué instituciones se concentran, con qué objetos de gasto se pagan, cuánto cuestan y cómo crecieron desde 2017."
+date: 2030-07-04
+categories: [Contratados, Dotación, Masa salarial]
+image: social.png
+image-alt: "Contratados 2030: quiénes son y dónde están"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import plotly.graph_objects as go
+
+UA = ultimo_anio_completo(); A0 = 2017
+v = leer("vinculos_mensual_sector.csv")
+t = v[v.anho.between(A0, UA)].groupby(["anho", "mes"])[["total", "contratado", "permanente"]].sum().groupby("anho").mean()
+t["pc"] = t.contratado / t.total * 100
+dC = t.contratado[UA] - t.contratado[A0]; dP = t.permanente[UA] - t.permanente[A0]
+parte = dC / (dC + dP) * 100
+s = v[v.anho == UA].groupby(["mes", "sector"]).contratado.sum().groupby("sector").mean().sort_values(ascending=False)
+st = v[v.anho == UA].groupby(["mes", "sector"]).total.sum().groupby("sector").mean()
+sp = (s / st * 100)
+p = vin_promedio_oee(UA); p["pc"] = p.contratado / p.total * 100
+top = p.sort_values("contratado", ascending=False).head(10)
+part_top = top.contratado.sum() / p.contratado.sum() * 100
+o = leer("masa_anual_objeto.csv"); o = o[o.objeto_gasto // 10 == 14]
+OBJ = {141: "Personal técnico (141)", 142: "Personal de salud (142)", 143: "Docentes ocasionales (143)",
+       144: "Jornales (144)", 145: "Honorarios profesionales (145)"}
+o["obj"] = o.objeto_gasto.map(OBJ).fillna("Otros contratos (146–148)")
+ob = o[o.anho == UA].groupby("obj").devengado.sum().sort_values(ascending=False)
+obp = ob / ob.sum() * 100
+masa_c = ob.sum()
+costo = masa_c / 12 / t.contratado[UA]
+ma = leer("masa_anual_sector.csv").query("anho == @UA")
+part_masa = masa_c / ma.devengado.sum() * 100
+```
+
+::: {.en-breve}
+**En breve**
+
+- En `{python} UA` el Estado pagó en promedio **`{python} miles(t.contratado[UA])` vínculos contratados** por mes, el **`{python} pct(t.pc[UA])`** del total. En `{python} A0` eran el `{python} pct(t.pc[A0])`.
+- Desde `{python} A0`, los contratos explican el **`{python} pct(parte, 0)`** del aumento de vínculos.
+- Las 10 instituciones con más contratados reúnen el `{python} pct(part_top, 0)` de todos los contratos. La primera es el **`{python} top.nombre_largo.iloc[0]`**, con `{python} miles(top.contratado.iloc[0])`.
+- Los contratos costaron `{python} milmillones(masa_c)` mil millones de guaraníes (`{python} pct(part_masa, 0)` de la masa salarial). El objeto de gasto más grande es el de **`{python} ob.index[0].split(' (')[0].lower()`**.
+:::
+
+## Cómo crecieron
+
+```{python}
+#| label: fig-serie
+#| fig-cap: "Vínculos por tipo, promedio de cada año"
+fig = go.Figure()
+fig.add_trace(go.Bar(x=t.index, y=t.permanente, name="Permanentes", marker_color=AZUL, hovertemplate="Permanentes: %{y:,.0f}<extra></extra>"))
+fig.add_trace(go.Bar(x=t.index, y=t.contratado, name="Contratados", marker_color=NARANJA,
+                     text=[pct(x, 0) for x in t.pc], textposition="inside", insidetextanchor="end",
+                     hovertemplate="Contratados: %{y:,.0f}<extra></extra>"))
+estilo(fig, alto=340).update_layout(barmode="stack", bargap=0.3)
+fig.update_xaxes(dtick=1); fig.update_yaxes(tickformat=",.0f")
+fig.show(config=CONFIG)
+```
+
+La planta permanente creció `{python} miles(dP)` vínculos entre `{python} A0` y `{python} UA`; los contratos, `{python} miles(dC)`. El salto más grande se dio en 2020 y 2021, con la contratación de personal de salud durante la pandemia.
+
+## Dónde están
+
+```{python}
+#| label: fig-sector
+#| fig-cap: "Contratados por sector (promedio del último año completo) y proporción sobre el total del sector"
+o_ = s.sort_values()
+fig = barras_h(o_.index, o_.values, [f"{miles(c)} · {pct(sp[k], 0)}" for k, c in o_.items()], colores=[NARANJA] * len(o_),
+               rango=[0, o_.max() * 1.35])
+fig.update_xaxes(tickformat=",.0f"); fig.show(config=CONFIG)
+```
+
+**Salud** concentra más de la mitad de los contratos del Estado. Pero la proporción más alta está en las **municipalidades**, donde el `{python} pct(sp.get('Municipalidades', 0), 0)` del personal es contratado ([municipalidades por dentro](../2026-12-18-municipalidades-por-dentro/)).
+
+```{python}
+#| label: tbl-top
+#| output: asis
+print("| Institución | Contratados | % de su personal |\n|---|--:|--:|")
+for _, r in top.iterrows():
+    print(f"| {r.nombre_largo} | {miles(r.contratado)} | {pct(r.pc, 0)} |")
+print(f"\n: Las 10 instituciones con más contratados, promedio de {UA}")
+```
+
+## Con qué se pagan
+
+```{python}
+#| label: tbl-obj
+#| output: asis
+print(f"| Objeto de gasto | {UA} (mil M Gs) | % |\n|---|--:|--:|")
+for k, x in ob.items():
+    print(f"| {k} | {milmillones(x)} | {pct(obp[k])} |")
+print(f"\n: Masa salarial del personal contratado por objeto de gasto (subgrupo 14x), {UA}")
+```
+
+Dividido por la cantidad de contratados, cada contrato cuesta en promedio unos **`{python} millones(costo, 2)` millones de guaraníes por mes**. Es menos que la remuneración media del Estado, en parte porque los contratos se concentran en funciones y sectores con remuneraciones más bajas.
+
+## Por qué importa
+
+Un contrato no tiene la estabilidad de un cargo permanente: se renueva periódicamente, puede no renovarse y quien lo tiene no forma parte de la planta permanente. Que casi uno de cada cuatro vínculos públicos sea un contrato, y que la mayor parte del crecimiento del empleo de los últimos años haya sido con contratos, es una de las características centrales del Estado paraguayo hoy.
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA (vínculos por mes y devengado por objeto de gasto). [Descargar los datos](/datos/).
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_portada, ig_dato, barras_h as bh
+cort = lambda x: x.replace("Servicio civil del Ejecutivo", "Servicio civil").replace("Entes autónomos y autárquicos", "Entes autónomos")
+social("Contratados: quiénes\nson y dónde están", miles(t.contratado[UA]) + " contratos", f"el {pct(t.pc[UA])} de los vínculos ({UA})", (list(t.index), list(t.pc)))
+ig_portada("Contratados", "Contratados:\nquiénes son\ny dónde están", f"{pct(t.pc[UA])} de los vínculos públicos\ny {pct(parte, 0)} del aumento desde {A0}.", (list(t.index), list(t.pc)))
+o7 = s.head(7).iloc[::-1]
+ig_dato(2, "Por sector", "Salud concentra", pct(s.get("Salud", 0) / s.sum() * 100, 0), "de todos los contratos del Estado",
+        f"Contratados promedio de {UA}", bh([cort(x) for x in o7.index], o7.values, [miles(x) for x in o7.values], colores=[NARANJA] * len(o7)))
+```

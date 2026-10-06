@@ -1,0 +1,49 @@
+---
+title: "Instituciones que reportan con atraso"
+description: "Cuántas instituciones todavía no cargaron los datos del último mes y cuántos vínculos faltan."
+date: 2029-11-05
+categories: [El dato de la semana, Metodología]
+image: social.png
+image-alt: "Instituciones que reportan con atraso"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import numpy as np
+import plotly.graph_objects as go
+
+```
+
+```{python}
+#| label: datos
+nc = leer("vinculos_completados_sector.csv"); A1, M1 = ultimo_mes()
+u = nc[(nc.anho == A1) & (nc.mes == M1)].set_index("sector").sort_values("instituciones_completadas", ascending=False)
+```
+
+```{python}
+#| label: kpis
+#| output: asis
+print(kpis([(miles(u.instituciones_completadas.sum()), f"instituciones sin datos de {fecha_txt(A1, M1)}"), (miles(u.completado.sum() - u.reportado.sum()), "vínculos que faltan cargar (estimación)")]))
+```
+
+En `{python} fecha_txt(A1, M1)`, `{python} miles(u.instituciones_completadas.sum())` instituciones que reportaban un año antes todavía no habían cargado sus datos; la mayoría son **`{python} u.index[0].lower()`** (`{python} miles(u.instituciones_completadas.iloc[0])`). Si se completan con su último dato, faltarían unos `{python} miles(u.completado.sum() - u.reportado.sum())` vínculos. El detalle está en el [informe de calidad de datos](../2029-11-01-calidad-de-datos-el-primer-informe-anual/).
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA.
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_dato, barras_h as bh
+social("Instituciones que\nreportan con atraso", miles(u.instituciones_completadas.sum()), f"instituciones sin datos de {fecha_txt(A1, M1)}")
+o = u.head(6).sort_values("instituciones_completadas")
+ig_dato(1, "El dato de la semana", f"Sin datos de {fecha_txt(A1, M1)}:", miles(u.instituciones_completadas.sum()), "instituciones", "Por sector",
+        bh(list(o.index), list(o.instituciones_completadas), [miles(x) for x in o.instituciones_completadas]))
+```

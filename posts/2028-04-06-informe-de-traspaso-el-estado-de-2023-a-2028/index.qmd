@@ -1,0 +1,89 @@
+---
+title: "Informe de traspaso: el Estado de 2023 a 2028"
+description: "Cuántos vínculos permanentes y contratados sumó el Estado entre julio de 2023 y julio de 2028, y cómo se compara con el período 2018–2023."
+date: 2028-04-06
+categories: [Ciclo electoral, Dotación, Masa salarial]
+image: social.png
+image-alt: "Informe de traspaso: el Estado de 2023 a 2028"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import numpy as np
+import plotly.graph_objects as go
+
+```
+
+```{python}
+#| label: datos
+AC, MC = ultimo_mes_confiable()
+s = serie_extendida(2028, 7).set_index("fecha")
+def tramo(a, b):
+    r0, r1 = s.loc[pd.Timestamp(year=a, month=7, day=1)], s.loc[pd.Timestamp(year=b, month=7, day=1)]
+    return dict(total=r1.total - r0.total, contr=r1.contratado - r0.contratado, perm=r1.permanente - r0.permanente,
+                muj=r1.mujeres - r0.mujeres, var=(r1.total / r0.total - 1) * 100, est=bool(s.loc[pd.Timestamp(year=a, month=7, day=1):pd.Timestamp(year=b, month=7, day=1)].estimado.any()))
+T1, T2 = tramo(2018, 2023), tramo(2023, 2028)
+UA = ultimo_anio_completo()
+ms = leer("masa_anual_sector.csv").groupby("anho").devengado.sum(); D = deflactor(UA)
+real = ms * D.reindex(ms.index)
+g1 = (real[2022] / real[2018]) ** (1 / 4) - 1
+g2 = (real[UA] / real[2023]) ** (1 / max(UA - 2023, 1)) - 1
+```
+
+```{python}
+#| output: asis
+if T2["est"]:
+    aviso_estimacion(f"Julio de 2028 todavía no tiene datos completos: el período 2023–2028 usa una estimación a partir del último mes confiable ({fecha_txt(AC, MC)}).")
+```
+
+```{python}
+#| label: kpis
+#| output: asis
+print(kpis([(signo(T1["total"]), "vínculos entre julio de 2018 y julio de 2023"), (signo(T2["total"]), "entre julio de 2023 y julio de 2028" + (" (estimado)" if T2["est"] else "")),
+            (spct(g2 * 100), f"por año creció la masa salarial real desde 2023 (2018–2022: {spct(g1 * 100)})")]))
+```
+
+Entre julio de 2018 y julio de 2023, el Estado sumó `{python} miles(T1["total"])` vínculos (`{python} spct(T1["var"])`): `{python} signo(T1["contr"])` contratos y `{python} signo(T1["perm"])` permanentes. Entre julio de 2023 y julio de 2028 el cambio es de `{python} signo(T2["total"])` (`{python} spct(T2["var"])`)`{python} " según nuestra estimación" if T2["est"] else ""`: `{python} signo(T2["contr"])` contratos y `{python} signo(T2["perm"])` permanentes.
+
+```{python}
+#| label: fig
+#| fig-cap: "Cambio de vínculos en cada período de gobierno, por tipo (julio a julio)"
+fig = go.Figure()
+x = ["2018–2023", "2023–2028" + (" (est.)" if T2["est"] else "")]
+fig.add_trace(go.Bar(x=x, y=[T1["perm"], T2["perm"]], name="Permanentes", marker_color=AZUL))
+fig.add_trace(go.Bar(x=x, y=[T1["contr"], T2["contr"]], name="Contratados", marker_color=NARANJA))
+estilo(fig, alto=320).update_layout(barmode="relative"); fig.update_yaxes(tickformat=",.0f")
+fig.add_hline(y=0, line=dict(color=GRIS, width=1))
+fig.show(config=CONFIG)
+```
+
+```{python}
+#| label: fig-m
+#| fig-cap: "Masa salarial anual, billones de guaraníes del último año completo"
+h = real.loc[2017:UA]
+fig = go.Figure(go.Bar(x=h.index, y=h / 1e12, marker_color=[AZUL if a < 2023 else NARANJA for a in h.index], text=[coma(x / 1e12, 1) for x in h], textposition="outside", cliponaxis=False))
+estilo(fig, alto=300, leyenda=False).update_layout(hovermode="closest"); fig.update_xaxes(dtick=1); fig.update_yaxes(range=[0, h.max() / 1e12 * 1.18])
+fig.show(config=CONFIG)
+```
+
+Un informe de traspaso no evalúa a ningún gobierno: muestra el punto de partida del siguiente. El detalle por sector está en [cinco años de gobierno, sector por sector](../2028-07-06-cinco-anos-de-gobierno-sector-por-sector/), y el seguimiento mes a mes, en el [monitor del ciclo electoral](/monitor-electoral/).
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA e IPC del BCP.
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_portada, ig_dato, barras
+social("Informe de traspaso:\nel Estado 2023–2028", signo(T2["total"]) + " vínculos", "julio 2023 a julio 2028" + (" (estimado)" if T2["est"] else "") + f" · 2018–2023: {signo(T1['total'])}")
+ig_portada("Informe de traspaso", "El Estado\nde 2023\na 2028", f"{signo(T2['total'])} vínculos en cinco años" + (" (est.)" if T2["est"] else "") + ".")
+ig_dato(2, "Por período", "Cambio de vínculos en cada gobierno", signo(T2["total"]), "2023–2028" + (" (estimado)" if T2["est"] else ""), "Vínculos, julio a julio",
+        barras(["2018–2023", "2023–2028"], [T1["total"], T2["total"]], [signo(T1["total"]), signo(T2["total"])], colores=[AZUL, NARANJA]))
+```

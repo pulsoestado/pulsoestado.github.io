@@ -1,0 +1,49 @@
+---
+title: "Cómo corregimos los datos: el registro de correcciones"
+description: "Un registro público de cada corrección a los datos de origen y una estimación rotulada del último mes, para que las limitaciones de los registros queden a la vista."
+date: 2028-01-17
+categories: [El dato de la semana, Metodología, Datos abiertos]
+image: social.png
+image-alt: "Cómo corregimos los datos: el registro de correcciones"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import numpy as np
+import plotly.graph_objects as go
+
+```
+
+```{python}
+#| label: datos
+cr = pd.read_csv(raiz / "data/manual/correcciones.csv")
+nc = leer("vinculos_completados_sector.csv")
+u = nc[(nc.anho == nc.anho.max())]; u = u[u.mes == u.mes.max()]
+```
+
+Los registros administrativos tienen errores de carga y pagos atípicos, y algunas instituciones cargan sus datos con meses de atraso. Publicamos dos herramientas para que esas limitaciones queden a la vista:
+
+1. **[El registro de correcciones](/correcciones/)**: cada corrección que hacemos a los datos de origen, con su motivo, su alcance y qué análisis afecta. Hoy tiene `{python} len(cr)` entradas; la más importante es el aguinaldo de diciembre de 2021, que figura seis veces por encima de lo normal en la Administración Central.
+2. **La estimación del último mes**: en `{python} fecha_txt(int(u.anho.iloc[0]), int(u.mes.iloc[0]))` reportaron `{python} miles(u.instituciones_reportan.sum())` instituciones; si completamos con su último dato a las `{python} miles(u.instituciones_completadas.sum())` que todavía no cargaron, el total pasa de `{python} miles(u.reportado.sum())` a unos `{python} miles(u.completado.sum())` vínculos. La estimación se publica como dato aparte, rotulada, en la [sección de datos](/datos/).
+
+Si encontrás otro error, escribinos: lo revisamos y, si corresponde, lo sumamos al registro.
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA.
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_dato, barras
+social("Cómo corregimos\nlos datos", f"{len(cr)} correcciones", "documentadas en el nuevo registro público")
+x = nc.groupby(["anho", "mes"])[["reportado", "completado"]].sum().reset_index()
+ig_dato(1, "Calidad de datos", "El último mes, completando a quienes cargan con atraso:", miles(u.completado.sum()), f"vínculos (reportados: {miles(u.reportado.sum())})",
+        "Reportado y completado, últimos meses", barras([f"{MES_C[m - 1]}-{str(a)[2:]}" for a, m in zip(x.anho, x.mes)], list(x.completado - x.reportado), [miles(v) for v in x.completado - x.reportado]))
+```

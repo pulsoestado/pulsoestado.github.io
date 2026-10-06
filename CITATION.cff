@@ -1,0 +1,11 @@
+cff-version: 1.2.0
+message: "Si usás estos datos o análisis, citá a Pulso del Estado con este formato."
+title: "Pulso del Estado: datos sobre la dotación de personal y la masa salarial del sector público paraguayo"
+type: dataset
+authors:
+  - name: "Pulso del Estado"
+    email: pulsoestado@gmail.com
+url: "https://pulsoestado.github.io"
+repository-code: "https://github.com/pulsoestado/pulsoestado.github.io"
+license: CC-BY-4.0
+keywords: [Paraguay, empleo público, masa salarial, SINARH, SICCA, ISSP]

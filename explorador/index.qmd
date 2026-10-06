@@ -1,0 +1,76 @@
+---
+title: "Explorador de datos"
+subtitle: "Elegí sectores, indicador y período; mirá el gráfico y descargá los datos"
+toc: false
+---
+
+```{ojs}
+//| echo: false
+//| output: false
+vs = (await FileAttachment("/data/processed/vinculos_mensual_sector.csv").csv({typed: true}))
+  .map(d => ({...d, fecha: new Date(d.anho, d.mes - 1, 1)}))
+mm = (await FileAttachment("/data/processed/masa_mensual_sector.csv").csv({typed: true}))
+ipc = (await FileAttachment("/data/processed/ipc_salarios_bcp.csv").csv({typed: true}))
+sectores = [...new Set(vs.map(d => d.sector))].sort((a, b) => a.localeCompare(b, "es"))
+fmt = (x, d = 0) => x == null || isNaN(x) ? "—" : x.toLocaleString("es-PY", {maximumFractionDigits: d, minimumFractionDigits: d})
+ipcMap = new Map(ipc.map(d => [d.anho, d.ipc]))
+ipcBase = ipcMap.get(d3.max(ipc.filter(d => d.ipc), d => d.anho))
+```
+
+```{ojs}
+//| echo: false
+viewof indicador = Inputs.radio(["Vínculos", "Contratados", "% contratados", "Mujeres", "% mujeres", "Masa salarial mensual (nominal)", "Masa salarial anual real"],
+  {label: "Indicador", value: "Vínculos"})
+viewof elegidos = Inputs.checkbox(sectores, {label: "Sectores", value: ["Educación", "Salud", "Fuerzas públicas"]})
+viewof agregar = Inputs.toggle({label: "Sumar los sectores elegidos", value: false})
+viewof desde = Inputs.range([2015, 2026], {label: "Desde el año", step: 1, value: 2017})
+```
+
+```{ojs}
+//| echo: false
+datos = {
+  const S = new Set(elegidos);
+  let filas;
+  if (indicador.startsWith("Masa salarial anual")) {
+    const r = d3.rollups(mm.filter(d => S.has(d.sector) && d.anho >= desde), v => ({dev: d3.sum(v, d => d.devengado), meses: new Set(v.map(d => d.mes)).size}), d => d.sector, d => d.anho);
+    filas = r.flatMap(([s, a]) => a.filter(([, x]) => x.meses === 12).map(([anho, x]) => ({serie: s, x: new Date(anho, 0, 1), y: x.dev * ipcBase / ipcMap.get(anho) / 1e9})));
+  } else if (indicador.startsWith("Masa salarial mensual")) {
+    filas = d3.rollups(mm.filter(d => S.has(d.sector) && d.anho >= desde), v => d3.sum(v, d => d.devengado), d => d.sector, d => d.anho * 100 + d.mes)
+      .flatMap(([s, a]) => a.map(([k, y]) => ({serie: s, x: new Date(Math.floor(k / 100), k % 100 - 1, 1), y: y / 1e9})));
+  } else {
+    const campo = {"Vínculos": "total", "Contratados": "contratado", "Mujeres": "mujeres", "% contratados": "contratado", "% mujeres": "mujeres"}[indicador];
+    const pct = indicador.startsWith("%");
+    filas = vs.filter(d => S.has(d.sector) && d.anho >= desde).map(d => ({serie: d.sector, x: d.fecha, num: d[campo], den: d.total}));
+    if (!agregar) filas = filas.map(d => ({serie: d.serie, x: d.x, y: pct ? d.num / d.den * 100 : d.num}));
+    else filas = d3.rollups(filas, v => pct ? d3.sum(v, d => d.num) / d3.sum(v, d => d.den) * 100 : d3.sum(v, d => d.num), d => +d.x)
+      .map(([x, y]) => ({serie: "Sectores elegidos", x: new Date(x), y}));
+    return filas.sort((a, b) => a.x - b.x);
+  }
+  if (agregar) filas = d3.rollups(filas, v => d3.sum(v, d => d.y), d => +d.x).map(([x, y]) => ({serie: "Sectores elegidos", x: new Date(x), y}));
+  return filas.sort((a, b) => a.x - b.x);
+}
+unidad = indicador.startsWith("%") ? "%" : indicador.startsWith("Masa salarial anual") ? "Miles de millones de Gs del último año" : indicador.startsWith("Masa") ? "Miles de millones de Gs" : "Vínculos"
+```
+
+```{ojs}
+//| echo: false
+Plot.plot({
+  height: 420, marginLeft: 70, x: {type: "time", label: null}, y: {grid: true, label: unidad, tickFormat: d => fmt(d)},
+  color: {legend: true, scheme: "tableau10"},
+  marks: [indicador.startsWith("Masa salarial anual")
+      ? Plot.lineY(datos, {x: "x", y: "y", stroke: "serie", marker: "circle", tip: true})
+      : Plot.lineY(datos, {x: "x", y: "y", stroke: "serie", tip: true}),
+    Plot.ruleY([0])]
+})
+```
+
+```{ojs}
+//| echo: false
+html`<p>${DOM.download(() => new Blob([d3.csvFormat(datos.map(d => ({serie: d.serie, fecha: d.x.toISOString().slice(0, 10), valor: d.y})))], {type: "text/csv"}), "pulso_explorador.csv", "Descargar estos datos (CSV)")}</p>`
+```
+
+Los últimos meses pueden estar incompletos porque algunas instituciones, sobre todo municipalidades, cargan sus datos con atraso. La masa salarial anual real usa el IPC promedio del Banco Central del Paraguay y solo muestra años completos. Para una institución en particular, usá las [fichas por institución](/instituciones/).
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA e IPC del BCP. [Todos los datos](/datos/).
+:::

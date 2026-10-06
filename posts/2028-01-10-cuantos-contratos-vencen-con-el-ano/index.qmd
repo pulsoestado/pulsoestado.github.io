@@ -1,0 +1,60 @@
+---
+title: "Cuántos contratos vencen con el año"
+description: "Cuántos contratos del Estado se caen entre diciembre y enero, en qué sectores y cómo se compara con años anteriores."
+date: 2028-01-10
+categories: [El dato de la semana, Contratados]
+image: social.png
+image-alt: "Cuántos contratos vencen con el año"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import numpy as np
+import plotly.graph_objects as go
+
+```
+
+```{python}
+#| label: datos
+v = leer("vinculos_mensual_sector.csv")
+anios = sorted(a for a in v.anho.unique() if ((v.anho == a - 1) & (v.mes == 12)).any() and ((v.anho == a) & (v.mes == 1)).any())
+A = anios[-1]
+dic = v[(v.anho == A - 1) & (v.mes == 12)].groupby("sector").contratado.sum(); ene = v[(v.anho == A) & (v.mes == 1)].groupby("sector").contratado.sum()
+d = pd.DataFrame({"dic": dic, "ene": ene}).fillna(0); d["dif"] = d.ene - d.dic; d = d.sort_values("dif")
+h = pd.Series({a: v[(v.anho == a) & (v.mes == 1)].contratado.sum() - v[(v.anho == a - 1) & (v.mes == 12)].contratado.sum() for a in anios if a >= 2017})
+```
+
+```{python}
+#| label: kpis
+#| output: asis
+print(kpis([(signo(d.dif.sum()), f"contratos entre diciembre de {A - 1} y enero de {A}"), (pct(-d.dif.sum() / d.dic.sum() * 100, 0), "de los contratos de diciembre")]))
+```
+
+Cada fin de año vencen los contratos y una parte no se renueva enseguida: entre diciembre de `{python} A - 1` y enero de `{python} A`, los contratos del Estado cambiaron `{python} signo(d.dif.sum())`. La mayor caída fue en **`{python} d.index[0]`** (`{python} signo(d.dif.iloc[0])`). Casi todos vuelven en febrero y marzo ([el calendario del empleo público](/posts/2027-02-01-el-calendario-del-empleo-publico/)).
+
+```{python}
+#| label: fig
+#| fig-cap: "Cambio de contratos entre diciembre y enero de cada año"
+fig = go.Figure(go.Bar(x=h.index, y=h.values, marker_color=NARANJA, text=[signo(x) for x in h], textposition="outside", cliponaxis=False))
+estilo(fig, alto=300, leyenda=False).update_layout(hovermode="closest"); fig.update_xaxes(dtick=1); fig.update_yaxes(tickformat=",.0f")
+fig.show(config=CONFIG)
+```
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA.
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_dato, barras
+social("Cuántos contratos\nvencen con el año", signo(d.dif.sum()), f"contratos entre diciembre de {A - 1} y enero de {A}", (list(h.index), list(h.values)), tipo="barras")
+ig_dato(1, "El dato de la semana", f"Entre diciembre de {A - 1} y enero de {A}, los contratos cambiaron", signo(d.dif.sum()), "y vuelven en febrero y marzo",
+        "Diciembre a enero, cada año", barras([str(x) for x in h.index], list(h.values), [signo(x) for x in h], rot=45))
+```

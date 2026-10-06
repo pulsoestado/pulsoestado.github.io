@@ -1,0 +1,139 @@
+---
+title: "Masa salarial 2027: ¿más gente o mejores sueldos?"
+description: "Cuánto creció la masa salarial real del Estado, qué parte se explica por más vínculos y qué parte por mejores remuneraciones, sector por sector."
+date: 2028-04-13
+categories: [Masa salarial, Sectores]
+image: social.png
+image-alt: "Masa salarial 2027: ¿más gente o mejores sueldos?"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import numpy as np
+import plotly.graph_objects as go
+
+A0, A1 = 2017, 2025
+anual = leer("masa_anual_sector.csv")
+anual = anual[anual.anho.between(A0, A1)]
+
+# Total: masa real = vínculos × remuneración media real  →  en logaritmos, los efectos suman
+t = anual.groupby("anho")[["devengado_real_2025", "vinculos_promedio"]].sum()
+t["rem"] = t.devengado_real_2025 / t.vinculos_promedio
+d = np.log(t).diff().dropna() * 100
+d.columns = ["masa", "vinculos", "rem"]
+
+def efectos(g0, g1):
+    ev = np.log(g1.vinculos_promedio / g0.vinculos_promedio) * 100
+    er = np.log((g1.devengado_real_2025 / g1.vinculos_promedio) / (g0.devengado_real_2025 / g0.vinculos_promedio)) * 100
+    return ev, er
+
+T0, T1 = t.loc[A0], t.loc[A1]
+ev_tot, er_tot = efectos(T0, T1)
+masa_var = (T1.devengado_real_2025 / T0.devengado_real_2025 - 1) * 100
+
+s = anual.pivot(index="sector", columns="anho", values=["devengado_real_2025", "vinculos_promedio"])
+sec = pd.DataFrame({
+    "vinculos_var": (s[("vinculos_promedio", A1)] / s[("vinculos_promedio", A0)] - 1) * 100,
+    "masa_var": (s[("devengado_real_2025", A1)] / s[("devengado_real_2025", A0)] - 1) * 100,
+    "rem0": s[("devengado_real_2025", A0)] / s[("vinculos_promedio", A0)] / 13,
+    "rem1": s[("devengado_real_2025", A1)] / s[("vinculos_promedio", A1)] / 13,
+})
+sec["rem_var"] = (sec.rem1 / sec.rem0 - 1) * 100
+sec["peso"] = s[("devengado_real_2025", A1)] / s[("devengado_real_2025", A1)].sum() * 100
+E, S, F = sec.loc["Educación"], sec.loc["Salud"], sec.loc["Fuerzas públicas"]
+años_vin = int((d.vinculos > d.rem).sum())
+```
+
+::: {.en-breve}
+**En breve**
+
+- Entre `{python} A0` y `{python} A1` la masa salarial real creció **`{python} pct(masa_var)`**. Si se separan sus dos motores, **más vínculos** explican `{python} coma(ev_tot)` puntos y la **remuneración media real**, `{python} signo(er_tot, coma)` puntos: todo el aumento vino por la cantidad.
+- **Educación** casi no sumó vínculos (`{python} spct(E.vinculos_var)`), pero su remuneración media real subió **`{python} pct(E.rem_var, 0)`**.
+- **Salud** hizo lo contrario: sumó **`{python} pct(S.vinculos_var, 0)` más vínculos**, mayormente contratos, y su remuneración media real bajó `{python} pct(abs(S.rem_var), 0)`.
+- En **Fuerzas públicas** crecieron ambas cosas, pero sobre todo la cantidad (`{python} spct(F.vinculos_var, 0)` en vínculos).
+:::
+
+```{python}
+#| label: kpis
+#| output: asis
+print(kpis([
+    (spct(masa_var), f"masa salarial real {A0}–{A1}"),
+    (signo(ev_tot, coma) + " pp", "explicados por más vínculos"),
+    (signo(er_tot, coma) + " pp", "explicados por la remuneración media real"),
+    (spct(E.rem_var, 0), "remuneración media real en Educación"),
+]))
+```
+
+Una de las preguntas centrales sobre el gasto en personal es **por qué crece**. La masa salarial puede aumentar porque el Estado contrata más gente, porque paga más a la que ya tiene, o por las dos cosas a la vez. Distinguirlas importa: no es lo mismo una política de expansión de plantilla que una de recuperación salarial.
+
+## El método, en una línea
+
+La masa salarial es igual a la **cantidad de vínculos** multiplicada por la **remuneración media por vínculo**. Si se toman las tasas de variación en logaritmos, el crecimiento de la masa se divide exactamente en dos partes: un **efecto cantidad** y un **efecto sueldo**. Todo está en guaraníes de 2025 e incluye el aguinaldo.
+
+## Año por año
+
+```{python}
+#| label: fig-anual
+#| fig-cap: "Variación anual de la masa salarial real y sus dos componentes (puntos porcentuales, escala logarítmica)"
+fig = go.Figure()
+fig.add_trace(go.Bar(x=d.index, y=d.vinculos, name="Efecto cantidad (más vínculos)", marker_color=AZUL,
+                     hovertemplate="Más vínculos: <b>%{y:.1f} pp</b><extra></extra>"))
+fig.add_trace(go.Bar(x=d.index, y=d.rem, name="Efecto sueldo (remuneración media real)", marker_color=NARANJA,
+                     hovertemplate="Sueldo medio real: <b>%{y:.1f} pp</b><extra></extra>"))
+fig.add_trace(go.Scatter(x=d.index, y=d.masa, name="Masa salarial real", mode="markers",
+                         marker=dict(symbol="diamond", size=11, color=NAVY, line=dict(width=2, color="#fcfcfb")),
+                         hovertemplate="Masa real: <b>%{y:.1f}%</b><extra></extra>"))
+estilo(fig, alto=400).update_layout(barmode="group", bargap=0.25)
+fig.update_yaxes(ticksuffix=" pp", zeroline=True, zerolinecolor="rgba(128,128,128,.5)")
+fig.update_xaxes(dtick=1)
+fig.show(config=CONFIG)
+```
+
+El patrón cambia con el ciclo. Entre 2018 y 2020 los dos motores empujaron hacia arriba. En **2021 y 2022** la cantidad siguió creciendo, sobre todo por las contrataciones en salud durante la pandemia, pero la inflación se comió los sueldos y el efecto sueldo fue negativo: la masa real cayó. En 2023 y 2024 se dio el caso inverso, con pocos vínculos nuevos y una recuperación del sueldo medio real. En 2025 volvió a dominar la cantidad. En `{python} años_vin` de los `{python} len(d)` años, el efecto cantidad fue mayor que el efecto sueldo.
+
+## Tres sectores, tres modelos
+
+```{python}
+#| label: fig-sectores
+#| fig-cap: "Variación de vínculos y de remuneración media real por sector, 2017–2025"
+o = sec[sec.peso >= 1].sort_values("masa_var")
+fig = go.Figure()
+fig.add_trace(go.Bar(y=o.index, x=o.vinculos_var, name="Vínculos", orientation="h", marker_color=AZUL,
+                     hovertemplate="<b>%{y}</b><br>Vínculos: %{x:.1f}%<extra></extra>"))
+fig.add_trace(go.Bar(y=o.index, x=o.rem_var, name="Remuneración media real", orientation="h",
+                     marker_color=NARANJA, hovertemplate="<b>%{y}</b><br>Remuneración media real: %{x:.1f}%<extra></extra>"))
+estilo(fig, alto=520).update_layout(barmode="group", bargap=0.25, hovermode="closest")
+fig.update_xaxes(ticksuffix="%", showgrid=True, gridcolor="rgba(128,128,128,.18)", zeroline=True,
+                 zerolinecolor="rgba(128,128,128,.6)")
+fig.update_yaxes(showgrid=False)
+fig.show(config=CONFIG)
+```
+
+- **Educación: mejores sueldos.** El Ministerio de Educación y las universidades tienen hoy casi los mismos vínculos que en `{python} A0`, pero su remuneración media real pasó de `{python} millones(E.rem0)` a `{python} millones(E.rem1)` millones de guaraníes por mes (`{python} spct(E.rem_var, 0)`). Es el reflejo de los sucesivos reajustes del salario docente.
+- **Salud: más gente.** El Ministerio de Salud y el IPS sumaron `{python} pct(S.vinculos_var, 0)` más vínculos. La remuneración media real bajó de `{python} millones(S.rem0)` a `{python} millones(S.rem1)` millones. No significa necesariamente que a cada trabajador le paguen menos: la mayoría de los nuevos vínculos son contratos con remuneraciones más bajas que las de la planta permanente, y eso baja el promedio (un **efecto composición**).
+- **Fuerzas públicas: más gente, con sueldos estables.** La Policía y el Ministerio de Defensa crecieron `{python} pct(F.vinculos_var, 0)` en vínculos y su remuneración media real varió `{python} spct(F.rem_var, 0)`.
+
+## Por qué importa
+
+Las dos estrategias tienen costos y efectos distintos. Subir sueldos sin sumar personal mejora la retención y la motivación de quienes ya están, pero no amplía la cobertura del servicio. Sumar personal por contratos amplía la capacidad rápido, pero deja una planta más precaria y concentra el riesgo en la renovación anual de esos contratos. Separar los dos efectos permite discutir la política salarial con datos, como recomienda la guía *Creación de indicadores de nómina pública* del BID (Schuster, Naranjo Bautista y Lipinski, nota técnica IDB-TN-03246, 2025).
+
+::: {.callout-note collapse="true"}
+## Notas metodológicas
+
+- Masa salarial: devengado en servicios personales (grupo 100), incluido el aguinaldo, a precios de 2025 con el IPC promedio anual del BCP. El aguinaldo de diciembre de 2021 fue corregido (ver [¿Cuánto paga el Estado en salarios?](../2026-10-16-masa-salarial-real/)).
+- Vínculos: promedio de los 12 meses de cada año. Remuneración media = masa anual / vínculos promedio / 13 (doce sueldos y el aguinaldo).
+- La descomposición usa logaritmos para que los dos efectos sumen exactamente la variación de la masa. Por eso los valores en puntos porcentuales difieren levemente de las variaciones porcentuales simples.
+- La remuneración media mezcla jornadas y tipos de cargo: un cambio en la composición del personal la mueve aunque ningún salario cambie.
+- Se muestran los sectores con al menos 1% de la masa salarial.
+:::
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA y del Banco Central del Paraguay (IPC). Sectores según la [clasificación de Pulso del Estado](/metodologia.qmd). [Descargar los datos](/datos/).
+:::

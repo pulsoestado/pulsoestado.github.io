@@ -1,0 +1,69 @@
+---
+title: "El Índice de Sueldos del Sector Público: cómo leerlo"
+description: "Un índice trimestral de cuánto sube el sueldo básico de los mismos cargos, sin el efecto de quién entra y quién sale del Estado."
+date: 2028-01-13
+categories: [ISSP, Remuneraciones, Productos]
+image: social.png
+image-alt: "El Índice de Sueldos del Sector Público: cómo leerlo"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import numpy as np
+import plotly.graph_objects as go
+
+```
+
+```{python}
+#| label: datos
+a = leer("issp_anual.csv").set_index("anho"); q = leer("issp_trimestral.csv")
+d = a.dropna(subset=["var"])
+UA = int(d.index.max()); A0 = int(a.index.min())
+acum = (a.fisher[UA] / a.fisher[A0] - 1) * 100
+acum_real = (a.fisher_real[UA] / a.fisher_real[A0] - 1) * 100
+sm = (a.sueldo_medio[UA] / a.sueldo_medio[A0] - 1) * 100
+```
+
+```{python}
+#| label: kpis
+#| output: asis
+print(kpis([(spct(acum, 0), f"subió el sueldo básico de los mismos cargos, junio {A0}–{UA}"), (spct(acum_real, 0), "descontada la inflación"), (spct(sm, 0), "subió el sueldo básico medio, en el mismo período")]))
+```
+
+Pulso del Estado publica el **Índice de Sueldos del Sector Público (ISSP)**: una medida trimestral de cuánto cambia el sueldo básico de los mismos cargos. Entre junio de `{python} A0` y junio de `{python} UA` subió `{python} spct(acum, 0)`; descontada la inflación, `{python} spct(acum_real, 0)`.
+
+¿Por qué un índice y no el sueldo medio? Porque el promedio se mueve también cuando cambia quién trabaja en el Estado. Si se suman muchos cargos de categorías bajas, el promedio baja aunque ningún cargo cobre menos. El ISSP compara cada categoría de cada institución consigo misma y separa las dos cosas.
+
+```{python}
+#| label: fig
+#| fig-cap: "Variación anual del ISSP y del sueldo básico medio, de junio a junio (%)"
+fig = go.Figure()
+fig.add_trace(go.Bar(x=d.index, y=d["var"], name="ISSP (mismos cargos)", marker_color=AZUL))
+fig.add_trace(go.Bar(x=d.index, y=d.var_sueldo_medio, name="Sueldo básico medio", marker_color=GRIS))
+estilo(fig, alto=320).update_layout(barmode="group"); fig.update_xaxes(dtick=1); fig.update_yaxes(ticksuffix="%")
+fig.show(config=CONFIG)
+```
+
+La diferencia entre las dos barras es el **efecto composición**. En `{python} UA` fue de `{python} signo(d.efecto_composicion_pp[UA], lambda x: coma(x, 1))` puntos: `{python} "la mezcla de cargos empujó el promedio hacia arriba" if d.efecto_composicion_pp[UA] > 0 else "la mezcla de cargos empujó el promedio hacia abajo"`.
+
+El ISSP se actualizará cada trimestre, con la serie, el detalle por sector y la metodología en su [página propia](/issp/).
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA (nivel y categoría) e IPC del BCP.
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_portada, ig_dato, barras
+social("El Índice de Sueldos\ndel Sector Público", spct(acum_real, 0) + " real", f"el sueldo básico de los mismos cargos, {A0}–{UA}", (list(a.index), list(a.fisher)), color=VERDE_AGUA)
+ig_portada("Herramientas", "El Índice\nde Sueldos\ndel Estado", "Cuánto sube un mismo cargo,\nsin el efecto de quién entra y quién sale.", (list(a.index), list(a.fisher)), color=VERDE_AGUA)
+ig_dato(2, "ISSP", f"Junio {A0}–{UA}: el sueldo básico de los mismos cargos", spct(acum, 0), f"nominal · {spct(acum_real, 0)} real", "Variación anual del ISSP (%)",
+        barras([str(x) for x in d.index], list(d["var"]), [coma(x, 1) for x in d["var"]], rot=45), color=VERDE_AGUA)
+```

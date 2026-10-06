@@ -1,0 +1,116 @@
+---
+title: "Público y privado: los salarios por rama (2029)"
+description: "El Índice de Sueldos y Salarios del Banco Central muestra cómo evolucionaron los salarios privados por rama de actividad. Cómo se compara con la remuneración media pública y con el salario mínimo."
+date: 2029-05-24
+categories: [Salarios, Público y privado, Inflación]
+image: social.png
+image-alt: "Público y privado: los salarios por rama (2029)"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import plotly.graph_objects as go
+
+UA = ultimo_anio_completo(); A0 = 2017
+i = leer("bcp_iss_ramas.csv"); i = i[i.periodo == "jun"].set_index("anho").drop(columns="periodo")
+sm = leer("bcp_salario_minimo.csv").set_index("anho")
+ipc = sm.ipc
+AI = int(i.index.max())                       # último junio con ISS
+real = i.div(ipc.reindex(i.index), axis=0) * ipc.loc[AI]
+r01 = (real.loc[AI] / real.loc[2001] - 1) * 100
+r17 = (real.loc[AI] / real.loc[A0] - 1) * 100
+ramas = [c for c in i.columns if c != "Índice General"]
+mejor, peor = r17[ramas].idxmax(), r17[ramas].idxmin()
+t = leer("masa_anual_sector.csv").groupby("anho")[["devengado_sin_aguinaldo", "vinculos_promedio"]].sum().loc[A0:UA]
+pub = t.devengado_sin_aguinaldo / 12 / t.vinculos_promedio * ipc.loc[UA] / ipc.reindex(t.index)
+fin = min(UA, AI)
+pub_r = (pub.loc[fin] / pub.loc[A0] - 1) * 100
+smr = sm.salario_minimo / ipc * ipc.loc[AI]
+sm_r = (smr.loc[fin] / smr.loc[A0] - 1) * 100
+g_r = (real.loc[fin, "Índice General"] / real.loc[A0, "Índice General"] - 1) * 100
+idx = pd.DataFrame({"Salarios privados (ISS)": real["Índice General"], "Remuneración media pública": pub,
+                    "Salario mínimo": smr}).loc[A0:fin]
+idx = idx / idx.loc[A0] * 100
+```
+
+::: {.en-breve}
+**En breve**
+
+- Descontada la inflación, el **índice general de salarios privados** del BCP está `{python} pct(abs(r01['Índice General']), 0)` `{python} "por encima" if r01['Índice General'] >= 0 else "por debajo"` de su nivel de 2001 (junio de `{python} AI`).
+- Desde `{python} A0`, la rama donde más subió el salario real es **`{python} mejor`** (`{python} spct(r17[mejor])`) y donde menos, **`{python} peor`** (`{python} spct(r17[peor])`).
+- Entre `{python} A0` y `{python} fin`, los salarios privados cambiaron `{python} spct(g_r)` en términos reales, la remuneración media pública `{python} spct(pub_r)` y el salario mínimo `{python} spct(sm_r)`.
+:::
+
+## Veinticinco años de salarios privados
+
+```{python}
+#| label: fig-largo
+#| fig-cap: "Índice de Sueldos y Salarios del BCP, índice general, en términos reales (junio de cada año, 2001 = 100)"
+g = real["Índice General"] / real.loc[2001, "Índice General"] * 100
+fig = go.Figure(go.Scatter(x=g.index, y=g, mode="lines+markers", line=dict(color=VERDE_AGUA, width=2.8),
+                           hovertemplate="%{x}: <b>%{y:.1f}</b><extra></extra>"))
+fig.add_hline(y=100, line=dict(color=GRIS, width=1, dash="dot"))
+estilo(fig, alto=320, leyenda=False)
+fig.show(config=CONFIG)
+```
+
+El **Índice de Sueldos y Salarios** (ISS) del Banco Central mide cómo cambian los salarios que pagan las empresas privadas de varias ramas de actividad. Descontada la inflación, la serie muestra largos períodos en que los salarios privados apenas siguen a los precios.
+
+## Por rama
+
+```{python}
+#| label: fig-ramas
+#| fig-cap: "Cambio del salario real por rama de actividad desde 2017 (junio)"
+o = r17[ramas].sort_values()
+lim = abs(o).max()
+fig = barras_h(o.index, o.values, [spct(x) for x in o.values], rango=[min(o.min() * 1.6, -lim * 0.15), lim * 1.5])
+fig.update_xaxes(ticksuffix="%"); fig.show(config=CONFIG)
+```
+
+## Público, privado y mínimo
+
+```{python}
+#| label: fig-comp
+#| fig-cap: "Salarios en términos reales, índice 2017 = 100"
+fig = go.Figure()
+for k, c in [("Salarios privados (ISS)", VERDE_AGUA), ("Remuneración media pública", NARANJA), ("Salario mínimo", AZUL)]:
+    fig.add_trace(go.Scatter(x=idx.index, y=idx[k], name=k, mode="lines+markers", line=dict(color=c, width=2.6),
+                             hovertemplate=k + ": %{y:.1f}<extra></extra>"))
+fig.add_hline(y=100, line=dict(color=GRIS, width=1, dash="dot"))
+estilo(fig, alto=340).update_xaxes(dtick=1)
+fig.show(config=CONFIG)
+```
+
+Las tres series terminan cerca del punto de partida: ni el sector público ni el privado tuvieron, en promedio, aumentos reales importantes desde `{python} A0`. La diferencia está en el camino: la remuneración media pública tiene además un efecto composición, porque sube o baja según el tipo de personal que se suma.
+
+::: {.callout-note collapse="true"}
+## Qué se puede comparar
+
+- El **ISS** es un índice: mide cambios, no niveles. No dice si un trabajador privado gana más o menos que uno público, solo cómo cambió su salario.
+- La **remuneración media pública** es un promedio por vínculo (masa salarial sin aguinaldo / 12 / vínculos). Mezcla cargos muy distintos y cambia también con la composición del personal.
+- Las tres series se pasan a términos reales con el IPC promedio anual del BCP. El ISS se toma en junio de cada año.
+:::
+
+::: {.fuente}
+**Fuentes:** Banco Central del Paraguay, Anexo Estadístico (Índice de Sueldos y Salarios, salario mínimo legal e IPC). Elaboración de Pulso del Estado con datos de SINARH y SICCA. [Descargar los datos](/datos/).
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_portada, ig_dato, lineas, barras_h as bh
+social("Público y privado: los\nsalarios desde 2017", f"{spct(pub_r, 0)} y {spct(g_r, 0)}", f"remuneración media pública y salarios privados, reales ({A0}–{fin})",
+       (list(g.index), list(g)), color=VERDE_AGUA)
+ig_portada("Salarios", "Público y\nprivado", f"Desde {A0}, ninguno de los dos\ntuvo aumentos reales grandes.", (list(g.index), list(g)), color=VERDE_AGUA)
+ig_dato(2, "En términos reales", f"Entre {A0} y {fin}, los salarios privados cambiaron", spct(g_r),
+        f"la remuneración media pública, {spct(pub_r)}", "Índice 2017 = 100, términos reales",
+        lineas(list(idx.index), {"Privados": (list(idx.iloc[:, 0]), VERDE_AGUA), "Públicos": (list(idx.iloc[:, 1]), NARANJA),
+                                 "Mínimo": (list(idx.iloc[:, 2]), AZUL)}, ref=100), color=VERDE_AGUA)
+```

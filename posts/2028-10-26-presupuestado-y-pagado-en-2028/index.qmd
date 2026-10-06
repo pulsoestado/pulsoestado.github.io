@@ -1,0 +1,85 @@
+---
+title: "Presupuestado y pagado en 2028"
+description: "En servicios personales, las instituciones ejecutan casi todo lo que tienen presupuestado. Dónde la ejecución es más baja y qué significa."
+date: 2028-10-26
+categories: [Presupuesto, Masa salarial, Instituciones]
+image: social.png
+image-alt: "Presupuestado y pagado en 2028"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import plotly.graph_objects as go
+
+UA = ultimo_anio_completo()
+mm = leer("masa_mensual_oee.csv")
+a = mm[mm.anho == UA].groupby(K_OEE)[["presupuestado", "devengado"]].sum()
+a = a.join(instituciones().set_index(K_OEE)[["nombre_largo", "sector"]])
+a["ej"] = a.devengado / a.presupuestado * 100; a["sin"] = a.presupuestado - a.devengado
+E = a.devengado.sum() / a.presupuestado.sum() * 100; S = a.sin.sum()
+s = a.groupby("sector")[["presupuestado", "devengado"]].sum(); s["ej"] = s.devengado / s.presupuestado * 100; s = s.sort_values("ej")
+g = a[a.presupuestado >= 20e9].sort_values("ej")
+hist = mm.groupby("anho")[["presupuestado", "devengado"]].sum().loc[2017:UA]; hist["ej"] = hist.devengado / hist.presupuestado * 100
+top_sin = a.sort_values("sin", ascending=False).head(10)
+```
+
+::: {.en-breve}
+**En breve**
+
+- En `{python} UA`, las instituciones devengaron el **`{python} pct(E)`** de lo que figuraba como presupuestado para servicios personales en sus registros mensuales. Quedaron sin ejecutar `{python} milmillones(S)` mil millones de guaraníes.
+- La ejecución va del `{python} pct(s.ej.iloc[0])` en **`{python} s.index[0]`** al `{python} pct(s.ej.iloc[-1])` en **`{python} s.index[-1]`**.
+- Desde 2017, la ejecución anual se mantuvo entre el `{python} pct(hist.ej.min(), 0)` y el `{python} pct(hist.ej.max(), 0)`.
+:::
+
+```{python}
+#| label: fig
+#| fig-cap: "Ejecución del presupuesto de servicios personales por sector, último año completo (% devengado sobre presupuestado)"
+fig = barras_h(s.index, s.ej, [pct(x) for x in s.ej], colores=[AZUL] * len(s), rango=[s.ej.min() * 0.85, 101])
+fig.update_xaxes(ticksuffix="%"); fig.show(config=CONFIG)
+```
+
+La ejecución de servicios personales es alta porque los salarios son un gasto que no se puede postergar: si el cargo está ocupado, se paga. Lo que queda sin ejecutar suele corresponder a **cargos vacantes**, contratos que no se firmaron o se firmaron tarde, y previsiones para reajustes o bonificaciones que no se usaron.
+
+## Dónde quedó más sin ejecutar
+
+```{python}
+#| label: tbl
+#| output: asis
+print("| Institución | Presupuestado (mil M Gs) | Devengado (mil M Gs) | Ejecución | Sin ejecutar (mil M Gs) |\n|---|--:|--:|--:|--:|")
+for _, r in top_sin.iterrows():
+    print(f"| {r.nombre_largo} | {milmillones(r.presupuestado)} | {milmillones(r.devengado)} | {pct(r.ej)} | {milmillones(r.sin)} |")
+print(f"\n: Las 10 instituciones con más presupuesto de servicios personales sin ejecutar, {UA}")
+```
+
+Entre las instituciones con al menos 20 mil millones de guaraníes presupuestados, la ejecución más baja fue la de **`{python} g.nombre_largo.iloc[0]`** (`{python} pct(g.ej.iloc[0])`).
+
+::: {.callout-note collapse="true"}
+## Qué se compara
+
+- **Presupuestado**: el monto que figura como presupuestado en los registros mensuales de SINARH y SICCA, sumado en el año.
+- **Devengado**: lo que se comprometió a pagar porque el trabajo se realizó. Es lo que usamos como masa salarial.
+- La ejecución puede ser algo distinta de la que publica el Ministerio de Economía sobre el presupuesto vigente al cierre del año, que incluye las modificaciones presupuestarias.
+:::
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA (grupo 100). [Descargar los datos](/datos/).
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_portada, ig_dato, barras_h as bh
+cort = lambda x: x.replace("Servicio civil del Ejecutivo", "Servicio civil").replace("Entes autónomos y autárquicos", "Entes autónomos").replace("Gobiernos departamentales", "Gobernaciones")
+social("Presupuestado y pagado", pct(E) + " ejecutado", f"del presupuesto de servicios personales ({UA})")
+ig_portada("Presupuesto", "Presupuestado\ny pagado", f"Se ejecutó el {pct(E)} del presupuesto\nde servicios personales.")
+o = s.head(7)
+ig_dato(2, "Por sector", f"La ejecución más baja es la de {cort(s.index[0])}:", pct(s.ej.iloc[0]), "de lo presupuestado",
+        "% devengado sobre presupuestado", bh([cort(x) for x in o.index], o.ej, [pct(x) for x in o.ej]))
+```

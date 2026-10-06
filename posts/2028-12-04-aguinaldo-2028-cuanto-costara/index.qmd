@@ -1,0 +1,64 @@
+---
+title: "Aguinaldo 2028: cuánto costará"
+description: "Una estimación de cuánto pagará el Estado en aguinaldo en diciembre, a partir de lo que lleva pagado en sueldos en el año."
+date: 2028-12-04
+categories: [El dato de la semana, Aguinaldo, Masa salarial]
+image: social.png
+image-alt: "Aguinaldo 2028: cuánto costará"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+
+A1, M = ultimo_mes(); UA = ultimo_anio_completo()
+AE = A1 if M < 12 else A1 + 1          # año a estimar: el último con datos incompletos
+mm = leer("masa_mensual_sector.csv")
+sb = mm[mm.componente == "Sueldo básico"].groupby(["anho", "mes"]).devengado.sum()
+ag = mm[(mm.componente == "Aguinaldo")].groupby("anho").devengado.sum()
+Mx = M if AE == A1 else 12
+# crecimiento del sueldo básico en los meses con datos del año a estimar, frente a los mismos meses del año anterior
+g = sb.loc[AE].loc[1:Mx].sum() / sb.loc[AE - 1].loc[1:Mx].sum() if AE in sb.index.get_level_values(0) else None
+est = ag.loc[AE - 1] * g if g else None
+h = ag.loc[2017:AE - 1]
+```
+
+```{python}
+#| label: kpis
+#| output: asis
+print(kpis([(milmillones(est) + " mil M" if est else "—", f"de guaraníes: aguinaldo estimado de {AE}"), (milmillones(ag.loc[AE - 1]) + " mil M", f"aguinaldo pagado en {AE - 1}"),
+            (spct((g - 1) * 100) if g else "—", f"crecimiento del sueldo básico, enero–{MESES[Mx - 1]}")]))
+```
+
+El aguinaldo se paga en diciembre y equivale, en el conjunto del Estado, a casi un mes de sueldo básico ([¿cuánto cuesta el aguinaldo?](../2027-01-18-cuanto-cuesta-el-aguinaldo/)). Si crece al mismo ritmo que el sueldo básico pagado entre enero y `{python} MESES[Mx - 1]` de `{python} AE` (`{python} spct((g - 1) * 100) if g else "—"` frente al mismo período de `{python} AE - 1`), el aguinaldo de `{python} AE` costará unos **`{python} milmillones(est) if est else "—"` mil millones de guaraníes**.
+
+```{python}
+#| label: fig
+#| fig-cap: "Aguinaldo pagado cada año y estimación del año en curso, miles de millones de guaraníes de cada año"
+x = [str(a) for a in h.index] + ([f"{AE} (est.)"] if est else [])
+y = list(h / 1e9) + ([est / 1e9] if est else [])
+fig = barras_h(x, y, [miles(v_) for v_ in y], colores=[AZUL] * len(h) + ([AMARILLO] if est else []), rango=[0, max(y) * 1.2])
+fig.show(config=CONFIG)
+```
+
+Es una estimación simple: el aguinaldo final dependerá de los pagos de los últimos meses del año y de los contratos que reciben aguinaldo por otros objetos de gasto. Cómo se reparte entre sectores e instituciones lo analizamos en [el aguinaldo: cuánto cuesta y cómo se reparte](../2027-12-09-el-aguinaldo-como-se-reparte/).
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA (objetos 111 y 114). [Descargar los datos](/datos/).
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_dato, barras
+social(f"Aguinaldo {AE}:\ncuánto costará", (milmillones(est) + " mil millones") if est else "—", "de guaraníes, estimación de Pulso del Estado",
+       (list(range(len(y))), y), tipo="barras", color=AMARILLO)
+ig_dato(1, "El dato de la semana", f"El aguinaldo de {AE} costaría unos", (milmillones(est) + " mil M") if est else "—", "de guaraníes (estimación)",
+        "Miles de millones de Gs", barras([s_.replace(" (est.)", "*") for s_ in x], y, [miles(v_) for v_ in y], colores=[AZUL] * len(h) + ([AMARILLO] if est else [])), color=AMARILLO)
+```

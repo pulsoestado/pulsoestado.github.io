@@ -1,0 +1,78 @@
+---
+title: "Techo de cristal: ¿se movió en diez años?"
+description: "La participación de las mujeres en el 10% de cargos mejor pagos de cada institución, desde 2018."
+date: 2029-03-01
+categories: [Género, Remuneraciones]
+image: social.png
+image-alt: "Techo de cristal: ¿se movió en diez años?"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import numpy as np
+import plotly.graph_objects as go
+
+```
+
+```{python}
+#| label: datos
+c = leer("categorias_oee.csv"); c = c[c.mes == 6]
+
+def techo(g, q=0.10):
+    w = g.pivot_table(index="nivel_categoria", columns="sexo", values=["cantidad", "devengado"], aggfunc="sum").fillna(0)
+    cant = w["cantidad"].sum(axis=1)
+    muj = w["cantidad"]["FEMENINO"] if "FEMENINO" in w["cantidad"] else 0 * cant
+    d = pd.DataFrame({"cant": cant, "muj": muj, "s": w["devengado"].sum(axis=1) / cant}).sort_values("s", ascending=False)
+    tot = d.cant.sum(); d["previo"] = d.cant.cumsum().shift(fill_value=0) / tot
+    d["peso"] = ((q - d.previo) / (d.cant / tot)).clip(0, 1)
+    return pd.Series({"tot": tot, "muj": d.muj.sum(), "ttop": (d.peso * d.cant).sum(), "mtop": (d.peso * d.muj).sum()})
+
+fil = []
+for a in sorted(c.anho.unique()):
+    if a < 2018:
+        continue
+    r = c[c.anho == a].groupby(K_OEE).apply(techo, include_groups=False); r = r[r.tot >= 100]
+    fil.append(dict(anho=int(a), todas=r.muj.sum() / r.tot.sum() * 100, top=r.mtop.sum() / r.ttop.sum() * 100))
+d = pd.DataFrame(fil).set_index("anho"); d["brecha"] = d.top - d.todas
+A0, A = int(d.index.min()), int(d.index.max())
+```
+
+```{python}
+#| label: kpis
+#| output: asis
+print(kpis([(pct(d.top[A], 0), f"de los cargos del 10% mejor pago de cada institución son de mujeres ({A})"), (pct(d.todas[A], 0), "de todos los cargos"),
+            (signo(d.top[A] - d.top[A0], lambda x: coma(x, 1)) + " puntos", f"cambió su participación arriba desde {A0}")]))
+```
+
+Para saber si las mujeres llegan a los cargos mejor pagos, en cada institución con al menos 100 cargos tomamos el 10% de cargos con sueldo básico más alto y contamos cuántos ocupan mujeres ([cómo lo medimos](/posts/2027-03-04-el-techo-de-cristal/)). En junio de `{python} A` ocupaban el `{python} pct(d.top[A], 1)` de esos cargos, frente al `{python} pct(d.todas[A], 1)` del total. En `{python} A0` las cifras eran `{python} pct(d.top[A0], 1)` y `{python} pct(d.todas[A0], 1)`.
+
+```{python}
+#| label: fig
+#| fig-cap: "Participación de las mujeres en todos los cargos y en el 10% mejor pago de cada institución (junio)"
+fig = go.Figure()
+fig.add_trace(go.Scatter(x=d.index, y=d.todas, name="Todos los cargos", mode="lines+markers", line=dict(color=GRIS, width=2.2)))
+fig.add_trace(go.Scatter(x=d.index, y=d.top, name="10% mejor pago", mode="lines+markers", line=dict(color=VIOLETA, width=2.6)))
+estilo(fig, alto=320).update_xaxes(dtick=1); fig.update_yaxes(ticksuffix="%")
+fig.show(config=CONFIG)
+```
+
+`{python} "En el conjunto del Estado no aparece un techo de cristal: las mujeres están arriba en una proporción parecida o mayor que en el total." if d.brecha[A] >= -1 else "Las mujeres están menos representadas arriba que en el total: una señal de techo de cristal."` El promedio esconde diferencias por sector; Salud fue la excepción en la [medición de 2027](/posts/2027-03-04-el-techo-de-cristal/).
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA (nivel y categoría, objeto 111).
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_dato, lineas
+social("Techo de cristal:\n¿se movió en diez años?", pct(d.top[A], 0), f"de los cargos mejor pagos son de mujeres ({A}); en {A0}: {pct(d.top[A0], 0)}", (list(d.index), list(d.top)), color=VIOLETA)
+ig_dato(1, "Género", "En el 10% de cargos mejor pagos, las mujeres son", pct(d.top[A], 0), f"(en todos los cargos: {pct(d.todas[A], 0)})", "% de mujeres",
+        lineas(list(d.index), {"10% mejor pago": (list(d.top), VIOLETA), "Todos": (list(d.todas), GRIS)}, fmt=lambda x: coma(x, 0)), color=VIOLETA)
+```

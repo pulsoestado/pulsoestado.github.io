@@ -1,0 +1,99 @@
+---
+title: "Bonificaciones 2030: la parte del sueldo que no es sueldo"
+description: "Las bonificaciones y asignaciones complementarias suman más de un octavo de la masa salarial. Cuánto pesan en cada institución, cuáles crecen más y por qué conviene seguirlas."
+date: 2030-10-03
+categories: [Masa salarial, Remuneraciones, Bonificaciones]
+image: social.png
+image-alt: "Bonificaciones 2030: la parte del sueldo que no es sueldo"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import plotly.graph_objects as go
+
+UA = ultimo_anio_completo(); A0 = 2017
+mm = leer("masa_mensual_sector.csv"); mm = mm[mm.anho.between(A0, UA)]
+t = mm.pivot_table(index="anho", columns="componente", values="devengado", aggfunc="sum")
+dfl = deflactor(UA).reindex(t.index)
+b = t["Bonificaciones y asignaciones"] * dfl; sb = t["Sueldo básico"] * dfl; T = t.sum(axis=1)
+pb = t["Bonificaciones y asignaciones"] / T * 100
+vb = (b[UA] / b[A0] - 1) * 100; vsb = (sb[UA] / sb[A0] - 1) * 100
+mo = masa_oee_anual(UA); mo["pb"] = mo["Bonificaciones y asignaciones"] / mo.masa * 100
+g = mo[mo.masa >= 50e9].sort_values("pb", ascending=False)
+s = mo.groupby("sector")[["Bonificaciones y asignaciones", "masa"]].sum(); s["pb"] = s["Bonificaciones y asignaciones"] / s.masa * 100; s = s.sort_values("pb")
+B = t.loc[UA, "Bonificaciones y asignaciones"]
+top_monto = mo.sort_values("Bonificaciones y asignaciones", ascending=False).head(3)
+```
+
+::: {.en-breve}
+**En breve**
+
+- En `{python} UA` el Estado pagó **`{python} milmillones(B)` mil millones de guaraníes en bonificaciones y asignaciones complementarias** (subgrupo 13x), el `{python} pct(pb[UA])` de la masa salarial.
+- Descontada la inflación, cambiaron `{python} spct(vb, 0)` desde `{python} A0`; el sueldo básico, `{python} spct(vsb, 0)`.
+- Entre las instituciones con masa salarial de al menos 50 mil millones, las bonificaciones pesan más en **`{python} g.nombre_largo.iloc[0]`** (`{python} pct(g.pb.iloc[0], 0)` de su masa) y en **`{python} g.nombre_largo.iloc[1]`** (`{python} pct(g.pb.iloc[1], 0)`).
+- Por monto, las que más pagan son `{python} ", ".join(top_monto.nombre_largo.iloc[:2])` y `{python} top_monto.nombre_largo.iloc[2]`.
+:::
+
+## Qué son
+
+Las **asignaciones complementarias** son pagos que se suman al sueldo básico, como bonificaciones, gratificaciones, subsidios y otros complementos que define cada régimen. A diferencia del sueldo básico, que está fijado por la categoría del cargo, las bonificaciones varían mucho entre instituciones y no siempre se discuten junto con los reajustes salariales.
+
+## Cuánto pesan en cada sector
+
+```{python}
+#| label: fig-sector
+#| fig-cap: "Bonificaciones y asignaciones como porcentaje de la masa salarial de cada sector, último año completo"
+fig = barras_h(s.index, s.pb, [pct(x, 0) for x in s.pb], colores=[AMARILLO] * len(s), rango=[0, s.pb.max() * 1.25])
+fig.update_xaxes(ticksuffix="%"); fig.show(config=CONFIG)
+```
+
+```{python}
+#| label: tbl
+#| output: asis
+print("| Institución | Bonificaciones (mil M Gs) | % de su masa salarial |\n|---|--:|--:|")
+for _, r in g.head(10).iterrows():
+    print(f"| {r.nombre_largo} | {milmillones(r['Bonificaciones y asignaciones'])} | {pct(r.pb, 0)} |")
+print(f"\n: Instituciones con masa salarial de al menos 50 mil millones de guaraníes y mayor peso de bonificaciones, {UA}")
+```
+
+Las **empresas públicas** y las entidades financieras encabezan la lista: en ellas, una parte grande de la remuneración se paga como bonificación. En la **Policía Nacional**, el monto es el más grande del Estado en términos absolutos.
+
+## Cómo crecieron
+
+```{python}
+#| label: fig-serie
+#| fig-cap: "Bonificaciones y sueldo básico, índice 2017 = 100, en términos reales"
+fig = go.Figure()
+fig.add_trace(go.Scatter(x=b.index, y=b / b[A0] * 100, name="Bonificaciones y asignaciones", mode="lines+markers",
+                         line=dict(color=AMARILLO, width=2.8), hovertemplate="Bonificaciones: %{y:.0f}<extra></extra>"))
+fig.add_trace(go.Scatter(x=sb.index, y=sb / sb[A0] * 100, name="Sueldo básico", mode="lines+markers", line=dict(color=AZUL, width=2.8),
+                         hovertemplate="Sueldo básico: %{y:.0f}<extra></extra>"))
+fig.add_hline(y=100, line=dict(color=GRIS, width=1, dash="dot"))
+estilo(fig, alto=320).update_xaxes(dtick=1)
+fig.show(config=CONFIG)
+```
+
+Seguir las bonificaciones por separado es una de las recomendaciones centrales de la [guía del BID sobre nómina pública](../2027-05-27-indicadores-de-nomina/): son el componente que más varía entre instituciones y uno de los que más puede crecer por fuera de la política salarial general.
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA (devengado de los objetos 131 a 139) e IPC del Banco Central del Paraguay. [Descargar los datos](/datos/).
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_portada, ig_dato, barras_h as bh
+cort = lambda x: x.replace("Servicio civil del Ejecutivo", "Servicio civil").replace("Entes autónomos y autárquicos", "Entes autónomos")
+social("Bonificaciones: la parte\ndel sueldo que no es sueldo", milmillones(B) + " mil millones", f"de guaraníes en {UA} · {pct(pb[UA], 0)} de la masa salarial", color=AMARILLO)
+ig_portada("Remuneraciones", "Bonificaciones", f"{milmillones(B)} mil millones de guaraníes,\nel {pct(pb[UA], 0)} de la masa salarial.", color=AMARILLO)
+o = s.tail(7)
+ig_dato(2, "Por sector", f"En {cort(s.index[-1])}, las bonificaciones son el", pct(s.pb.iloc[-1], 0), "de la masa salarial",
+        "% de la masa salarial de cada sector", bh([cort(x) for x in o.index], o.pb, [pct(x, 0) for x in o.pb], colores=[AMARILLO] * len(o)), color=AMARILLO)
+```

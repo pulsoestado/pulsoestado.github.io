@@ -1,0 +1,64 @@
+---
+title: "La brecha salarial de género en un número (2029)"
+description: "En la misma institución y la misma categoría, el sueldo básico de las mujeres sigue siendo algo menor que el de los hombres. Así cambió desde 2018."
+date: 2029-03-05
+categories: [El dato de la semana, Género, Remuneraciones]
+image: social.png
+image-alt: "La brecha salarial de género en un número (2029)"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import plotly.graph_objects as go
+
+g = leer("genero_brecha_anual.csv").set_index("anho").loc[2018:]
+A1 = int(g.index.max()); u = g.loc[A1]; p0 = g.loc[2018]
+dif = u.sueldo_medio_hombres * u.brecha_misma_categoria_pct / 100
+```
+
+```{python}
+#| label: kpis
+#| output: asis
+print(kpis([
+    (pct(u.brecha_misma_categoria_pct), f"menos ganan las mujeres en la misma institución y categoría (junio de {A1})"),
+    (pct(p0.brecha_misma_categoria_pct), "en 2018"),
+]))
+```
+
+Cuando se compara a mujeres y hombres que ocupan **la misma categoría salarial en la misma institución**, el sueldo básico de ellas es **`{python} pct(u.brecha_misma_categoria_pct)` menor**. En 2018 la diferencia era de `{python} pct(p0.brecha_misma_categoria_pct)`. Sobre el sueldo medio de los hombres, equivale a unos `{python} miles(dif / 1000)` mil guaraníes por mes.
+
+```{python}
+#| label: fig-brecha
+#| fig-cap: "Brecha salarial de género en el sueldo básico, dentro de la misma institución y categoría (junio de cada año)"
+fig = go.Figure(go.Bar(x=g.index, y=g.brecha_misma_categoria_pct, marker_color=VIOLETA,
+                       text=[pct(x) for x in g.brecha_misma_categoria_pct], textposition="outside", cliponaxis=False,
+                       textfont=dict(color=TINTA_GRAF), hovertemplate="%{x}: <b>%{y:.1f}%</b><extra></extra>"))
+estilo(fig, alto=320, leyenda=False).update_layout(hovermode="closest")
+fig.update_xaxes(dtick=1); fig.update_yaxes(ticksuffix="%", range=[0, g.brecha_misma_categoria_pct.max() * 1.3])
+fig.show(config=CONFIG)
+```
+
+Es una brecha chica, porque en el Estado el sueldo de cada categoría está fijado en el presupuesto. La diferencia que queda puede deberse, por ejemplo, a cargos con distinta carga horaria o distinta asignación dentro de una misma categoría. La otra pregunta es si las mujeres llegan en la misma proporción a las categorías mejor pagas: la respondemos en [¿Hay un techo de cristal en el Estado?](../2027-03-04-el-techo-de-cristal/).
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA (sueldo básico por institución, categoría y sexo, junio de cada año). Método: [¿Ganan menos las mujeres en el Estado?](../2026-11-13-brecha-salarial-genero/). [Descargar los datos](/datos/).
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_dato, barras
+social("La brecha salarial\nde género en un número", pct(u.brecha_misma_categoria_pct),
+       "menos ganan las mujeres en la misma categoría", (list(g.index), list(g.brecha_misma_categoria_pct)), color=VIOLETA, tipo="barras")
+ig_dato(1, "El dato de la semana", "En la misma institución y categoría, las mujeres ganan", pct(u.brecha_misma_categoria_pct),
+        "menos que los hombres", f"Brecha en el sueldo básico, junio de cada año",
+        barras(list(g.index), list(g.brecha_misma_categoria_pct), [pct(x) for x in g.brecha_misma_categoria_pct],
+               colores=[VIOLETA] * len(g)), color=VIOLETA)
+```

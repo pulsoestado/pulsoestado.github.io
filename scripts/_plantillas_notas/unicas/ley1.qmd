@@ -1,0 +1,51 @@
+```{python}
+#| label: datos
+s = serie_mensual(); s["pc"] = s.contratado / s.total * 100
+AC, MC = ultimo_mes_confiable()
+corte = pd.Timestamp(2025, 7, 1)
+antes = s[(s.fecha >= corte - pd.DateOffset(months=12)) & (s.fecha < corte)]
+desp = s[(s.fecha >= corte) & (s.fecha <= pd.Timestamp(AC, MC, 1))]
+pc0, pc1 = antes.pc.mean(), desp.pc.tail(12).mean()
+```
+
+La **Ley 7445/2025 de la Función Pública y del Servicio Civil** rige desde julio de 2025. Establece el concurso público como vía de ingreso y de ascenso, la evaluación anual del desempeño y la rectoría del Ministerio de Economía y Finanzas sobre la política salarial. ¿Qué se puede ver de eso en los datos que publican SINARH y SICCA?
+
+| Lo que pide la ley | ¿Se ve en los datos actuales? |
+|---|---|
+| Ingreso y ascenso por concurso | No: los registros no dicen cómo entró cada persona. Haría falta el registro de concursos. |
+| Evaluación anual del desempeño | No: no hay datos de evaluaciones. |
+| Menos cargos de confianza | No: los registros no distinguen cargos de confianza. |
+| Política salarial centralizada | En parte: el ISSP y la compresión salarial muestran si las escalas convergen. |
+| Profesionalización de la planta | En parte: la proporción de contratos y de permanentes, mes a mes. |
+
+```{python}
+#| label: kpis
+#| output: asis
+print(kpis([(pct(pc0, 1), "de contratos en los 12 meses previos a la ley"), (pct(pc1, 1), f"en los últimos 12 meses, hasta {fecha_txt(AC, MC)}")]))
+```
+
+```{python}
+#| label: fig
+#| fig-cap: "Proporción de contratos en los vínculos del Estado, por mes; la línea marca julio de 2025"
+h = s[s.anho >= 2021]
+fig = go.Figure(go.Scatter(x=h.fecha, y=h.pc, mode="lines", line=dict(color=NARANJA, width=2.4)))
+fig.add_vline(x=corte, line=dict(color=GRIS, width=1.5, dash="dash"))
+estilo(fig, alto=300, leyenda=False).update_yaxes(ticksuffix="%")
+fig.show(config=CONFIG)
+```
+
+Una ley así cambia procesos —cómo se entra, cómo se asciende— antes que totales; sus efectos sobre la cantidad de personal y los sueldos llevan años. Para seguirla de verdad hacen falta datos que hoy no son públicos: la [lista de pendientes](/pendientes/) detalla cuáles. La segunda parte mira contratos, planta y categorías antes y después de julio de 2025.
+
+::: {.fuente}
+**Fuentes:** Ley 7445/2025 ([MEF](https://www.mef.gov.py/es/institucional/sala-de-prensa/noticias/ejecutivo-promulga-ley-funcion-publica-carrera-del-servicio)); elaboración de Pulso del Estado con datos de SINARH y SICCA.
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_dato, lineas
+social("La ley de la función pública\nen los datos (I)", pct(pc1, 1), f"de contratos en los últimos 12 meses (antes de la ley: {pct(pc0, 1)})", (list(h.fecha), list(h.pc)))
+hj = s[s.mes == 6]
+ig_dato(1, "Ley 7445", "Proporción de contratos en el Estado:", pct(pc1, 1), f"últimos 12 meses (antes: {pct(pc0, 1)})", "% de contratos en junio",
+        lineas([int(x) for x in hj.anho], {"%": (list(hj.pc), NARANJA)}, fmt=lambda x: coma(x, 0)))
+```

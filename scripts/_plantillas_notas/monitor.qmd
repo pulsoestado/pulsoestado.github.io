@@ -1,0 +1,71 @@
+```{python}
+#| label: datos
+# ELEC: fecha de la elección actual (referencia si el TSJE aún no la fijó); PREV: elecciones anteriores del mismo tipo
+f0 = pd.Timestamp(ELEC).replace(day=1)
+desde, hasta = (f0 - pd.DateOffset(months=6), f0) if FASE == "antes" else (f0, f0 + pd.DateOffset(months=6))
+s = serie_extendida(hasta.year, hasta.month, SECTOR).set_index("fecha")
+def cambio(a, b):
+    return s.loc[b, "contratado"] - s.loc[a, "contratado"], bool(s.loc[a:b].estimado.any())
+fil = []
+for f in PREV + [ELEC]:
+    g = pd.Timestamp(f).replace(day=1)
+    a, b = (g - pd.DateOffset(months=6), g) if FASE == "antes" else (g, g + pd.DateOffset(months=6))
+    if a in s.index and b in s.index:
+        c, e = cambio(a, b)
+        # mismos meses en años sin esa elección (promedio)
+        otros = []
+        for y in range(2016, s.index.max().year + 1):
+            a2, b2 = a.replace(year=a.year + (y - g.year)), b.replace(year=b.year + (y - g.year))
+            if abs(y - g.year) >= 2 and a2 in s.index and b2 in s.index and not s.loc[a2:b2].estimado.any():
+                otros.append(s.loc[b2, "contratado"] - s.loc[a2, "contratado"])
+        fil.append(dict(anio=g.year, cambio=c, normal=np.mean(otros) if otros else np.nan, est=e))
+d = pd.DataFrame(fil).set_index("anio"); d["dif"] = d.cambio - d.normal
+ult = d.iloc[-1]
+DONDE = "las municipalidades" if SECTOR else "todo el Estado"
+```
+
+```{python}
+#| output: asis
+if ult.est or not REF_CONFIRMADA:
+    ac, mc = ultimo_mes_confiable()
+    partes = []
+    if ult.est:
+        partes.append(f"Los meses posteriores a {fecha_txt(ac, mc)} son estimaciones de Pulso del Estado (mismo mes del año anterior por el crecimiento de los últimos doce meses).")
+    if not REF_CONFIRMADA:
+        partes.append("La fecha de la elección es una referencia hasta que la fije el Tribunal Superior de Justicia Electoral.")
+    aviso_estimacion(" ".join(partes))
+```
+
+```{python}
+#| label: kpis
+#| output: asis
+print(kpis([(signo(r.cambio), f"contratos en los seis meses {'previos' if FASE == 'antes' else 'posteriores'}, {y}" + (" (est.)" if r.est else "")) for y, r in d.iterrows()]))
+```
+
+En los seis meses `{python} "previos a" if FASE == "antes" else "posteriores a"` la elección de `{python} int(d.index[-1])`, los contratos de `{python} DONDE` cambiaron `{python} signo(ult.cambio) + (" (estimado)" if ult.est else "")`; en los mismos meses de los años sin esa elección, el cambio promedio es de `{python} signo(ult.normal)`. En los ciclos anteriores la diferencia frente a lo normal fue de `{python} " · ".join(f"{signo(r.dif)} en {y}" for y, r in d.iloc[:-1].iterrows())`.
+
+```{python}
+#| label: fig
+#| fig-cap: "Cambio de contratos en los seis meses de la ventana y promedio de los mismos meses en años sin elección"
+fig = go.Figure()
+fig.add_trace(go.Bar(x=[str(y) + (" (est.)" if r.est else "") for y, r in d.iterrows()], y=d.cambio, name="Año de elección", marker_color=NARANJA))
+fig.add_trace(go.Bar(x=[str(y) + (" (est.)" if r.est else "") for y, r in d.iterrows()], y=d.normal, name="Mismos meses, otros años", marker_color=GRIS))
+estilo(fig, alto=320).update_layout(barmode="group"); fig.update_yaxes(tickformat=",.0f")
+fig.add_hline(y=0, line=dict(color=GRIS, width=1))
+fig.show(config=CONFIG)
+```
+
+Que el total no muestre un salto no descarta contrataciones con fines electorales en algunas instituciones; para eso hace falta mirar institución por institución y persona por persona. La serie completa, ciclo por ciclo, está en el [monitor del ciclo electoral](/monitor-electoral/).
+
+::: {.fuente}
+**Fuentes:** elaboración de Pulso del Estado con datos de SINARH y SICCA. Fechas electorales: Tribunal Superior de Justicia Electoral.
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_dato, barras
+social(TITULO_RED, signo(ult.cambio) + " contratos", f"en los seis meses {'previos' if FASE == 'antes' else 'posteriores'} · promedio de otros años: {signo(ult.normal)}" + (" · estimado" if ult.est else ""))
+ig_dato(1, "Monitor electoral", f"Seis meses {'antes' if FASE == 'antes' else 'después'} de votar, los contratos cambiaron", signo(ult.cambio), f"(otros años: {signo(ult.normal)})" + (" · estimado" if ult.est else ""),
+        "Cambio frente a lo normal, por elección", barras([str(y) for y in d.index], list(d.dif), [signo(x) for x in d.dif]))
+```

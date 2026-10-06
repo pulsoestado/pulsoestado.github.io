@@ -149,6 +149,8 @@ Con Python instalado (o en Colab), desde la raíz del repositorio:
 pip install -r requirements.txt
 python scripts/preparar_series.py     # series de masa salarial, sectores, género, discapacidad, municipios y SITUCAP
 python scripts/preparar_instituciones.py  # series por institución, objeto de gasto, categorías, BCP e INDEC (después de preparar_series)
+python scripts/preparar_issp.py          # Índice de Sueldos del Sector Público (trimestral, anual y por sector)
+python scripts/preparar_estimaciones.py  # último mes completado y proyecciones a 2035
 python scripts/nueva_edicion_situcap.py 2027 11 16 2028-01-20  # nueva edición del SITUCAP: año, mes, número y fecha de publicación
 python scripts/flyers_serie.py        # social.png e ig_1..3.png de las notas de octubre–diciembre
 python scripts/preparar_dw.py         # serie principal: data/raw/dw_funcionarios_sicca_sinarh.xlsx
@@ -156,6 +158,25 @@ python scripts/flyer_radiografia.py   # carrusel_1..7.png y social.png de la Rad
 python scripts/preparar_dotacion.py   # personas distintas: data/raw/resumen_personas_vinculos_2015_2025_v2.xlsx
 python scripts/flyer_dotacion.py      # flyer_1.png, flyer_2.png y social.png de "¿Cuántas personas…?"
 ```
+
+## Herramientas del sitio
+
+| Página | Qué es | Cómo se actualiza |
+|---|---|---|
+| `/issp/` | Índice de Sueldos del Sector Público | `preparar_issp.py` |
+| `/instituciones/` | Ficha de cada institución (en el navegador, con los CSV) | Sola, al actualizar `data/processed/` |
+| `/explorador/` | Gráficos y descargas por sector | Sola |
+| `/simulador/` | Costo de un reajuste salarial | Sola |
+| `/monitor-electoral/` | Contratos alrededor de cada elección | Sola (los meses sin datos se estiman y se rotulan) |
+| `/proyecciones/` | Escenarios a 2035 | `preparar_estimaciones.py` |
+| `/informe-anual/` | Informe anual en HTML y PDF (Typst, incluido en Quarto) | Solo |
+| `/correcciones/` | Registro de correcciones | Editar `data/manual/correcciones.csv` |
+| `/pendientes/` | Lo que falta y cómo se estima (fuera del menú) | Editar `planes/pendientes.csv` |
+| `/redes/` | Agenda de redes (fuera del menú) | Sola |
+
+## Plan editorial 2028–2030
+
+Las 313 piezas de 2028–2030 (lunes, jueves y SITUCAP) se generan con `python scripts/plan_2028_2030.py` a partir de las plantillas de `scripts/_plantillas_notas/` y quedan programadas por fecha. El calendario completo, con el estado de los datos de cada pieza, está en `planes/calendario_2028_2030.csv`. Para cambiar el plan, editar `PLAN` en ese script y volver a correrlo (no sobrescribe las ediciones del SITUCAP ya creadas).
 
 ## Opcionales
 

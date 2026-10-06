@@ -1,0 +1,66 @@
+---
+title: "Quince años de salario mínimo y sueldo básico público"
+description: "Cómo evolucionaron, descontada la inflación, el salario mínimo legal y el sueldo básico medio de un cargo público."
+date: 2030-05-06
+categories: [El dato de la semana, Salario mínimo, Quince años]
+image: social.png
+image-alt: "Quince años de salario mínimo y sueldo básico público"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import numpy as np
+import plotly.graph_objects as go
+
+```
+
+```{python}
+#| label: datos
+sm = leer("bcp_salario_minimo.csv").set_index("anho")
+ia = leer("issp_anual.csv").set_index("anho")
+ipc = leer("ipc_salarios_bcp.csv").set_index("anho").ipc
+A = int(min(sm.index.max(), ia.index.max())); A0 = int(ia.index.min())
+smr = sm.salario_minimo.loc[A0:A] / ipc.reindex(range(A0, A + 1)) * ipc[A]
+sbr = ia.sueldo_medio.loc[A0:A] / ipc.reindex(range(A0, A + 1)) * ipc[A]
+i_sm = smr / smr[A0] * 100; i_sb = sbr / sbr[A0] * 100
+```
+
+```{python}
+#| label: kpis
+#| output: asis
+print(kpis([(spct(i_sm[A] - 100, 0), f"salario mínimo real, {A0}–{A}"), (spct(i_sb[A] - 100, 0), "sueldo básico medio real de un cargo público"), (coma(sbr[A] / smr[A], 2), f"salarios mínimos vale un sueldo básico medio ({A})")]))
+```
+
+Entre `{python} A0` y `{python} A`, el salario mínimo legal cambió `{python} spct(i_sm[A] - 100, 0)` descontada la inflación, y el sueldo básico medio de un cargo público, `{python} spct(i_sb[A] - 100, 0)`. Hoy un sueldo básico medio equivale a `{python} coma(sbr[A] / smr[A], 2)` salarios mínimos.
+
+```{python}
+#| label: fig
+#| fig-cap: "Salario mínimo y sueldo básico medio por cargo, en términos reales (primer año = 100)"
+fig = go.Figure()
+fig.add_trace(go.Scatter(x=i_sm.index, y=i_sm, name="Salario mínimo legal", mode="lines+markers", line=dict(color=NARANJA, width=2.4)))
+fig.add_trace(go.Scatter(x=i_sb.index, y=i_sb, name="Sueldo básico medio público", mode="lines+markers", line=dict(color=AZUL, width=2.4)))
+fig.add_hline(y=100, line=dict(color=GRIS, width=1))
+estilo(fig, alto=320).update_xaxes(dtick=1)
+fig.show(config=CONFIG)
+```
+
+El sueldo básico medio cambia también por la mezcla de cargos; para comparar el mismo cargo en el tiempo está el [ISSP](/issp/). La historia larga del mínimo, en [el salario mínimo desde 1980](/posts/2027-07-01-el-salario-minimo/).
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA y del BCP (salario mínimo e IPC).
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_dato, lineas
+social("Quince años de salario mínimo\ny sueldo básico público", coma(sbr[A] / smr[A], 2) + " mínimos", f"vale el sueldo básico medio de un cargo público ({A})", (list(i_sb.index), list(i_sb)))
+ig_dato(1, "El dato de la semana", "Un sueldo básico medio público equivale a", coma(sbr[A] / smr[A], 2), "salarios mínimos", "Índices reales (primer año = 100)",
+        lineas(list(i_sm.index), {"Mínimo": (list(i_sm), NARANJA), "Sueldo básico": (list(i_sb), AZUL)}, fmt=lambda x: coma(x, 0)))
+```

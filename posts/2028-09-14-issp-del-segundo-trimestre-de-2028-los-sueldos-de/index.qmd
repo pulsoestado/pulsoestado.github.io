@@ -1,0 +1,75 @@
+---
+title: "ISSP del segundo trimestre de 2028: los sueldos de los mismos cargos"
+description: "El Índice de Sueldos del Sector Público del último trimestre con datos: cuánto subió el sueldo básico de los mismos cargos, en total y por sector."
+date: 2028-09-14
+categories: [ISSP, Remuneraciones]
+image: social.png
+image-alt: "ISSP del segundo trimestre de 2028: los sueldos de los mismos cargos"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import numpy as np
+import plotly.graph_objects as go
+
+```
+
+```{python}
+#| label: datos
+q = leer("issp_trimestral.csv"); a = leer("issp_anual.csv").set_index("anho"); s = leer("issp_sector_anual.csv")
+q["fecha"] = pd.to_datetime(dict(year=q.anho, month=q.mes, day=1))
+u = q.iloc[-1]; AQ, MQ = int(u.anho), int(u.mes)
+TRIM = {3: "primer", 6: "segundo", 9: "tercer", 12: "cuarto"}
+ipc_i = ipc_interanual(AQ, MQ)
+real_i = ((1 + u.var_interanual / 100) / (1 + ipc_i / 100) - 1) * 100 if ipc_i is not None else None
+ul = int(s.anho.max()); ss = s[s.anho == ul].sort_values("var", ascending=False)
+```
+
+```{python}
+#| label: kpis
+#| output: asis
+print(kpis([(coma(u.fisher, 1), f"ISSP del {TRIM[MQ]} trimestre de {AQ} (2025 = 100)"), (spct(u.var_trimestral), "frente al trimestre anterior"),
+            (spct(u.var_interanual), "frente al mismo trimestre del año anterior"), (spct(real_i) if real_i is not None else "—", "interanual, descontada la inflación")]))
+```
+
+El **Índice de Sueldos del Sector Público (ISSP)** del `{python} TRIM[MQ]` trimestre de `{python} AQ` fue de `{python} coma(u.fisher, 1)`: el sueldo básico de los mismos cargos subió `{python} spct(u.var_interanual)` en un año`{python} f", {spct(real_i)} descontada la inflación de {MESES[MQ - 1]} ({pct(ipc_i)})" if real_i is not None else ""`. A diferencia de la remuneración media, el ISSP no cambia cuando entra o sale personal: solo cuando cambia lo que se paga por un mismo cargo.
+
+```{python}
+#| label: fig
+#| fig-cap: "ISSP trimestral (promedio 2025 = 100)"
+fig = go.Figure(go.Scatter(x=q.fecha, y=q.fisher, mode="lines+markers", line=dict(color=AZUL, width=2.6), hovertemplate="%{x|%b %Y}: <b>%{y:.1f}</b><extra></extra>"))
+estilo(fig, alto=300, leyenda=False)
+fig.show(config=CONFIG)
+```
+
+## Por sector, de junio a junio
+
+```{python}
+#| label: tbl
+#| output: asis
+print(f"| Sector | ISSP junio {ul} | Variación en un año |\n|---|--:|--:|")
+for _, r in ss.iterrows():
+    print(f"| {r.sector} | {coma(r.fisher, 1)} | {spct(r['var'])} |")
+```
+
+La metodología completa, la serie y los datos para descargar están en la [página del ISSP](/issp/).
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA (nivel y categoría) e inflación del BCP.
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_dato, lineas
+social("ISSP: los sueldos públicos\nen el último trimestre", spct(u.var_interanual), f"el sueldo básico de los mismos cargos en un año ({TRIM[MQ]} trimestre de {AQ})", (list(q.fecha), list(q.fisher)), color=VERDE_AGUA)
+qq = q.tail(12)
+ig_dato(1, "ISSP", f"{TRIM[MQ].capitalize()} trimestre de {AQ}: el sueldo básico de los mismos cargos", spct(u.var_interanual), "en un año",
+        "ISSP (2025 = 100)", lineas([f"{MES_C[m - 1]}-{str(a)[2:]}" for a, m in zip(qq.anho, qq.mes)], {"ISSP": (list(qq.fisher), VERDE_AGUA)}, fmt=lambda x: coma(x, 0)), color=VERDE_AGUA)
+```

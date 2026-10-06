@@ -70,3 +70,12 @@ La clasificación se aplica con el script `scripts/clasificacion_sectores.py` y 
 ## Reproducibilidad
 
 El código que transforma los datos originales en las series publicadas está en el [repositorio del sitio](https://github.com/pulsoestado/pulsoestado.github.io), en la carpeta `scripts/`.
+
+
+## Índice de Sueldos del Sector Público (ISSP)
+
+Mide cuánto cambia el sueldo básico de los mismos cargos: compara cada categoría salarial de cada institución consigo misma de un período al siguiente (índice de Fisher encadenado, promedio 2025 = 100). La fórmula, la cobertura y sus límites están en la [página del ISSP](/issp/).
+
+## Estimaciones y correcciones
+
+Cuando una nota necesita un mes que todavía no tiene datos, lo estima (el mismo mes del año anterior por el crecimiento de los últimos doce meses, desde el último mes en que reportó al menos el 97% de las instituciones) y lo rotula como **estimación provisoria**; al llegar el dato real, la nota se recalcula sola. Las correcciones a los datos de origen están en el [registro de correcciones](/correcciones/).

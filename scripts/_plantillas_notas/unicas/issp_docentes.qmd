@@ -1,0 +1,43 @@
+```{python}
+#| label: datos
+s = leer("issp_sector_anual.csv"); e = s[s.sector == "Educación"].set_index("anho")
+a = leer("issp_anual.csv").set_index("anho")
+ipc = leer("ipc_salarios_bcp.csv").set_index("anho").ipc
+UA = int(e.index.max()); A0 = int(e.index.min())
+real = e.fisher / ipc.reindex(e.index); real_t = a.fisher / ipc.reindex(a.index)
+ve = (real[UA] / real[A0] - 1) * 100; vt = (real_t[UA] / real_t[A0] - 1) * 100
+```
+
+```{python}
+#| label: kpis
+#| output: asis
+print(kpis([(spct(ve, 0), f"sueldo básico real de los mismos cargos en Educación, junio {A0}–{UA}"), (spct(vt, 0), "en todo el Estado"), (spct(e["var"][UA]), f"nominal en el último año")]))
+```
+
+En la semana del Día del Maestro, el ISSP de **Educación** —el Ministerio de Educación y las universidades nacionales— muestra que el sueldo básico de los mismos cargos subió `{python} spct(ve, 0)` descontada la inflación entre junio de `{python} A0` y junio de `{python} UA`, frente a `{python} spct(vt, 0)` en todo el Estado.
+
+```{python}
+#| label: fig
+#| fig-cap: "ISSP real, junio de cada año (primer año = 100)"
+fig = go.Figure()
+fig.add_trace(go.Scatter(x=real.index, y=real / real[A0] * 100, name="Educación", mode="lines+markers", line=dict(color=AZUL, width=2.6)))
+fig.add_trace(go.Scatter(x=real_t.loc[A0:].index, y=real_t.loc[A0:] / real_t[A0] * 100, name="Todo el Estado", mode="lines+markers", line=dict(color=GRIS, width=2.2)))
+fig.add_hline(y=100, line=dict(color=GRIS, width=1))
+estilo(fig, alto=320).update_xaxes(dtick=1)
+fig.show(config=CONFIG)
+```
+
+El ISSP mide el sueldo básico de cada categoría; no incluye bonificaciones ni el efecto de que un docente tenga varios cargos ([¿cuánto gana un docente?](/posts/2027-04-29-cuanto-gana-un-docente/)).
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA (nivel y categoría) e IPC del BCP. [ISSP](/issp/).
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_dato, lineas
+social("El índice de sueldos\nde los docentes", spct(ve, 0) + " real", f"sueldo básico de los mismos cargos en Educación, {A0}–{UA}", (list(real.index), list(real / real[A0] * 100)), color=AZUL)
+ig_dato(1, "El dato de la semana", "En Educación, el sueldo básico real de los mismos cargos cambió", spct(ve, 0), f"entre {A0} y {UA} (Estado: {spct(vt, 0)})", "Índice real (primer año = 100)",
+        lineas(list(real.index), {"Educación": (list(real / real[A0] * 100), AZUL), "Estado": (list(real_t.loc[A0:] / real_t[A0] * 100), GRIS)}, fmt=lambda x: coma(x, 0)), color=AZUL)
+```

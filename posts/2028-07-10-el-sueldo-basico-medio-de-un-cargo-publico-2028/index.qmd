@@ -1,0 +1,71 @@
+---
+title: "El sueldo básico medio de un cargo público (2028)"
+description: "Cuánto es, en promedio, el sueldo básico de un cargo permanente en el Estado paraguayo y cuánto cambió desde 2018, en guaraníes de cada año y descontada la inflación."
+date: 2028-07-10
+categories: [El dato de la semana, Remuneraciones, Categorías]
+image: social.png
+image-alt: "El sueldo básico medio de un cargo público (2028)"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import plotly.graph_objects as go
+
+c = leer("categorias_oee.csv"); B0 = 2018   # junio de 2017 tiene un registro anómalo en la Policía Nacional (ver notas)
+c = c[(c.mes == 6) & (c.anho >= B0)]
+a = c.groupby("anho")[["cantidad", "devengado"]].sum(); a["s"] = a.devengado / a.cantidad
+A = int(a.index.max())
+ipc = leer("bcp_salario_minimo.csv").set_index("anho").ipc
+a["real"] = a.s * ipc.loc[A] / ipc.reindex(a.index)
+vn = (a.s[A] / a.s[B0] - 1) * 100; vr = (a.real[A] / a.real[B0] - 1) * 100
+c["mec"] = (c.codigo_nivel == 12) & (c.codigo_entidad == 7) & (c.codigo_oee == 1)
+b = c[~c.mec].groupby("anho")[["cantidad", "devengado"]].sum(); b["s"] = b.devengado / b.cantidad
+b["real"] = b.s * ipc.loc[A] / ipc.reindex(b.index)
+vr2 = (b.real[A] / b.real[B0] - 1) * 100
+```
+
+```{python}
+#| label: kpis
+#| output: asis
+print(kpis([(millones(a.s[A], 2) + " M", f"de Gs: sueldo básico medio por cargo (junio de {A})"),
+            (spct(vr, 0), f"real desde {B0}"), (spct(vr2, 0), "real sin el Ministerio de Educación")]))
+```
+
+En junio de `{python} A`, el sueldo básico medio de los `{python} miles(a.cantidad[A])` cargos públicos permanentes registrados fue de **`{python} millones(a.s[A], 2)` millones de guaraníes**. Desde `{python} B0` subió `{python} pct(vn, 0)` en guaraníes corrientes; descontada la inflación, el cambio fue de **`{python} spct(vr, 0)`**. El promedio esconde dos tendencias: sin el Ministerio de Educación, donde los reajustes docentes elevaron el sueldo básico, el cambio real fue de `{python} spct(vr2, 0)`.
+
+```{python}
+#| label: fig
+#| fig-cap: "Sueldo básico medio por cargo, junio de cada año, en millones de guaraníes del último año"
+fig = go.Figure()
+fig.add_trace(go.Scatter(x=a.index, y=a.real / 1e6, name="Todos los cargos", mode="lines+markers", line=dict(color=AZUL, width=2.8),
+                         hovertemplate="Todos: %{y:.2f} millones<extra></extra>"))
+fig.add_trace(go.Scatter(x=b.index, y=b.real / 1e6, name="Sin el Ministerio de Educación", mode="lines+markers",
+                         line=dict(color=GRIS, width=2.2, dash="dot"), hovertemplate="Sin MEC: %{y:.2f} millones<extra></extra>"))
+estilo(fig, alto=320).update_xaxes(dtick=1)
+fig.show(config=CONFIG)
+```
+
+El sueldo básico es solo una parte de lo que cobra un funcionario permanente: a él se suman bonificaciones, gastos de representación y otros complementos. Y es un promedio de cargos muy distintos, desde un auxiliar hasta un ministro. Pero, al no incluir a los contratados, permite seguir cómo evolucionó la escala salarial de la planta permanente.
+
+Empezamos la serie en 2018 porque en junio de 2017 el sueldo básico registrado de la Policía Nacional es casi 50% más alto que el de los meses de junio de los años vecinos, probablemente por un pago extraordinario o un error de registro.
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA (sueldo básico, objeto 111, por categoría, junio de cada año) e IPC del Banco Central del Paraguay. [Descargar los datos](/datos/).
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_dato, barras
+social("El sueldo básico medio\nde un cargo público", millones(a.s[A], 2) + " millones", f"de Gs (junio de {A}) · {spct(vr, 0)} real desde {B0}", (list(a.index), list(a.real)), color=AZUL)
+ig_dato(1, "El dato de la semana", "El sueldo básico medio de un cargo público es de", millones(a.s[A], 2) + " M",
+        f"de guaraníes ({spct(vr, 0)} real desde {B0})", f"Millones de Gs de {A}, junio de cada año",
+        barras(list(a.index), list(a.real / 1e6), [coma(x / 1e6, 1) for x in a.real]), color=AZUL)
+```

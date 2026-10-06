@@ -1,0 +1,314 @@
+fecha,dia,tipo,titulo,ruta,datos
+2028-01-03,lunes,re,El bache de enero de 2028,posts/2028-01-03-el-bache-de-enero-de-2028,con los datos disponibles
+2028-01-06,jueves,re,Balance 2027: el empleo público en 10 gráficos,posts/2028-01-06-balance-2027-el-empleo-publico-en-10-graficos,con los datos disponibles
+2028-01-10,lunes,unica,Cuántos contratos vencen con el año,posts/2028-01-10-cuantos-contratos-vencen-con-el-ano,con los datos disponibles
+2028-01-13,jueves,unica,El Índice de Sueldos del Sector Público: cómo leerlo,posts/2028-01-13-el-indice-de-sueldos-del-sector-publico-como-leerlo,con los datos disponibles
+2028-01-17,lunes,unica,Cómo corregimos los datos: el registro de correcciones,posts/2028-01-17-como-corregimos-los-datos-el-registro-de-correcciones,con los datos disponibles
+2028-01-20,jueves (SITUCAP),situcap,SITUCAP N.º 16 · Noviembre de 2027,situcap/ediciones/2027-11,espera los datos de 2027-11
+2028-01-24,lunes,re,Cuánto costó el aguinaldo de 2027,posts/2028-01-24-cuanto-costo-el-aguinaldo-de-2027,con los datos disponibles
+2028-01-27,jueves,departamento,Concepción: la gobernación y las municipalidades por dentro,posts/2028-01-27-concepcion-la-gobernacion-y-las-municipalidades-por-dentro,con los datos disponibles
+2028-01-31,lunes,institucion,La institución de la semana: Instituto de Previsión Social,posts/2028-01-31-la-institucion-de-la-semana-instituto-de-prevision-social,con los datos disponibles
+2028-02-03,jueves,monitor,Monitor electoral I: los contratos antes de votar en 2028,posts/2028-02-03-monitor-electoral-i-los-contratos-antes-de-votar-en,estima los meses sin datos (rotulado)
+2028-02-07,lunes,unica,El Estado a tres meses de votar,posts/2028-02-07-el-estado-a-tres-meses-de-votar,estima los meses sin datos (rotulado)
+2028-02-10,jueves,re,Educación al empezar las clases de 2028,posts/2028-02-10-educacion-al-empezar-las-clases-de-2028,con los datos disponibles
+2028-02-14,lunes,re,Mujeres en el Estado: cuántas son en 2028,posts/2028-02-14-mujeres-en-el-estado-cuantas-son-en-2028,con los datos disponibles
+2028-02-17,jueves (SITUCAP),situcap,SITUCAP N.º 17 · Diciembre de 2027,situcap/ediciones/2027-12,espera los datos de 2027-12
+2028-02-21,lunes,re,Cuántas instituciones reportan sus datos (2028),posts/2028-02-21-cuantas-instituciones-reportan-sus-datos-2028,con los datos disponibles
+2028-02-24,jueves,departamento,San Pedro: la gobernación y las municipalidades por dentro,posts/2028-02-24-san-pedro-la-gobernacion-y-las-municipalidades-por-dentro,con los datos disponibles
+2028-02-28,lunes,institucion,La institución de la semana: Ministerio de Defensa Nacional,posts/2028-02-28-la-institucion-de-la-semana-ministerio-de-defensa-nacional,con los datos disponibles
+2028-03-02,jueves,unica,La deriva salarial: cuánto se paga además del sueldo básico,posts/2028-03-02-la-deriva-salarial-cuanto-se-paga-ademas-del-sueldo,con los datos disponibles
+2028-03-06,lunes,re,La brecha salarial de género en un número (2028),posts/2028-03-06-la-brecha-salarial-de-genero-en-un-numero-2028,con los datos disponibles
+2028-03-09,jueves,issp,ISSP del cuarto trimestre de 2027: los sueldos de los mismos cargos,posts/2028-03-09-issp-del-cuarto-trimestre-de-2027-los-sueldos-de,con los datos disponibles
+2028-03-13,lunes,re,8M 2028: las mujeres con discapacidad en el empleo público,posts/2028-03-13-8m-2028-las-mujeres-con-discapacidad-en-el-empleo,con los datos disponibles
+2028-03-16,jueves (SITUCAP),situcap,SITUCAP N.º 18 · Enero de 2028,situcap/ediciones/2028-01,espera los datos de 2028-01
+2028-03-20,lunes,institucion,La institución de la semana: Ministerio Público,posts/2028-03-20-la-institucion-de-la-semana-ministerio-publico,con los datos disponibles
+2028-03-23,jueves,re,¿Hay un techo de cristal en el Estado? Medición 2028,posts/2028-03-23-hay-un-techo-de-cristal-en-el-estado-medicion,con los datos disponibles
+2028-03-27,lunes,objeto,"Objeto 142: contratación de personal de salud, quién lo paga y cuánto",posts/2028-03-27-objeto-142-contratacion-de-personal-de-salud-quien-lo,con los datos disponibles
+2028-03-30,jueves,sector,Servicio civil del Ejecutivo: el último año en cifras,posts/2028-03-30-servicio-civil-del-ejecutivo-el-ultimo-ano-en-cifras,con los datos disponibles
+2028-04-03,lunes,unica,"El Estado que recibe el próximo gobierno, en cinco cifras",posts/2028-04-03-el-estado-que-recibe-el-proximo-gobierno-en-cinco,con los datos disponibles
+2028-04-06,jueves,unica,Informe de traspaso: el Estado de 2023 a 2028,posts/2028-04-06-informe-de-traspaso-el-estado-de-2023-a-2028,estima los meses sin datos (rotulado)
+2028-04-10,lunes,re,La masa salarial del último trimestre (2028),posts/2028-04-10-la-masa-salarial-del-ultimo-trimestre-2028,con los datos disponibles
+2028-04-13,jueves,re,Masa salarial 2027: ¿más gente o mejores sueldos?,posts/2028-04-13-masa-salarial-2027-mas-gente-o-mejores-sueldos,con los datos disponibles
+2028-04-17,lunes,institucion,La institución de la semana: ANDE,posts/2028-04-17-la-institucion-de-la-semana-ande,con los datos disponibles
+2028-04-20,jueves (SITUCAP),situcap,SITUCAP N.º 19 · Febrero de 2028,situcap/ediciones/2028-02,espera los datos de 2028-02
+2028-04-24,lunes,institucion,La institución de la semana: Ministerio de Obras Públicas y Comunicaciones,posts/2028-04-24-la-institucion-de-la-semana-ministerio-de-obras-publicas,con los datos disponibles
+2028-04-27,jueves,re,¿Cuánto gana un docente? Edición 2028,posts/2028-04-27-cuanto-gana-un-docente-edicion-2028,con los datos disponibles
+2028-05-01,lunes,re,1 de mayo de 2028: cargos públicos con sueldo básico bajo el mínimo,posts/2028-05-01-1-de-mayo-de-2028-cargos-publicos-con-sueldo,con los datos disponibles
+2028-05-04,jueves,monitor,Monitor electoral II: los contratos después de votar,posts/2028-05-04-monitor-electoral-ii-los-contratos-despues-de-votar,estima los meses sin datos (rotulado)
+2028-05-08,lunes,re,Las promociones policiales de 2028,posts/2028-05-08-las-promociones-policiales-de-2028,con los datos disponibles
+2028-05-11,jueves,re,Público y privado: los salarios por rama (2028),posts/2028-05-11-publico-y-privado-los-salarios-por-rama-2028,con los datos disponibles
+2028-05-15,lunes,institucion,La institución de la semana: Ministerio de la Defensa Pública,posts/2028-05-15-la-institucion-de-la-semana-ministerio-de-la-defensa,con los datos disponibles
+2028-05-18,jueves (SITUCAP),situcap,SITUCAP N.º 20 · Marzo de 2028,situcap/ediciones/2028-03,espera los datos de 2028-03
+2028-05-22,lunes,objeto,"Objeto 133: bonificaciones, quién lo paga y cuánto",posts/2028-05-22-objeto-133-bonificaciones-quien-lo-paga-y-cuanto,con los datos disponibles
+2028-05-25,jueves,departamento,Cordillera: la gobernación y las municipalidades por dentro,posts/2028-05-25-cordillera-la-gobernacion-y-las-municipalidades-por-dentro,con los datos disponibles
+2028-05-29,lunes,institucion,La institución de la semana: Compañía Paraguaya de Comunicaciones S.A.,posts/2028-05-29-la-institucion-de-la-semana-compania-paraguaya-de-comunicaciones,con los datos disponibles
+2028-06-01,jueves,unica,Compresión salarial: cuánto más gana la categoría más alta,posts/2028-06-01-compresion-salarial-cuanto-mas-gana-la-categoria-mas-alta,con los datos disponibles
+2028-06-05,lunes,re,Lo que va de 2028: vínculos y masa salarial,posts/2028-06-05-lo-que-va-de-2028-vinculos-y-masa-salarial,con los datos disponibles
+2028-06-08,jueves,issp,ISSP del primer trimestre de 2028: los sueldos de los mismos cargos,posts/2028-06-08-issp-del-primer-trimestre-de-2028-los-sueldos-de,con los datos disponibles
+2028-06-12,lunes,institucion,La institución de la semana: Ministerio de Agricultura y Ganadería,posts/2028-06-12-la-institucion-de-la-semana-ministerio-de-agricultura-y,con los datos disponibles
+2028-06-15,jueves (SITUCAP),situcap,SITUCAP N.º 21 · Abril de 2028,situcap/ediciones/2028-04,espera los datos de 2028-04
+2028-06-19,lunes,institucion,La institución de la semana: Empresa de Servicios Sanitarios del Paraguay S.A.,posts/2028-06-19-la-institucion-de-la-semana-empresa-de-servicios-sanitarios,con los datos disponibles
+2028-06-22,jueves,re,Contratados 2028: quiénes son y dónde están,posts/2028-06-22-contratados-2028-quienes-son-y-donde-estan,con los datos disponibles
+2028-06-26,lunes,objeto,"Objeto 136: bonificación por exposición al peligro, quién lo paga y cuánto",posts/2028-06-26-objeto-136-bonificacion-por-exposicion-al-peligro-quien-lo,con los datos disponibles
+2028-06-29,jueves,departamento,Guairá: la gobernación y las municipalidades por dentro,posts/2028-06-29-guaira-la-gobernacion-y-las-municipalidades-por-dentro,con los datos disponibles
+2028-07-03,lunes,re,El salario mínimo de 2028 y la remuneración pública,posts/2028-07-03-el-salario-minimo-de-2028-y-la-remuneracion-publica,con los datos disponibles
+2028-07-06,jueves,unica,"Cinco años de gobierno, sector por sector",posts/2028-07-06-cinco-anos-de-gobierno-sector-por-sector,con los datos disponibles
+2028-07-10,lunes,re,El sueldo básico medio de un cargo público (2028),posts/2028-07-10-el-sueldo-basico-medio-de-un-cargo-publico-2028,con los datos disponibles
+2028-07-13,jueves,sector,Poder Judicial: el último año en cifras,posts/2028-07-13-poder-judicial-el-ultimo-ano-en-cifras,con los datos disponibles
+2028-07-17,lunes,institucion,"La institución de la semana: Ministerio del Trabajo, Empleo y Seguridad Social",posts/2028-07-17-la-institucion-de-la-semana-ministerio-del-trabajo-empleo,con los datos disponibles
+2028-07-20,jueves (SITUCAP),situcap,SITUCAP N.º 22 · Mayo de 2028,situcap/ediciones/2028-05,espera los datos de 2028-05
+2028-07-24,lunes,institucion,La institución de la semana: Dirección Nacional de Aeronáutica Civil,posts/2028-07-24-la-institucion-de-la-semana-direccion-nacional-de-aeronautica,con los datos disponibles
+2028-07-27,jueves,departamento,Caaguazú: la gobernación y las municipalidades por dentro,posts/2028-07-27-caaguazu-la-gobernacion-y-las-municipalidades-por-dentro,con los datos disponibles
+2028-07-31,lunes,institucion,La institución de la semana: Universidad Nacional del Este,posts/2028-07-31-la-institucion-de-la-semana-universidad-nacional-del-este,con los datos disponibles
+2028-08-03,jueves,gobierno,Cambio de gobierno en tiempo real: los contratos de agosto,posts/2028-08-03-cambio-de-gobierno-en-tiempo-real-los-contratos-de,estima los meses sin datos (rotulado)
+2028-08-07,lunes,gobierno,El Estado el día del traspaso,posts/2028-08-07-el-estado-el-dia-del-traspaso,estima los meses sin datos (rotulado)
+2028-08-10,jueves,departamento,Caazapá: la gobernación y las municipalidades por dentro,posts/2028-08-10-caazapa-la-gobernacion-y-las-municipalidades-por-dentro,con los datos disponibles
+2028-08-14,lunes,re,El Estado en un año: cuántos vínculos sumó (2028),posts/2028-08-14-el-estado-en-un-ano-cuantos-vinculos-sumo-2028,con los datos disponibles
+2028-08-17,jueves (SITUCAP),situcap,SITUCAP N.º 23 · Junio de 2028,situcap/ediciones/2028-06,espera los datos de 2028-06
+2028-08-21,lunes,re,Qué mirar del Presupuesto 2029 en personal,posts/2028-08-21-que-mirar-del-presupuesto-2029-en-personal,estimación provisoria hasta que se cargue data/manual/pgn_2029_servicios_personales.csv
+2028-08-24,jueves,sector,Entes autónomos y autárquicos: el último año en cifras,posts/2028-08-24-entes-autonomos-y-autarquicos-el-ultimo-ano-en-cifras,con los datos disponibles
+2028-08-28,lunes,objeto,"Objeto 144: jornales, quién lo paga y cuánto",posts/2028-08-28-objeto-144-jornales-quien-lo-paga-y-cuanto,con los datos disponibles
+2028-08-31,jueves,departamento,Itapúa: la gobernación y las municipalidades por dentro,posts/2028-08-31-itapua-la-gobernacion-y-las-municipalidades-por-dentro,con los datos disponibles
+2028-09-04,lunes,re,La masa salarial como porcentaje del PIB (2028),posts/2028-09-04-la-masa-salarial-como-porcentaje-del-pib-2028,con los datos disponibles
+2028-09-07,jueves,re,Presupuesto 2029: qué pide en personal,posts/2028-09-07-presupuesto-2029-que-pide-en-personal,estimación provisoria hasta que se cargue data/manual/pgn_2029_servicios_personales.csv
+2028-09-11,lunes,re,Vínculos públicos por cada 100 habitantes (2028),posts/2028-09-11-vinculos-publicos-por-cada-100-habitantes-2028,con los datos disponibles
+2028-09-14,jueves,issp,ISSP del segundo trimestre de 2028: los sueldos de los mismos cargos,posts/2028-09-14-issp-del-segundo-trimestre-de-2028-los-sueldos-de,con los datos disponibles
+2028-09-18,lunes,institucion,La institución de la semana: Banco Nacional de Fomento (BNF),posts/2028-09-18-la-institucion-de-la-semana-banco-nacional-de-fomento,con los datos disponibles
+2028-09-21,jueves (SITUCAP),situcap,SITUCAP N.º 24 · Julio de 2028,situcap/ediciones/2028-07,espera los datos de 2028-07
+2028-09-25,lunes,institucion,La institución de la semana: Universidad Nacional de Villarrica del Espíritu Santo,posts/2028-09-25-la-institucion-de-la-semana-universidad-nacional-de-villarrica,con los datos disponibles
+2028-09-28,jueves,re,La masa salarial en 2029: tres escenarios,posts/2028-09-28-la-masa-salarial-en-2029-tres-escenarios,con los datos disponibles
+2028-10-02,lunes,gobierno,Los primeros contratos del nuevo gobierno,posts/2028-10-02-los-primeros-contratos-del-nuevo-gobierno,estima los meses sin datos (rotulado)
+2028-10-05,jueves,re,Bonificaciones 2028: la parte del sueldo que no es sueldo,posts/2028-10-05-bonificaciones-2028-la-parte-del-sueldo-que-no-es,con los datos disponibles
+2028-10-09,lunes,re,¿Cuesta más un contrato o un cargo de planta? (2028),posts/2028-10-09-cuesta-mas-un-contrato-o-un-cargo-de-planta,con los datos disponibles
+2028-10-12,jueves,unica,Rotación: las instituciones con más recambio de personas,posts/2028-10-12-rotacion-las-instituciones-con-mas-recambio-de-personas,con los datos disponibles
+2028-10-16,lunes,institucion,La institución de la semana: Ministerio de Economía y Finanzas,posts/2028-10-16-la-institucion-de-la-semana-ministerio-de-economia-y,con los datos disponibles
+2028-10-19,jueves (SITUCAP),situcap,SITUCAP N.º 25 · Agosto de 2028,situcap/ediciones/2028-08,espera los datos de 2028-08
+2028-10-23,lunes,objeto,"Objeto 131: subsidio familiar, quién lo paga y cuánto",posts/2028-10-23-objeto-131-subsidio-familiar-quien-lo-paga-y-cuanto,con los datos disponibles
+2028-10-26,jueves,re,Presupuestado y pagado en 2028,posts/2028-10-26-presupuestado-y-pagado-en-2028,con los datos disponibles
+2028-10-30,lunes,institucion,La institución de la semana: Servicio Nacional de Calidad y Salud Animal,posts/2028-10-30-la-institucion-de-la-semana-servicio-nacional-de-calidad,con los datos disponibles
+2028-11-02,jueves,gobierno,Los primeros 100 días: el empleo público,posts/2028-11-02-los-primeros-100-dias-el-empleo-publico,estima los meses sin datos (rotulado)
+2028-11-06,lunes,re,¿Cuánto costaría un punto de reajuste en 2029?,posts/2028-11-06-cuanto-costaria-un-punto-de-reajuste-en-2029,con los datos disponibles
+2028-11-09,jueves,pgn_congreso,Presupuesto 2029: qué cambió el Congreso en personal,posts/2028-11-09-presupuesto-2029-que-cambio-el-congreso-en-personal,pendiente: necesita el proyecto y la ley aprobada del PGN 2029
+2028-11-13,lunes,re,Las instituciones que más crecieron en el último año (2028),posts/2028-11-13-las-instituciones-que-mas-crecieron-en-el-ultimo-ano,con los datos disponibles
+2028-11-16,jueves (SITUCAP),situcap,SITUCAP N.º 26 · Septiembre de 2028,situcap/ediciones/2028-09,espera los datos de 2028-09
+2028-11-20,lunes,institucion,La institución de la semana: Ministerio de Desarrollo Social,posts/2028-11-20-la-institucion-de-la-semana-ministerio-de-desarrollo-social,con los datos disponibles
+2028-11-23,jueves,unica,Cómo usar el simulador de reajustes,posts/2028-11-23-como-usar-el-simulador-de-reajustes,con los datos disponibles
+2028-11-27,lunes,institucion,La institución de la semana: Universidad Nacional de Itapúa,posts/2028-11-27-la-institucion-de-la-semana-universidad-nacional-de-itapua,con los datos disponibles
+2028-11-30,jueves,departamento,Misiones: la gobernación y las municipalidades por dentro,posts/2028-11-30-misiones-la-gobernacion-y-las-municipalidades-por-dentro,con los datos disponibles
+2028-12-04,lunes,re,Aguinaldo 2028: cuánto costará,posts/2028-12-04-aguinaldo-2028-cuanto-costara,con los datos disponibles
+2028-12-07,jueves,re,Discapacidad 2028: ¿avanzó la cuota del 5%?,posts/2028-12-07-discapacidad-2028-avanzo-la-cuota-del-5,con los datos disponibles
+2028-12-11,lunes,re,2028 en masa salarial,posts/2028-12-11-2028-en-masa-salarial,con los datos disponibles
+2028-12-14,jueves,issp,ISSP del tercer trimestre de 2028: los sueldos de los mismos cargos,posts/2028-12-14-issp-del-tercer-trimestre-de-2028-los-sueldos-de,con los datos disponibles
+2028-12-18,lunes,re,El dato de 2028: de dónde vino el crecimiento,posts/2028-12-18-el-dato-de-2028-de-donde-vino-el-crecimiento,con los datos disponibles
+2028-12-21,jueves (SITUCAP),situcap,SITUCAP N.º 27 · Octubre de 2028,situcap/ediciones/2028-10,espera los datos de 2028-10
+2028-12-25,lunes,objeto,"Objeto 145: honorarios profesionales, quién lo paga y cuánto",posts/2028-12-25-objeto-145-honorarios-profesionales-quien-lo-paga-y-cuanto,con los datos disponibles
+2028-12-28,jueves,re,Anuario 2028: el empleo público en 12 gráficos,posts/2028-12-28-anuario-2028-el-empleo-publico-en-12-graficos,con los datos disponibles
+2029-01-01,lunes,re,El bache de enero de 2029,posts/2029-01-01-el-bache-de-enero-de-2029,con los datos disponibles
+2029-01-04,jueves,re,Balance 2028: el empleo público en 10 gráficos,posts/2029-01-04-balance-2028-el-empleo-publico-en-10-graficos,con los datos disponibles
+2029-01-08,lunes,unica,Las instituciones que más cambiaron con el nuevo gobierno,posts/2029-01-08-las-instituciones-que-mas-cambiaron-con-el-nuevo-gobierno,con los datos disponibles
+2029-01-11,jueves,unica,Las fichas por institución: cómo usarlas,posts/2029-01-11-las-fichas-por-institucion-como-usarlas,con los datos disponibles
+2029-01-15,lunes,re,Cuánto costó el aguinaldo de 2028,posts/2029-01-15-cuanto-costo-el-aguinaldo-de-2028,con los datos disponibles
+2029-01-18,jueves (SITUCAP),situcap,SITUCAP N.º 28 · Noviembre de 2028,situcap/ediciones/2028-11,espera los datos de 2028-11
+2029-01-22,lunes,institucion,La institución de la semana: Administración Nacional de Navegación y Puertos,posts/2029-01-22-la-institucion-de-la-semana-administracion-nacional-de-navegacion,con los datos disponibles
+2029-01-25,jueves,sector,Gobiernos departamentales: el último año en cifras,posts/2029-01-25-gobiernos-departamentales-el-ultimo-ano-en-cifras,con los datos disponibles
+2029-01-29,lunes,institucion,La institución de la semana: Universidad Nacional de Caaguazú,posts/2029-01-29-la-institucion-de-la-semana-universidad-nacional-de-caaguazu,con los datos disponibles
+2029-02-01,jueves,re,Educación al empezar las clases de 2029,posts/2029-02-01-educacion-al-empezar-las-clases-de-2029,con los datos disponibles
+2029-02-05,lunes,gobierno,Seis meses de gobierno: el empleo público,posts/2029-02-05-seis-meses-de-gobierno-el-empleo-publico,estima los meses sin datos (rotulado)
+2029-02-08,jueves,departamento,Paraguarí: la gobernación y las municipalidades por dentro,posts/2029-02-08-paraguari-la-gobernacion-y-las-municipalidades-por-dentro,con los datos disponibles
+2029-02-12,lunes,re,Mujeres en el Estado: cuántas son en 2029,posts/2029-02-12-mujeres-en-el-estado-cuantas-son-en-2029,con los datos disponibles
+2029-02-15,jueves (SITUCAP),situcap,SITUCAP N.º 29 · Diciembre de 2028,situcap/ediciones/2028-12,espera los datos de 2028-12
+2029-02-19,lunes,re,Cuántas instituciones reportan sus datos (2029),posts/2029-02-19-cuantas-instituciones-reportan-sus-datos-2029,con los datos disponibles
+2029-02-22,jueves,departamento,Alto Paraná: la gobernación y las municipalidades por dentro,posts/2029-02-22-alto-parana-la-gobernacion-y-las-municipalidades-por-dentro,con los datos disponibles
+2029-02-26,lunes,institucion,La institución de la semana: Ministerio de Relaciones Exteriores,posts/2029-02-26-la-institucion-de-la-semana-ministerio-de-relaciones-exteriores,con los datos disponibles
+2029-03-01,jueves,unica,Techo de cristal: ¿se movió en diez años?,posts/2029-03-01-techo-de-cristal-se-movio-en-diez-anos,con los datos disponibles
+2029-03-05,lunes,re,La brecha salarial de género en un número (2029),posts/2029-03-05-la-brecha-salarial-de-genero-en-un-numero-2029,con los datos disponibles
+2029-03-08,jueves,issp,ISSP del cuarto trimestre de 2028: los sueldos de los mismos cargos,posts/2029-03-08-issp-del-cuarto-trimestre-de-2028-los-sueldos-de,con los datos disponibles
+2029-03-12,lunes,re,8M 2029: las mujeres con discapacidad en el empleo público,posts/2029-03-12-8m-2029-las-mujeres-con-discapacidad-en-el-empleo,con los datos disponibles
+2029-03-15,jueves (SITUCAP),situcap,SITUCAP N.º 30 · Enero de 2029,situcap/ediciones/2029-01,espera los datos de 2029-01
+2029-03-19,lunes,objeto,"Objeto 123: remuneración extraordinaria, quién lo paga y cuánto",posts/2029-03-19-objeto-123-remuneracion-extraordinaria-quien-lo-paga-y-cuanto,con los datos disponibles
+2029-03-22,jueves,sector,Empresas públicas: el último año en cifras,posts/2029-03-22-empresas-publicas-el-ultimo-ano-en-cifras,con los datos disponibles
+2029-03-26,lunes,institucion,La institución de la semana: Contraloría General de la República,posts/2029-03-26-la-institucion-de-la-semana-contraloria-general-de-la,con los datos disponibles
+2029-03-29,jueves,departamento,Central: la gobernación y las municipalidades por dentro,posts/2029-03-29-central-la-gobernacion-y-las-municipalidades-por-dentro,con los datos disponibles
+2029-04-02,lunes,unica,El índice de sueldos de los docentes,posts/2029-04-02-el-indice-de-sueldos-de-los-docentes,con los datos disponibles
+2029-04-05,jueves,re,Masa salarial 2028: ¿más gente o mejores sueldos?,posts/2029-04-05-masa-salarial-2028-mas-gente-o-mejores-sueldos,con los datos disponibles
+2029-04-09,lunes,re,La masa salarial del último trimestre (2029),posts/2029-04-09-la-masa-salarial-del-ultimo-trimestre-2029,con los datos disponibles
+2029-04-12,jueves,re,¿Cuánto gana un docente? Edición 2029,posts/2029-04-12-cuanto-gana-un-docente-edicion-2029,con los datos disponibles
+2029-04-16,lunes,institucion,La institución de la semana: Industria Nacional del Cemento,posts/2029-04-16-la-institucion-de-la-semana-industria-nacional-del-cemento,con los datos disponibles
+2029-04-19,jueves (SITUCAP),situcap,SITUCAP N.º 31 · Febrero de 2029,situcap/ediciones/2029-02,espera los datos de 2029-02
+2029-04-23,lunes,institucion,La institución de la semana: Universidad Nacional de Pilar,posts/2029-04-23-la-institucion-de-la-semana-universidad-nacional-de-pilar,con los datos disponibles
+2029-04-26,jueves,departamento,Ñeembucú: la gobernación y las municipalidades por dentro,posts/2029-04-26-neembucu-la-gobernacion-y-las-municipalidades-por-dentro,con los datos disponibles
+2029-04-30,lunes,objeto,"Objeto 125: remuneración adicional, quién lo paga y cuánto",posts/2029-04-30-objeto-125-remuneracion-adicional-quien-lo-paga-y-cuanto,con los datos disponibles
+2029-05-03,jueves,unica,El explorador de datos: tres preguntas en un minuto,posts/2029-05-03-el-explorador-de-datos-tres-preguntas-en-un-minuto,con los datos disponibles
+2029-05-07,lunes,re,1 de mayo de 2029: cargos públicos con sueldo básico bajo el mínimo,posts/2029-05-07-1-de-mayo-de-2029-cargos-publicos-con-sueldo,con los datos disponibles
+2029-05-10,jueves,unica,Salud: diez años de contratos,posts/2029-05-10-salud-diez-anos-de-contratos,con los datos disponibles
+2029-05-14,lunes,re,Las promociones policiales de 2029,posts/2029-05-14-las-promociones-policiales-de-2029,con los datos disponibles
+2029-05-17,jueves (SITUCAP),situcap,SITUCAP N.º 32 · Marzo de 2029,situcap/ediciones/2029-03,espera los datos de 2029-03
+2029-05-21,lunes,institucion,La institución de la semana: Dirección Nacional de Correos del Paraguay,posts/2029-05-21-la-institucion-de-la-semana-direccion-nacional-de-correos,con los datos disponibles
+2029-05-24,jueves,re,Público y privado: los salarios por rama (2029),posts/2029-05-24-publico-y-privado-los-salarios-por-rama-2029,con los datos disponibles
+2029-05-28,lunes,institucion,La institución de la semana: Banco Central del Paraguay,posts/2029-05-28-la-institucion-de-la-semana-banco-central-del-paraguay,con los datos disponibles
+2029-05-31,jueves,sector,Poder Legislativo: el último año en cifras,posts/2029-05-31-poder-legislativo-el-ultimo-ano-en-cifras,con los datos disponibles
+2029-06-04,lunes,re,Lo que va de 2029: vínculos y masa salarial,posts/2029-06-04-lo-que-va-de-2029-vinculos-y-masa-salarial,con los datos disponibles
+2029-06-07,jueves,unica,La ley de la función pública a cuatro años (I): lo que muestran los datos,posts/2029-06-07-la-ley-de-la-funcion-publica-a-cuatro-anos,con los datos disponibles
+2029-06-11,lunes,institucion,La institución de la semana: Ministerio de la Niñez y la Adolescencia,posts/2029-06-11-la-institucion-de-la-semana-ministerio-de-la-ninez,con los datos disponibles
+2029-06-14,jueves,issp,ISSP del primer trimestre de 2029: los sueldos de los mismos cargos,posts/2029-06-14-issp-del-primer-trimestre-de-2029-los-sueldos-de,con los datos disponibles
+2029-06-18,lunes,objeto,"Objeto 137: gratificaciones por servicios especiales, quién lo paga y cuánto",posts/2029-06-18-objeto-137-gratificaciones-por-servicios-especiales-quien-lo-paga,con los datos disponibles
+2029-06-21,jueves (SITUCAP),situcap,SITUCAP N.º 33 · Abril de 2029,situcap/ediciones/2029-04,espera los datos de 2029-04
+2029-06-25,lunes,institucion,La institución de la semana: Petróleos Paraguayos,posts/2029-06-25-la-institucion-de-la-semana-petroleos-paraguayos,con los datos disponibles
+2029-06-28,jueves,re,Contratados 2029: quiénes son y dónde están,posts/2029-06-28-contratados-2029-quienes-son-y-donde-estan,con los datos disponibles
+2029-07-02,lunes,re,El salario mínimo de 2029 y la remuneración pública,posts/2029-07-02-el-salario-minimo-de-2029-y-la-remuneracion-publica,con los datos disponibles
+2029-07-05,jueves,unica,"La ley de la función pública a cuatro años (II): contratos, planta y escalas",posts/2029-07-05-la-ley-de-la-funcion-publica-a-cuatro-anos,con los datos disponibles
+2029-07-09,lunes,re,El sueldo básico medio de un cargo público (2029),posts/2029-07-09-el-sueldo-basico-medio-de-un-cargo-publico-2029,con los datos disponibles
+2029-07-12,jueves,departamento,Amambay: la gobernación y las municipalidades por dentro,posts/2029-07-12-amambay-la-gobernacion-y-las-municipalidades-por-dentro,con los datos disponibles
+2029-07-16,lunes,institucion,La institución de la semana: Universidad Nacional de Concepción,posts/2029-07-16-la-institucion-de-la-semana-universidad-nacional-de-concepcion,con los datos disponibles
+2029-07-19,jueves (SITUCAP),situcap,SITUCAP N.º 34 · Mayo de 2029,situcap/ediciones/2029-05,espera los datos de 2029-05
+2029-07-23,lunes,institucion,La institución de la semana: Ministerio de Urbanismo Vivienda y Hábitat,posts/2029-07-23-la-institucion-de-la-semana-ministerio-de-urbanismo-vivienda,con los datos disponibles
+2029-07-26,jueves,departamento,Canindeyú: la gobernación y las municipalidades por dentro,posts/2029-07-26-canindeyu-la-gobernacion-y-las-municipalidades-por-dentro,con los datos disponibles
+2029-07-30,lunes,objeto,"Objeto 122: gastos de residencia, quién lo paga y cuánto",posts/2029-07-30-objeto-122-gastos-de-residencia-quien-lo-paga-y,con los datos disponibles
+2029-08-02,jueves,gobierno,Un año de gobierno frente a los dos anteriores,posts/2029-08-02-un-ano-de-gobierno-frente-a-los-dos-anteriores,estima los meses sin datos (rotulado)
+2029-08-06,lunes,re,El Estado en un año: cuántos vínculos sumó (2029),posts/2029-08-06-el-estado-en-un-ano-cuantos-vinculos-sumo-2029,con los datos disponibles
+2029-08-09,jueves,sector,SA del Estado: el último año en cifras,posts/2029-08-09-sa-del-estado-el-ultimo-ano-en-cifras,con los datos disponibles
+2029-08-13,lunes,re,Qué mirar del Presupuesto 2030 en personal,posts/2029-08-13-que-mirar-del-presupuesto-2030-en-personal,estimación provisoria hasta que se cargue data/manual/pgn_2030_servicios_personales.csv
+2029-08-16,jueves (SITUCAP),situcap,SITUCAP N.º 35 · Junio de 2029,situcap/ediciones/2029-06,espera los datos de 2029-06
+2029-08-20,lunes,institucion,La institución de la semana: Instituto Nacional de Estadísticas,posts/2029-08-20-la-institucion-de-la-semana-instituto-nacional-de-estadisticas,con los datos disponibles
+2029-08-23,jueves,departamento,Presidente Hayes: la gobernación y las municipalidades por dentro,posts/2029-08-23-presidente-hayes-la-gobernacion-y-las-municipalidades-por-dentro,con los datos disponibles
+2029-08-27,lunes,institucion,La institución de la semana: Instituto Paraguayo de Tecnología Agraria,posts/2029-08-27-la-institucion-de-la-semana-instituto-paraguayo-de-tecnologia,con los datos disponibles
+2029-08-30,jueves,departamento,Boquerón: la gobernación y las municipalidades por dentro,posts/2029-08-30-boqueron-la-gobernacion-y-las-municipalidades-por-dentro,con los datos disponibles
+2029-09-03,lunes,re,La masa salarial como porcentaje del PIB (2029),posts/2029-09-03-la-masa-salarial-como-porcentaje-del-pib-2029,con los datos disponibles
+2029-09-06,jueves,re,Presupuesto 2030: qué pide en personal,posts/2029-09-06-presupuesto-2030-que-pide-en-personal,estimación provisoria hasta que se cargue data/manual/pgn_2030_servicios_personales.csv
+2029-09-10,lunes,re,Vínculos públicos por cada 100 habitantes (2029),posts/2029-09-10-vinculos-publicos-por-cada-100-habitantes-2029,con los datos disponibles
+2029-09-13,jueves,issp,ISSP del segundo trimestre de 2029: los sueldos de los mismos cargos,posts/2029-09-13-issp-del-segundo-trimestre-de-2029-los-sueldos-de,con los datos disponibles
+2029-09-17,lunes,institucion,La institución de la semana: Servicio Nacional de Calidad Vegetal y de Semilla,posts/2029-09-17-la-institucion-de-la-semana-servicio-nacional-de-calidad,con los datos disponibles
+2029-09-20,jueves (SITUCAP),situcap,SITUCAP N.º 36 · Julio de 2029,situcap/ediciones/2029-07,espera los datos de 2029-07
+2029-09-24,lunes,institucion,La institución de la semana: Dirección Nacional de Migraciones,posts/2029-09-24-la-institucion-de-la-semana-direccion-nacional-de-migraciones,con los datos disponibles
+2029-09-27,jueves,re,La masa salarial en 2030: tres escenarios,posts/2029-09-27-la-masa-salarial-en-2030-tres-escenarios,con los datos disponibles
+2029-10-01,lunes,re,¿Cuesta más un contrato o un cargo de planta? (2029),posts/2029-10-01-cuesta-mas-un-contrato-o-un-cargo-de-planta,con los datos disponibles
+2029-10-04,jueves,re,Bonificaciones 2029: la parte del sueldo que no es sueldo,posts/2029-10-04-bonificaciones-2029-la-parte-del-sueldo-que-no-es,con los datos disponibles
+2029-10-08,lunes,re,Las instituciones que más crecieron en el último año (2029),posts/2029-10-08-las-instituciones-que-mas-crecieron-en-el-ultimo-ano,con los datos disponibles
+2029-10-11,jueves,unica,Gobernaciones y municipalidades a mitad de mandato,posts/2029-10-11-gobernaciones-y-municipalidades-a-mitad-de-mandato,estima los meses sin datos (rotulado)
+2029-10-15,lunes,institucion,La institución de la semana: Instituto Nacional de Desarrollo Rural y de la Tierra,posts/2029-10-15-la-institucion-de-la-semana-instituto-nacional-de-desarrollo,con los datos disponibles
+2029-10-18,jueves (SITUCAP),situcap,SITUCAP N.º 37 · Agosto de 2029,situcap/ediciones/2029-08,espera los datos de 2029-08
+2029-10-22,lunes,institucion,La institución de la semana: SENADIS,posts/2029-10-22-la-institucion-de-la-semana-senadis,con los datos disponibles
+2029-10-25,jueves,re,Presupuestado y pagado en 2029,posts/2029-10-25-presupuestado-y-pagado-en-2029,con los datos disponibles
+2029-10-29,lunes,institucion,La institución de la semana: Secretaría Nacional Antidrogas,posts/2029-10-29-la-institucion-de-la-semana-secretaria-nacional-antidrogas,con los datos disponibles
+2029-11-01,jueves,unica,Calidad de datos: el primer informe anual,posts/2029-11-01-calidad-de-datos-el-primer-informe-anual,con los datos disponibles
+2029-11-05,lunes,unica,Instituciones que reportan con atraso,posts/2029-11-05-instituciones-que-reportan-con-atraso,con los datos disponibles
+2029-11-08,jueves,pgn_congreso,Presupuesto 2030: qué cambió el Congreso en personal,posts/2029-11-08-presupuesto-2030-que-cambio-el-congreso-en-personal,pendiente: necesita el proyecto y la ley aprobada del PGN 2030
+2029-11-12,lunes,re,¿Cuánto costaría un punto de reajuste en 2030?,posts/2029-11-12-cuanto-costaria-un-punto-de-reajuste-en-2030,con los datos disponibles
+2029-11-15,jueves (SITUCAP),situcap,SITUCAP N.º 38 · Septiembre de 2029,situcap/ediciones/2029-09,espera los datos de 2029-09
+2029-11-19,lunes,institucion,La institución de la semana: Crédito Agrícola de Habilitación,posts/2029-11-19-la-institucion-de-la-semana-credito-agricola-de-habilitacion,con los datos disponibles
+2029-11-22,jueves,unica,Estado del capital humano público: el informe anual,posts/2029-11-22-estado-del-capital-humano-publico-el-informe-anual,con los datos disponibles
+2029-11-26,lunes,institucion,La institución de la semana: Ministerio del Ambiente y Desarrollo Sostenible,posts/2029-11-26-la-institucion-de-la-semana-ministerio-del-ambiente-y,con los datos disponibles
+2029-11-29,jueves,sector,Otros organismos: el último año en cifras,posts/2029-11-29-otros-organismos-el-ultimo-ano-en-cifras,con los datos disponibles
+2029-12-03,lunes,re,Aguinaldo 2029: cuánto costará,posts/2029-12-03-aguinaldo-2029-cuanto-costara,con los datos disponibles
+2029-12-06,jueves,re,Discapacidad 2029: ¿avanzó la cuota del 5%?,posts/2029-12-06-discapacidad-2029-avanzo-la-cuota-del-5,con los datos disponibles
+2029-12-10,lunes,re,2029 en masa salarial,posts/2029-12-10-2029-en-masa-salarial,con los datos disponibles
+2029-12-13,jueves,issp,ISSP del tercer trimestre de 2029: los sueldos de los mismos cargos,posts/2029-12-13-issp-del-tercer-trimestre-de-2029-los-sueldos-de,con los datos disponibles
+2029-12-17,lunes,re,El dato de 2029: de dónde vino el crecimiento,posts/2029-12-17-el-dato-de-2029-de-donde-vino-el-crecimiento,con los datos disponibles
+2029-12-20,jueves (SITUCAP),situcap,SITUCAP N.º 39 · Octubre de 2029,situcap/ediciones/2029-10,espera los datos de 2029-10
+2029-12-24,lunes,institucion,La institución de la semana: Ministerio de Tecnologías de la Información y Comunicación,posts/2029-12-24-la-institucion-de-la-semana-ministerio-de-tecnologias-de,con los datos disponibles
+2029-12-27,jueves,re,Anuario 2029: el empleo público en 12 gráficos,posts/2029-12-27-anuario-2029-el-empleo-publico-en-12-graficos,con los datos disponibles
+2029-12-31,lunes,institucion,La institución de la semana: Instituto Forestal Nacional,posts/2029-12-31-la-institucion-de-la-semana-instituto-forestal-nacional,con los datos disponibles
+2030-01-03,jueves,re,Balance 2029: el empleo público en 10 gráficos,posts/2030-01-03-balance-2029-el-empleo-publico-en-10-graficos,con los datos disponibles
+2030-01-07,lunes,re,El bache de enero de 2030,posts/2030-01-07-el-bache-de-enero-de-2030,con los datos disponibles
+2030-01-10,jueves,quince,Quince años de datos: el Estado entero,posts/2030-01-10-quince-anos-de-datos-el-estado-entero,con los datos disponibles
+2030-01-14,lunes,unica,El Estado de hoy frente al de 2015,posts/2030-01-14-el-estado-de-hoy-frente-al-de-2015,con los datos disponibles
+2030-01-17,jueves (SITUCAP),situcap,SITUCAP N.º 40 · Noviembre de 2029,situcap/ediciones/2029-11,espera los datos de 2029-11
+2030-01-21,lunes,re,Cuánto costó el aguinaldo de 2029,posts/2030-01-21-cuanto-costo-el-aguinaldo-de-2029,con los datos disponibles
+2030-01-24,jueves,departamento,Alto Paraguay: la gobernación y las municipalidades por dentro,posts/2030-01-24-alto-paraguay-la-gobernacion-y-las-municipalidades-por-dentro,con los datos disponibles
+2030-01-28,lunes,institucion,La institución de la semana: Ministerio de Industria y Comercio,posts/2030-01-28-la-institucion-de-la-semana-ministerio-de-industria-y,con los datos disponibles
+2030-01-31,jueves,sector,Salud: el último año en cifras,posts/2030-01-31-salud-el-ultimo-ano-en-cifras,con los datos disponibles
+2030-02-04,lunes,re,Mujeres en el Estado: cuántas son en 2030,posts/2030-02-04-mujeres-en-el-estado-cuantas-son-en-2030,con los datos disponibles
+2030-02-07,jueves,quince,Quince años de datos: Educación,posts/2030-02-07-quince-anos-de-datos-educacion,con los datos disponibles
+2030-02-11,lunes,re,Cuántas instituciones reportan sus datos (2030),posts/2030-02-11-cuantas-instituciones-reportan-sus-datos-2030,con los datos disponibles
+2030-02-14,jueves,re,Educación al empezar las clases de 2030,posts/2030-02-14-educacion-al-empezar-las-clases-de-2030,con los datos disponibles
+2030-02-18,lunes,institucion,La institución de la semana: Dirección Nacional de Transporte,posts/2030-02-18-la-institucion-de-la-semana-direccion-nacional-de-transporte,con los datos disponibles
+2030-02-21,jueves (SITUCAP),situcap,SITUCAP N.º 41 · Diciembre de 2029,situcap/ediciones/2029-12,espera los datos de 2029-12
+2030-02-25,lunes,institucion,La institución de la semana: Instituto Nacional de Tecnología y Normalización,posts/2030-02-25-la-institucion-de-la-semana-instituto-nacional-de-tecnologia,con los datos disponibles
+2030-02-28,jueves,sector,Fuerzas públicas: el último año en cifras,posts/2030-02-28-fuerzas-publicas-el-ultimo-ano-en-cifras,con los datos disponibles
+2030-03-04,lunes,re,La brecha salarial de género en un número (2030),posts/2030-03-04-la-brecha-salarial-de-genero-en-un-numero-2030,con los datos disponibles
+2030-03-07,jueves,unica,Quince años de datos: género,posts/2030-03-07-quince-anos-de-datos-genero,con los datos disponibles
+2030-03-11,lunes,re,8M 2030: las mujeres con discapacidad en el empleo público,posts/2030-03-11-8m-2030-las-mujeres-con-discapacidad-en-el-empleo,con los datos disponibles
+2030-03-14,jueves,issp,ISSP del cuarto trimestre de 2029: los sueldos de los mismos cargos,posts/2030-03-14-issp-del-cuarto-trimestre-de-2029-los-sueldos-de,con los datos disponibles
+2030-03-18,lunes,institucion,La institución de la semana: Jurado de Enjuiciamiento de Magistrados,posts/2030-03-18-la-institucion-de-la-semana-jurado-de-enjuiciamiento-de,con los datos disponibles
+2030-03-21,jueves (SITUCAP),situcap,SITUCAP N.º 42 · Enero de 2030,situcap/ediciones/2030-01,espera los datos de 2030-01
+2030-03-25,lunes,institucion,La institución de la semana: Comisión Nacional de Telecomunicaciones,posts/2030-03-25-la-institucion-de-la-semana-comision-nacional-de-telecomunicaciones,con los datos disponibles
+2030-03-28,jueves,re,¿Hay un techo de cristal en el Estado? Medición 2030,posts/2030-03-28-hay-un-techo-de-cristal-en-el-estado-medicion,con los datos disponibles
+2030-04-01,lunes,re,La masa salarial como porcentaje del PIB (2030),posts/2030-04-01-la-masa-salarial-como-porcentaje-del-pib-2030,con los datos disponibles
+2030-04-04,jueves,re,Masa salarial 2029: ¿más gente o mejores sueldos?,posts/2030-04-04-masa-salarial-2029-mas-gente-o-mejores-sueldos,con los datos disponibles
+2030-04-08,lunes,re,La masa salarial del último trimestre (2030),posts/2030-04-08-la-masa-salarial-del-ultimo-trimestre-2030,con los datos disponibles
+2030-04-11,jueves,re,¿Cuánto gana un docente? Edición 2030,posts/2030-04-11-cuanto-gana-un-docente-edicion-2030,con los datos disponibles
+2030-04-15,lunes,institucion,La institución de la semana: Ministerio del Interior,posts/2030-04-15-la-institucion-de-la-semana-ministerio-del-interior,con los datos disponibles
+2030-04-18,jueves (SITUCAP),situcap,SITUCAP N.º 43 · Febrero de 2030,situcap/ediciones/2030-02,espera los datos de 2030-02
+2030-04-22,lunes,institucion,La institución de la semana: Instituto Nacional de Educación Superior,posts/2030-04-22-la-institucion-de-la-semana-instituto-nacional-de-educacion,con los datos disponibles
+2030-04-25,jueves,sector,Educación: el último año en cifras,posts/2030-04-25-educacion-el-ultimo-ano-en-cifras,con los datos disponibles
+2030-04-29,lunes,institucion,La institución de la semana: Gabinete Civil,posts/2030-04-29-la-institucion-de-la-semana-gabinete-civil,con los datos disponibles
+2030-05-02,jueves,quince,Quince años de datos: Salud,posts/2030-05-02-quince-anos-de-datos-salud,con los datos disponibles
+2030-05-06,lunes,unica,Quince años de salario mínimo y sueldo básico público,posts/2030-05-06-quince-anos-de-salario-minimo-y-sueldo-basico-publico,con los datos disponibles
+2030-05-09,jueves,re,Público y privado: los salarios por rama (2030),posts/2030-05-09-publico-y-privado-los-salarios-por-rama-2030,con los datos disponibles
+2030-05-13,lunes,re,1 de mayo de 2030: cargos públicos con sueldo básico bajo el mínimo,posts/2030-05-13-1-de-mayo-de-2030-cargos-publicos-con-sueldo,con los datos disponibles
+2030-05-16,jueves (SITUCAP),situcap,SITUCAP N.º 44 · Marzo de 2030,situcap/ediciones/2030-03,espera los datos de 2030-03
+2030-05-20,lunes,institucion,La institución de la semana: Universidad Nacional de Misiones,posts/2030-05-20-la-institucion-de-la-semana-universidad-nacional-de-misiones,con los datos disponibles
+2030-05-23,jueves,sector,Municipalidades: el último año en cifras,posts/2030-05-23-municipalidades-el-ultimo-ano-en-cifras,con los datos disponibles
+2030-05-27,lunes,institucion,La institución de la semana: Gobernación de Alto Paraná,posts/2030-05-27-la-institucion-de-la-semana-gobernacion-de-alto-parana,con los datos disponibles
+2030-05-30,jueves,sector,Servicio civil del Ejecutivo: el último año en cifras,posts/2030-05-30-servicio-civil-del-ejecutivo-el-ultimo-ano-en-cifras,con los datos disponibles
+2030-06-03,lunes,re,Lo que va de 2030: vínculos y masa salarial,posts/2030-06-03-lo-que-va-de-2030-vinculos-y-masa-salarial,con los datos disponibles
+2030-06-06,jueves,quince,Quince años de datos: Fuerzas públicas,posts/2030-06-06-quince-anos-de-datos-fuerzas-publicas,con los datos disponibles
+2030-06-10,lunes,institucion,La institución de la semana: Secretaría Nacional de Turismo,posts/2030-06-10-la-institucion-de-la-semana-secretaria-nacional-de-turismo,con los datos disponibles
+2030-06-13,jueves,issp,ISSP del primer trimestre de 2030: los sueldos de los mismos cargos,posts/2030-06-13-issp-del-primer-trimestre-de-2030-los-sueldos-de,con los datos disponibles
+2030-06-17,lunes,institucion,La institución de la semana: Dirección Nacional de Contrataciones Públicas,posts/2030-06-17-la-institucion-de-la-semana-direccion-nacional-de-contrataciones,con los datos disponibles
+2030-06-20,jueves (SITUCAP),situcap,SITUCAP N.º 45 · Abril de 2030,situcap/ediciones/2030-04,espera los datos de 2030-04
+2030-06-24,lunes,institucion,La institución de la semana: Consejo de la Magistratura,posts/2030-06-24-la-institucion-de-la-semana-consejo-de-la-magistratura,con los datos disponibles
+2030-06-27,jueves,sector,Poder Judicial: el último año en cifras,posts/2030-06-27-poder-judicial-el-ultimo-ano-en-cifras,con los datos disponibles
+2030-07-01,lunes,re,El salario mínimo de 2030 y la remuneración pública,posts/2030-07-01-el-salario-minimo-de-2030-y-la-remuneracion-publica,con los datos disponibles
+2030-07-04,jueves,re,Contratados 2030: quiénes son y dónde están,posts/2030-07-04-contratados-2030-quienes-son-y-donde-estan,con los datos disponibles
+2030-07-08,lunes,re,El sueldo básico medio de un cargo público (2030),posts/2030-07-08-el-sueldo-basico-medio-de-un-cargo-publico-2030,con los datos disponibles
+2030-07-11,jueves,sector,Entes autónomos y autárquicos: el último año en cifras,posts/2030-07-11-entes-autonomos-y-autarquicos-el-ultimo-ano-en-cifras,con los datos disponibles
+2030-07-15,lunes,institucion,La institución de la semana: Gobernación de Caaguazú,posts/2030-07-15-la-institucion-de-la-semana-gobernacion-de-caaguazu,con los datos disponibles
+2030-07-18,jueves (SITUCAP),situcap,SITUCAP N.º 46 · Mayo de 2030,situcap/ediciones/2030-05,espera los datos de 2030-05
+2030-07-22,lunes,institucion,La institución de la semana: Gobernación de Itapúa,posts/2030-07-22-la-institucion-de-la-semana-gobernacion-de-itapua,con los datos disponibles
+2030-07-25,jueves,sector,Gobiernos departamentales: el último año en cifras,posts/2030-07-25-gobiernos-departamentales-el-ultimo-ano-en-cifras,con los datos disponibles
+2030-07-29,lunes,institucion,La institución de la semana: Dirección Nacional de Vigilancia Sanitaria,posts/2030-07-29-la-institucion-de-la-semana-direccion-nacional-de-vigilancia,con los datos disponibles
+2030-08-01,jueves,unica,Proyecciones 2030–2035: cuánto personal y cuánta masa salarial,posts/2030-08-01-proyecciones-20302035-cuanto-personal-y-cuanta-masa-salarial,con los datos disponibles
+2030-08-05,lunes,unica,Municipalidades al final del mandato,posts/2030-08-05-municipalidades-al-final-del-mandato,estima los meses sin datos (rotulado)
+2030-08-08,jueves,sector,Empresas públicas: el último año en cifras,posts/2030-08-08-empresas-publicas-el-ultimo-ano-en-cifras,con los datos disponibles
+2030-08-12,lunes,re,El Estado en un año: cuántos vínculos sumó (2030),posts/2030-08-12-el-estado-en-un-ano-cuantos-vinculos-sumo-2030,con los datos disponibles
+2030-08-15,jueves (SITUCAP),situcap,SITUCAP N.º 47 · Junio de 2030,situcap/ediciones/2030-06,espera los datos de 2030-06
+2030-08-19,lunes,re,Qué mirar del Presupuesto 2031 en personal,posts/2030-08-19-que-mirar-del-presupuesto-2031-en-personal,estimación provisoria hasta que se cargue data/manual/pgn_2031_servicios_personales.csv
+2030-08-22,jueves,sector,Poder Legislativo: el último año en cifras,posts/2030-08-22-poder-legislativo-el-ultimo-ano-en-cifras,con los datos disponibles
+2030-08-26,lunes,institucion,La institución de la semana: Secretaría Nacional de Cultura,posts/2030-08-26-la-institucion-de-la-semana-secretaria-nacional-de-cultura,con los datos disponibles
+2030-08-29,jueves,sector,SA del Estado: el último año en cifras,posts/2030-08-29-sa-del-estado-el-ultimo-ano-en-cifras,con los datos disponibles
+2030-09-02,lunes,re,Vínculos públicos por cada 100 habitantes (2030),posts/2030-09-02-vinculos-publicos-por-cada-100-habitantes-2030,con los datos disponibles
+2030-09-05,jueves,re,Presupuesto 2031: qué pide en personal,posts/2030-09-05-presupuesto-2031-que-pide-en-personal,estimación provisoria hasta que se cargue data/manual/pgn_2031_servicios_personales.csv
+2030-09-09,lunes,institucion,La institución de la semana: Gobernación de Guairá,posts/2030-09-09-la-institucion-de-la-semana-gobernacion-de-guaira,con los datos disponibles
+2030-09-12,jueves,issp,ISSP del segundo trimestre de 2030: los sueldos de los mismos cargos,posts/2030-09-12-issp-del-segundo-trimestre-de-2030-los-sueldos-de,con los datos disponibles
+2030-09-16,lunes,institucion,La institución de la semana: Instituto Superior de Bellas Artes,posts/2030-09-16-la-institucion-de-la-semana-instituto-superior-de-bellas,con los datos disponibles
+2030-09-19,jueves (SITUCAP),situcap,SITUCAP N.º 48 · Julio de 2030,situcap/ediciones/2030-07,espera los datos de 2030-07
+2030-09-23,lunes,institucion,La institución de la semana: Secretaría de Emergencia Nacional,posts/2030-09-23-la-institucion-de-la-semana-secretaria-de-emergencia-nacional,con los datos disponibles
+2030-09-26,jueves,re,La masa salarial en 2031: tres escenarios,posts/2030-09-26-la-masa-salarial-en-2031-tres-escenarios,con los datos disponibles
+2030-09-30,lunes,institucion,La institución de la semana: Defensoría del Pueblo,posts/2030-09-30-la-institucion-de-la-semana-defensoria-del-pueblo,con los datos disponibles
+2030-10-03,jueves,re,Bonificaciones 2030: la parte del sueldo que no es sueldo,posts/2030-10-03-bonificaciones-2030-la-parte-del-sueldo-que-no-es,con los datos disponibles
+2030-10-07,lunes,re,¿Cuesta más un contrato o un cargo de planta? (2030),posts/2030-10-07-cuesta-mas-un-contrato-o-un-cargo-de-planta,con los datos disponibles
+2030-10-10,jueves,quince,Quince años de datos: las municipalidades,posts/2030-10-10-quince-anos-de-datos-las-municipalidades,con los datos disponibles
+2030-10-14,lunes,re,Municipalidades por dentro (2030),posts/2030-10-14-municipalidades-por-dentro-2030,con los datos disponibles
+2030-10-17,jueves (SITUCAP),situcap,SITUCAP N.º 49 · Agosto de 2030,situcap/ediciones/2030-08,espera los datos de 2030-08
+2030-10-21,lunes,institucion,La institución de la semana: Caja de Jubilaciones y Pensiones del Personal Municipal,posts/2030-10-21-la-institucion-de-la-semana-caja-de-jubilaciones-y,con los datos disponibles
+2030-10-24,jueves,re,Presupuestado y pagado en 2030,posts/2030-10-24-presupuestado-y-pagado-en-2030,con los datos disponibles
+2030-10-28,lunes,institucion,La institución de la semana: Instituto Nacional de Cooperativismo,posts/2030-10-28-la-institucion-de-la-semana-instituto-nacional-de-cooperativismo,con los datos disponibles
+2030-10-31,jueves,sector,Otros organismos: el último año en cifras,posts/2030-10-31-otros-organismos-el-ultimo-ano-en-cifras,con los datos disponibles
+2030-11-04,lunes,unica,Quince años de cuota de discapacidad,posts/2030-11-04-quince-anos-de-cuota-de-discapacidad,con los datos disponibles
+2030-11-07,jueves,unica,Estado del capital humano público: el informe anual,posts/2030-11-07-estado-del-capital-humano-publico-el-informe-anual,con los datos disponibles
+2030-11-11,lunes,re,¿Cuánto costaría un punto de reajuste en 2031?,posts/2030-11-11-cuanto-costaria-un-punto-de-reajuste-en-2031,con los datos disponibles
+2030-11-14,jueves,pgn_congreso,Presupuesto 2031: qué cambió el Congreso en personal,posts/2030-11-14-presupuesto-2031-que-cambio-el-congreso-en-personal,pendiente: necesita el proyecto y la ley aprobada del PGN 2031
+2030-11-18,lunes,institucion,La institución de la semana: Ministerio de la Mujer,posts/2030-11-18-la-institucion-de-la-semana-ministerio-de-la-mujer,con los datos disponibles
+2030-11-21,jueves (SITUCAP),situcap,SITUCAP N.º 50 · Septiembre de 2030,situcap/ediciones/2030-09,espera los datos de 2030-09
+2030-11-25,lunes,institucion,La institución de la semana: Cañas Paraguayas S.A.,posts/2030-11-25-la-institucion-de-la-semana-canas-paraguayas-s-a,con los datos disponibles
+2030-11-28,jueves,quince,Quince años de datos: el servicio civil,posts/2030-11-28-quince-anos-de-datos-el-servicio-civil,con los datos disponibles
+2030-12-02,lunes,re,Aguinaldo 2030: cuánto costará,posts/2030-12-02-aguinaldo-2030-cuanto-costara,con los datos disponibles
+2030-12-05,jueves,re,Discapacidad 2030: ¿avanzó la cuota del 5%?,posts/2030-12-05-discapacidad-2030-avanzo-la-cuota-del-5,con los datos disponibles
+2030-12-09,lunes,re,2030 en masa salarial,posts/2030-12-09-2030-en-masa-salarial,con los datos disponibles
+2030-12-12,jueves,issp,ISSP del tercer trimestre de 2030: los sueldos de los mismos cargos,posts/2030-12-12-issp-del-tercer-trimestre-de-2030-los-sueldos-de,con los datos disponibles
+2030-12-16,lunes,re,El dato de 2030: de dónde vino el crecimiento,posts/2030-12-16-el-dato-de-2030-de-donde-vino-el-crecimiento,con los datos disponibles
+2030-12-19,jueves (SITUCAP),situcap,SITUCAP N.º 51 · Octubre de 2030,situcap/ediciones/2030-10,espera los datos de 2030-10
+2030-12-23,lunes,institucion,La institución de la semana: Gobernación de Paraguarí,posts/2030-12-23-la-institucion-de-la-semana-gobernacion-de-paraguari,con los datos disponibles
+2030-12-26,jueves,unica,Anuario 2030: diez preguntas para la próxima década,posts/2030-12-26-anuario-2030-diez-preguntas-para-la-proxima-decada,con los datos disponibles
+2030-12-30,lunes,institucion,La institución de la semana: Gobernación de Boquerón,posts/2030-12-30-la-institucion-de-la-semana-gobernacion-de-boqueron,con los datos disponibles

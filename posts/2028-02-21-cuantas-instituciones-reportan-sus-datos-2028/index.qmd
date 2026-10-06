@@ -1,0 +1,79 @@
+---
+title: "Cuántas instituciones reportan sus datos (2028)"
+description: "Los registros de SINARH y SICCA no se completan al mismo tiempo: en los meses más recientes faltan instituciones, sobre todo municipalidades, que cargan sus datos con atraso."
+date: 2028-02-21
+categories: [El dato de la semana, Metodología, Municipalidades]
+image: social.png
+image-alt: "Cuántas instituciones reportan sus datos (2028)"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import plotly.graph_objects as go
+
+v = leer("vinculos_mensual_oee.csv").merge(instituciones()[K_OEE + ["sector"]], on=K_OEE)
+v = v[(v.total > 0) & (v.anho >= 2017)]
+v["muni"] = v.sector == "Municipalidades"
+n = v.groupby(["anho", "mes", "muni"]).size().unstack().fillna(0)
+n.columns = ["Resto del Estado", "Municipalidades"]
+n["total"] = n.sum(axis=1)
+n = n.reset_index(); n["fecha"] = pd.to_datetime(dict(year=n.anho, month=n.mes, day=1))
+A1, M = ultimo_mes()
+u = n[(n.anho == A1) & (n.mes == M)].iloc[0]
+a = n[(n.anho == A1 - 1) & (n.mes == M)].iloc[0]
+maxm = n.Municipalidades.max()
+falta_m = a.Municipalidades - u.Municipalidades
+falta_r = a["Resto del Estado"] - u["Resto del Estado"]
+```
+
+```{python}
+#| label: kpis
+#| output: asis
+print(kpis([
+    (miles(u.total), f"instituciones con datos en {fecha_txt(A1, M)}"),
+    (miles(a.total), f"en {fecha_txt(A1 - 1, M)}"),
+    (miles(u.Municipalidades), f"municipalidades, de un máximo de {miles(maxm)}"),
+]))
+```
+
+Cuando descargamos los datos para cada nota, el último mes disponible no está completo. En `{python} fecha_txt(A1, M)` aparecen **`{python} miles(u.total)` instituciones** con vínculos registrados; en el mismo mes del año anterior eran `{python} miles(a.total)`. La diferencia está casi toda en las **municipalidades**: faltan `{python} miles(falta_m)` que sí habían reportado un año antes`{python} f", frente a {miles(falta_r)} instituciones del resto del Estado" if falta_r > 0 else ""`.
+
+```{python}
+#| label: fig-n
+#| fig-cap: "Instituciones con vínculos registrados por mes"
+fig = go.Figure()
+for c, col in [("Municipalidades", VERDE_AGUA), ("Resto del Estado", AZUL)]:
+    fig.add_trace(go.Scatter(x=n.fecha, y=n[c], name=c, mode="lines", stackgroup="uno", line=dict(color=col, width=0.5),
+                             hovertemplate=c + ": %{y:,.0f}<extra></extra>"))
+estilo(fig, alto=340)
+fig.show(config=CONFIG)
+```
+
+Las municipalidades cargan sus datos en los sistemas del Ministerio de Economía con más atraso que el resto, y algunas no reportan todos los meses. Por eso, en Pulso del Estado:
+
+- comparamos solo **las mismas instituciones** en los dos períodos (el [SITUCAP](/situcap/) lo hace cada mes);
+- marcamos como **preliminares** los meses más recientes;
+- actualizamos las cifras cuando llega un nuevo corte de datos.
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA. [Descargar los datos](/datos/).
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_dato, barras
+social("Cuántas instituciones\nreportan sus datos", miles(u.total) + " instituciones",
+       f"con datos en {fecha_txt(A1, M)} · {miles(a.total)} un año antes", color=VERDE_AGUA)
+ig_dato(1, "El dato de la semana", f"En {fecha_txt(A1, M)} reportaron", miles(u.total),
+        f"instituciones: {miles(falta_m)} municipalidades menos que un año antes", "Instituciones con datos",
+        barras([f"{MES_C[M - 1]} {A1 - 1}", f"{MES_C[M - 1]} {A1}"], [a.total, u.total], [miles(a.total), miles(u.total)],
+               colores=["#9db9de", VERDE_AGUA]), color=VERDE_AGUA)
+```

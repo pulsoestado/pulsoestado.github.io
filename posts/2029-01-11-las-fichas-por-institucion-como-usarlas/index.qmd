@@ -1,0 +1,56 @@
+---
+title: "Las fichas por institución: cómo usarlas"
+description: "Una página para cada institución del Estado con su personal, contratos, mujeres, masa salarial, categorías y personas con discapacidad."
+date: 2029-01-11
+categories: [Productos, Instituciones]
+image: social.png
+image-alt: "Las fichas por institución: cómo usarlas"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import numpy as np
+import plotly.graph_objects as go
+
+```
+
+```{python}
+#| label: datos
+UA = ultimo_anio_completo()
+p = vin_promedio_oee(UA).sort_values("total", ascending=False)
+n = len(p[p.total > 0]); top = p.head(20)
+```
+
+Las **[fichas por institución](/instituciones/)** reúnen todo lo que sabemos de cada institución: una página para cada una de las `{python} n` instituciones con datos en SINARH y SICCA, con su personal mes a mes, la proporción de contratos y de mujeres, la masa salarial por componente, las categorías salariales y las personas con discapacidad. Cada ficha tiene un enlace propio para compartir y los datos se pueden descargar.
+
+Estas son las 20 instituciones más grandes, con el enlace a su ficha:
+
+```{python}
+#| label: tbl
+#| output: asis
+print(f"| Institución | Sector | Vínculos promedio {UA} | Ficha |\n|---|---|--:|---|")
+for _, r in top.iterrows():
+    print(f"| {r.nombre_largo} | {r.sector} | {miles(r.total)} | [abrir](/instituciones/?id={int(r.codigo_nivel)}-{int(r.codigo_entidad)}-{int(r.codigo_oee)}) |")
+```
+
+Las 20 más grandes reúnen el `{python} pct(top.total.sum() / p.total.sum() * 100, 0)` de los vínculos del Estado. Todos los lunes seguimos presentando una en [la institución de la semana](/index.qmd#category=La%20instituci%C3%B3n%20de%20la%20semana).
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA.
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_dato, barras_h as bh
+social("Una ficha para\ncada institución", f"{n} fichas", "personal, contratos, mujeres, masa salarial, categorías y discapacidad")
+o = top.head(7).sort_values("total")
+ig_dato(1, "Fichas por institución", "Ya podés consultar la ficha de", f"{n}", "instituciones del Estado", f"Las más grandes, vínculos {UA}",
+        bh([x if len(x) < 32 else x[:30] + "…" for x in o.nombre_largo], list(o.total), [miles(x) for x in o.total]))
+```

@@ -1,0 +1,60 @@
+---
+title: "Municipalidades al final del mandato"
+description: "Cuánto cambió el personal municipal desde las elecciones de 2026, frente al mismo tramo del mandato anterior."
+date: 2030-08-05
+categories: [El dato de la semana, Municipalidades, Ciclo electoral]
+image: social.png
+image-alt: "Municipalidades al final del mandato"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import numpy as np
+import plotly.graph_objects as go
+
+```
+
+```{python}
+#| label: datos
+fin = pd.Timestamp(2030, 6, 1)
+s = serie_extendida(fin.year, fin.month, "Municipalidades").set_index("fecha")
+AC, MC = ultimo_mes_confiable(); t1 = min(fin, pd.Timestamp(AC, MC, 1)) if pd.Timestamp(AC, MC, 1) >= pd.Timestamp(2027, 1, 1) else fin
+EST = bool(s.loc[t1, "estimado"])
+b = pd.Timestamp(2026, 10, 1); b0, t0 = pd.Timestamp(2021, 10, 1), pd.Timestamp(2021, 10, 1) + (t1 - b)
+d1 = s.loc[t1, "total"] - s.loc[b, "total"]; c1 = s.loc[t1, "contratado"] - s.loc[b, "contratado"]
+t0 = pd.Timestamp(t0.year, t0.month, 1)
+d0 = s.loc[t0, "total"] - s.loc[b0, "total"] if t0 in s.index else np.nan
+```
+
+```{python}
+#| output: asis
+if EST:
+    aviso_estimacion(f"Los datos posteriores a {fecha_txt(AC, MC)} son estimaciones; las municipalidades cargan sus datos con atraso.")
+```
+
+```{python}
+#| label: kpis
+#| output: asis
+print(kpis([(signo(d1), f"vínculos municipales desde octubre de 2026" + (" (est.)" if EST else "")), (signo(c1), "contratos"), (signo(d0), "en el mismo tramo del mandato anterior (desde octubre de 2021)")]))
+```
+
+Desde las elecciones de octubre de 2026 hasta `{python} fecha_txt(t1.year, t1.month)`, las municipalidades cambiaron `{python} signo(d1)` vínculos, `{python} signo(c1)` de ellos contratos. En el mismo tramo del mandato anterior, desde octubre de 2021, el cambio había sido de `{python} signo(d0)`. Con las elecciones municipales de 2031 por delante, el [monitor del ciclo electoral](/monitor-electoral/) seguirá el período previo.
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA.
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_dato, barras
+social("Municipalidades al\nfinal del mandato", signo(d1) + " vínculos", "desde octubre de 2026" + (" (estimado)" if EST else "") + f" · mandato anterior: {signo(d0)}")
+ig_dato(1, "El dato de la semana", "Desde 2026, las municipalidades cambiaron", signo(d1), "vínculos" + (" (estimado)" if EST else ""), "Mismo tramo de cada mandato",
+        barras(["2021–", "2026–"], [d0, d1], [signo(d0), signo(d1)], colores=[GRIS, AZUL]))
+```

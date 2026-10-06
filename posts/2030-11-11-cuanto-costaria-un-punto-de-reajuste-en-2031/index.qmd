@@ -1,0 +1,92 @@
+---
+title: "¿Cuánto costaría un punto de reajuste en 2031?"
+description: "Una simulación simple: cuánto le cuesta al Estado, por año, subir 1% el sueldo básico de todo su personal permanente, y cuánto si el aumento alcanza también a contratos y bonificaciones."
+date: 2030-11-11
+categories: [Masa salarial, Presupuesto, Simulación]
+image: social.png
+image-alt: "¿Cuánto costaría un punto de reajuste en 2031?"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import plotly.graph_objects as go
+
+UA = ultimo_anio_completo()
+m = leer("masa_mensual_sector.csv")
+u = m[m.anho == UA].pivot_table(index="sector", columns="componente", values="devengado", aggfunc="sum").fillna(0)
+sb = u["Sueldo básico"]; tot = u.sum(axis=1); ag = u["Aguinaldo"]
+# 1 punto sobre el sueldo básico: +1% del básico anual y +1% del aguinaldo (que se calcula sobre lo cobrado)
+c_sb = (sb + ag) * 0.01
+# 1 punto sobre todas las remuneraciones (sin dietas ni gastos de representación)
+base_todo = tot - u.get("Dietas", 0) - u.get("Gastos de representación", 0)
+c_todo = base_todo * 0.01
+CSB, CT = c_sb.sum(), c_todo.sum()
+ipc = [ipc_interanual(*x) for x in [(UA + 1, mm) for mm in range(12, 0, -1)]]
+ult_ipc = next((i for i in ipc if i is not None), None)
+if ult_ipc is None:
+    d = leer("ipc_salarios_bcp.csv").set_index("anho").ipc; ult_ipc = (d[UA] / d[UA - 1] - 1) * 100
+MT = tot.sum()
+```
+
+::: {.en-breve}
+**En breve**
+
+- Con la masa salarial de `{python} UA`, subir **1% el sueldo básico** de todo el personal permanente cuesta unos **`{python} milmillones(CSB)` mil millones de guaraníes por año**, incluido su efecto en el aguinaldo.
+- Si el aumento de 1% alcanza a **todas las remuneraciones** (contratos, bonificaciones y demás), el costo sube a **`{python} milmillones(CT)` mil millones**.
+- Un reajuste igual a la última inflación interanual disponible (`{python} pct(ult_ipc)`) costaría entre `{python} milmillones(CSB * ult_ipc)` y `{python} milmillones(CT * ult_ipc)` mil millones de guaraníes por año.
+- Más de la mitad del costo de cualquier reajuste general está en **Educación, Salud y Fuerzas públicas**.
+:::
+
+## El costo de un punto, sector por sector
+
+```{python}
+#| label: fig
+#| fig-cap: "Costo anual de un reajuste de 1%, en miles de millones de guaraníes"
+o = c_todo.sort_values()
+fig = go.Figure()
+fig.add_trace(go.Bar(y=o.index, x=c_sb.reindex(o.index) / 1e9, name="1% del sueldo básico", orientation="h", marker_color=AZUL,
+                     hovertemplate="<b>%{y}</b><br>Sueldo básico: %{x:.1f} mil millones<extra></extra>"))
+fig.add_trace(go.Bar(y=o.index, x=o / 1e9, name="1% de todas las remuneraciones", orientation="h", marker_color="#9db9de",
+                     hovertemplate="<b>%{y}</b><br>Todas: %{x:.1f} mil millones<extra></extra>"))
+estilo(fig, alto=480).update_layout(barmode="group", hovermode="closest", bargap=0.25)
+fig.update_xaxes(showgrid=True, gridcolor="rgba(128,128,128,.18)"); fig.update_yaxes(showgrid=False)
+fig.show(config=CONFIG)
+```
+
+```{python}
+#| label: tbl
+#| output: asis
+print("| Reajuste | Solo sueldo básico (mil M Gs/año) | Todas las remuneraciones (mil M Gs/año) | % de la masa salarial |\n|--:|--:|--:|--:|")
+for k in [1, 2, 3, 5, 10]:
+    print(f"| {k}% | {milmillones(CSB * k)} | {milmillones(CT * k)} | {pct(CT * k / MT * 100)} |")
+print(f"\n: Costo anual estimado de un reajuste, con la masa salarial de {UA}")
+```
+
+## Cómo leer esta simulación
+
+Es una cuenta de primer orden: multiplica la masa salarial de `{python} UA` por el porcentaje de aumento. No incluye el crecimiento del personal ni los reajustes ya previstos para algunos grupos. Tampoco supone que todos los grupos reciban el mismo aumento: en la práctica, los reajustes del sector público suelen ser distintos para docentes, médicos, policías y militares o para el resto de la administración.
+
+Sirve como orden de magnitud: cada punto de reajuste general cuesta alrededor del `{python} pct(CT / MT * 100, 1)` de la masa salarial, y la masa salarial es uno de los gastos más grandes del Estado. Es una de las cifras que conviene tener a mano cuando se discute cada nuevo Presupuesto General de la Nación.
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA (devengado por componente) e inflación del Banco Central del Paraguay. [Descargar los datos](/datos/).
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_portada, ig_dato, barras_h as bh
+cort = lambda x: x.replace("Servicio civil del Ejecutivo", "Servicio civil").replace("Entes autónomos y autárquicos", "Entes autónomos")
+social("¿Cuánto cuesta un punto\nde reajuste salarial?", milmillones(CT) + " mil millones", f"de Gs por año por cada 1% de aumento general (base {UA})")
+ig_portada("Simulación", "¿Cuánto\ncuesta un\npunto?", f"Cada 1% de aumento general cuesta\nunos {milmillones(CT)} mil millones de Gs por año.")
+o = c_todo.sort_values().tail(6)
+ig_dato(2, "Por sector", "Un aumento de 1% en todo el Estado cuesta", milmillones(CT) + " mil M", "de guaraníes por año",
+        "Miles de millones de Gs por año, por sector", bh([cort(x) for x in o.index], o / 1e9, [coma(x / 1e9, 1) for x in o]))
+```

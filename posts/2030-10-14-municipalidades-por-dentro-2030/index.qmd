@@ -1,0 +1,138 @@
+---
+title: "Municipalidades por dentro (2030)"
+description: "Cuánto personal tienen las municipalidades, qué proporción son contratos, cuánto cuestan y cuáles son las más grandes."
+date: 2030-10-14
+categories: [Municipalidades, Contratados, Dotación]
+image: social.png
+image-alt: "Municipalidades por dentro (2030)"
+resources: ["ig_*.png"]
+draft: true  # programada
+---
+
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import numpy as np
+import plotly.graph_objects as go
+
+A0, A1 = 2017, 2025
+mu = leer("municipios_2025.csv")
+mu["pc"] = mu.contratados / mu.vinculos * 100
+mu["pm"] = mu.mujeres / mu.vinculos * 100
+mu["nombre"] = mu.descripcion_oee.map(nombre)
+v = leer("vinculos_mensual_sector.csv")
+va = v[v.anho.between(A0, A1)].groupby(["anho", "sector"])[["total", "contratado", "mujeres"]].mean().reset_index()
+m_ = va[va.sector == "Municipalidades"].set_index("anho")
+resto = va[va.sector != "Municipalidades"].groupby("anho")[["total", "contratado"]].sum()
+
+N = len(mu); V = mu.vinculos.sum()
+pc = mu.contratados.sum() / V * 100
+pc_resto = resto.loc[A1, "contratado"] / resto.loc[A1, "total"] * 100
+pm = mu.mujeres.sum() / V * 100
+mitad = int((mu.pc >= 50).sum()); casi_todos = int((mu.pc >= 80).sum())
+top = mu.sort_values("vinculos", ascending=False).head(15)
+top3 = top.nombre.head(3).tolist()
+parte_top10 = mu.sort_values("vinculos", ascending=False).head(10).vinculos.sum() / V * 100
+var_v = (m_.loc[A1, "total"] / m_.loc[A0, "total"] - 1) * 100
+dg = (mu.Dietas.sum() + mu["Gastos de representación"].sum()) / mu.masa_total.sum() * 100
+masa = mu.masa_total.sum()
+completos = int((mu.meses == 12).sum())
+```
+
+::: {.en-breve}
+**En breve**
+
+- En `{python} A1` las **`{python} N` municipalidades** con datos pagaron en promedio **`{python} miles(V)` vínculos** por mes.
+- El **`{python} pct(pc, 0)` son contratos**, frente al `{python} pct(pc_resto, 0)` en el resto del Estado. En `{python} mitad` municipalidades los contratados son mayoría y en `{python} casi_todos` superan el 80%.
+- **`{python} top3[0]`**, **`{python} top3[1]`** y **`{python} top3[2]`** son las de mayor personal. Las diez más grandes reúnen el `{python} pct(parte_top10, 0)` del total.
+- La **Municipalidad de Asunción**, la más grande del país, no figura en estos registros.
+- Desde `{python} A0` el personal municipal creció `{python} pct(var_v, 0)`. Las **dietas y los gastos de representación** son el `{python} pct(dg, 0)` de su masa salarial.
+:::
+
+```{python}
+#| label: kpis
+#| output: asis
+print(kpis([
+    (miles(V), f"vínculos municipales, promedio mensual {A1}"),
+    (pct(pc, 0), "son contratos"),
+    (pct(pm, 0), "son mujeres"),
+    (pct(dg, 0), "de la masa salarial municipal son dietas y gastos de representación"),
+]))
+```
+
+## Las más grandes
+
+```{python}
+#| label: fig-top
+#| fig-cap: "Las 15 municipalidades con más vínculos, promedio mensual 2025"
+o = top.sort_values("vinculos")
+fig = go.Figure()
+fig.add_trace(go.Bar(y=o.nombre, x=o.contratados, name="Contratados", orientation="h", marker_color=NARANJA,
+                     marker_line=dict(width=1, color="#fcfcfb"),
+                     hovertemplate="<b>%{y}</b><br>Contratados: %{x:,.0f}<extra></extra>"))
+fig.add_trace(go.Bar(y=o.nombre, x=o.vinculos - o.contratados, name="Permanentes", orientation="h",
+                     marker_color=AZUL, marker_line=dict(width=1, color="#fcfcfb"),
+                     text=[f"{miles(t_)} · {pct(p_, 0)} contratados" for t_, p_ in zip(o.vinculos, o.pc)],
+                     textposition="outside", cliponaxis=False, textfont=dict(color=TINTA_GRAF),
+                     hovertemplate="<b>%{y}</b><br>Permanentes: %{x:,.0f}<extra></extra>"))
+estilo(fig, alto=560).update_layout(barmode="stack", hovermode="closest", bargap=0.3, margin=dict(r=150))
+fig.update_xaxes(tickformat=",.0f", showgrid=True, gridcolor="rgba(128,128,128,.18)")
+fig.update_yaxes(showgrid=False)
+fig.show(config=CONFIG)
+```
+
+**`{python} top3[0]`** es la municipalidad con más personal: `{python} miles(top.iloc[0].vinculos)` vínculos en promedio, el `{python} pct(top.iloc[0].pc, 0)` contratados. Le siguen `{python} top3[1]` (`{python} miles(top.iloc[1].vinculos)`) y `{python} top3[2]` (`{python} miles(top.iloc[2].vinculos)`).
+
+## El contrato como regla
+
+```{python}
+#| label: fig-dist
+#| fig-cap: "Cantidad de municipalidades según su proporción de contratados, 2025"
+bins = np.arange(0, 101, 10)
+cuenta, _ = np.histogram(mu.pc.clip(upper=99.99), bins=bins)
+etiquetas = [f"{a}–{a + 10}%" for a in bins[:-1]]
+fig = go.Figure(go.Bar(x=etiquetas, y=cuenta, marker_color=[AZUL if a < 50 else NARANJA for a in bins[:-1]],
+                       marker_line_width=0, text=cuenta, textposition="outside", cliponaxis=False,
+                       textfont=dict(color=TINTA_GRAF),
+                       hovertemplate="%{x} contratados: <b>%{y} municipalidades</b><extra></extra>"))
+estilo(fig, alto=340, leyenda=False).update_layout(hovermode="closest", bargap=0.2)
+fig.update_yaxes(range=[0, cuenta.max() * 1.2])
+fig.show(config=CONFIG)
+```
+
+En el resto del Estado, el contrato es la excepción. En las municipalidades es la regla: en **`{python} mitad` de las `{python} N`** los contratados son mayoría y la proporción típica (la mediana) es de `{python} pct(mu.pc.median(), 0)`. Esto tiene consecuencias: la mayor parte del personal municipal no tiene estabilidad y su continuidad depende de la renovación de los contratos, que suele coincidir con los cambios de autoridades.
+
+## Cómo evolucionó
+
+```{python}
+#| label: fig-serie
+#| fig-cap: "Vínculos municipales por tipo, promedio mensual de cada año"
+fig = go.Figure()
+fig.add_trace(go.Scatter(x=m_.index, y=m_.contratado, name="Contratados", mode="lines+markers",
+                         line=dict(color=NARANJA, width=2.6), marker=dict(size=7),
+                         hovertemplate="Contratados: <b>%{y:,.0f}</b><extra></extra>"))
+fig.add_trace(go.Scatter(x=m_.index, y=m_.total - m_.contratado, name="Permanentes", mode="lines+markers",
+                         line=dict(color=AZUL, width=2.6), marker=dict(size=7),
+                         hovertemplate="Permanentes: <b>%{y:,.0f}</b><extra></extra>"))
+estilo(fig, alto=340)
+fig.update_yaxes(rangemode="tozero", tickformat=",.0f")
+fig.update_xaxes(dtick=1)
+fig.show(config=CONFIG)
+```
+
+Entre `{python} A0` y `{python} A1` el personal municipal creció `{python} pct(var_v, 0)`, casi todo por contratos. Parte de ese crecimiento puede deberse a que más municipalidades empezaron a reportar sus datos.
+
+## Qué tener en cuenta
+
+- **Asunción no está incluida**: su municipalidad no aparece en los registros de SINARH y SICCA, por lo que las cifras subestiman el empleo municipal total.
+- Los datos dependen de lo que cada municipalidad informa a los sistemas centrales. En 2025, `{python} completos` de las `{python} N` municipalidades reportaron los 12 meses; para las demás usamos el promedio de los meses informados.
+- La masa salarial municipal registrada (`{python} milmillones(masa)` mil millones de guaraníes en `{python} A1`) da una remuneración media por vínculo inferior al salario mínimo. Eso sugiere que parte de los pagos municipales, o de las jornadas, no se refleja completa en estos registros, por lo que los montos municipales deben leerse con cautela.
+- Las dietas corresponden a los concejales municipales y los gastos de representación, a autoridades como intendentes.
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA (vínculos por mes y devengado por objeto de gasto de las municipalidades), 2017–2025. [Descargar los datos](/datos/).
+:::

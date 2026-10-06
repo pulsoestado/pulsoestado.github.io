@@ -1,0 +1,37 @@
+```{python}
+#| label: datos
+UA = ultimo_anio_completo(); AC, MC = ultimo_mes_confiable()
+s = serie_mensual(); sj = s[s.mes == 6].set_index("anho")
+pr = leer("proyecciones_2035.csv"); t = pr.groupby(["anho", "escenario_vinculos", "aumento_real_anual"]).vinculos.sum()
+ia = leer("issp_anual.csv").set_index("anho")
+pc = leer("pcd_mensual.csv"); pu = pc[pc.mes == 6].iloc[-1]
+g = leer("genero_brecha_anual.csv").set_index("anho")
+u = sj.iloc[-1]
+```
+
+Cerramos quince años de datos con diez preguntas para la próxima década. Todas se pueden responder con datos públicos; algunas, solo si se publican datos nuevos.
+
+1. **¿Cuánto crecerá el Estado?** Hoy paga `{python} miles(u.total)` vínculos; según las tendencias, en 2035 serían entre `{python} miles(t.xs(2035, level=0).min())` y `{python} miles(t.xs(2035, level=0).max())` ([proyecciones](/proyecciones/)).
+2. **¿Seguirá creciendo con contratos?** Hoy son el `{python} pct(u.contratado / u.total * 100, 0)` de los vínculos.
+3. **¿Subirán los sueldos reales?** El sueldo básico real de los mismos cargos cambió `{python} spct((ia.fisher_real.iloc[-1] / ia.fisher_real.iloc[0] - 1) * 100, 0)` desde `{python} int(ia.index[0])` ([ISSP](/issp/)).
+4. **¿Se ordenarán las escalas salariales?** La categoría B gana `{python} coma(ia.ratio_b_g.iloc[-1], 1)` veces la G en la institución mediana.
+5. **¿Cumplirá el Estado la cuota de discapacidad?** Hoy está en `{python} pct(pu.pcd / pu.vinculos * 100, 2)`, frente al 5% legal.
+6. **¿Se cerrará la brecha de género?** En la misma categoría, las mujeres cobran un `{python} pct(g.brecha_misma_categoria_pct.iloc[-1], 1)` menos de sueldo básico.
+7. **¿Funcionarán los concursos de la Ley 7445?** Para saberlo hace falta publicar el registro de concursos.
+8. **¿Cuántas personas entran y salen cada año?** Hace falta un identificador de persona seudonimizado en los registros.
+9. **¿Dónde trabaja el Estado?** Hace falta el lugar de prestación del servicio de docentes, médicos y policías.
+10. **¿Cuánto cuesta el Estado completo, con sus jubilaciones?** Hace falta sumar la Caja Fiscal.
+
+Las preguntas 7 a 10 dependen de datos que todavía no son públicos: los detallamos en la [lista de pendientes](/pendientes/). ¡Gracias por acompañarnos estos años!
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA e IPC del BCP.
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_portada
+social("Diez preguntas para\nla próxima década", "10 preguntas", "crecimiento, contratos, sueldos, escalas, discapacidad, género, concursos y más", color=AMARILLO)
+ig_portada("Fin de año", "Diez\npreguntas\npara la década", "Lo que vamos a mirar\nhasta 2035.", color=AMARILLO, deslizar=False)
+```

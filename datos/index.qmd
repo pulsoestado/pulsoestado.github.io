@@ -39,5 +39,17 @@ Todos los datos están en formato CSV (separador coma, codificación UTF-8) y se
 | [bcp_salario_minimo_tramos.csv](/data/processed/bcp_salario_minimo_tramos.csv) | Salario mínimo por tramo de vigencia (BCP) | 1980 – 2026 |
 | [bcp_iss_ramas.csv](/data/processed/bcp_iss_ramas.csv) | Índice de Sueldos y Salarios por rama de actividad, junio y diciembre (BCP) | 2001 – 2025 |
 | [indec_dotacion_apn.csv](/data/processed/indec_dotacion_apn.csv) | Dotación de la administración pública nacional argentina (INDEC), para comparación | 2022 – 2026 |
+| [issp_trimestral.csv](/data/processed/issp_trimestral.csv) | Índice de Sueldos del Sector Público, trimestral (Fisher, Laspeyres y Paasche; 2025 = 100) | dic 2015 – último trimestre |
+| [issp_anual.csv](/data/processed/issp_anual.csv) | ISSP de junio de cada año, real, efecto composición, compresión y dispersión | 2016 – 2026 |
+| [issp_sector_anual.csv](/data/processed/issp_sector_anual.csv) | ISSP de junio por sector | 2016 – 2026 |
+| [vinculos_completados_sector.csv](/data/processed/vinculos_completados_sector.csv) | Último mes completado: lo reportado y la estimación con las instituciones que cargan con atraso | meses recientes |
+| [proyecciones_2035.csv](/data/processed/proyecciones_2035.csv) | Escenarios de vínculos y masa salarial real por sector hasta 2035 (no son pronósticos) | último año completo – 2035 |
 
 Las definiciones de cada columna están en la [metodología](/metodologia.qmd).
+
+
+## Correcciones y cita
+
+Las correcciones que hacemos a los datos de origen están documentadas en el [registro de correcciones](/correcciones/).
+
+**Cómo citar:** Pulso del Estado (año de consulta). *Datos sobre la dotación de personal y la masa salarial del sector público paraguayo*. https://pulsoestado.github.io/datos/. Licencia CC BY 4.0. El repositorio incluye un archivo [CITATION.cff](https://github.com/pulsoestado/pulsoestado.github.io/blob/main/CITATION.cff) con la cita en formato estándar.
