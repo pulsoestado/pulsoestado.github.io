@@ -1,0 +1,29 @@
+---
+title: "Plan 2028–2030"
+subtitle: "Adelanto de las notas programadas para los próximos tres años: qué vamos a medir y cómo se va a ver."
+listing:
+  contents: "../posts/*/index.qmd"
+  include:
+    plan: "2028-2030"
+  sort: "date asc"
+  type: table
+  fields: [date, title, categories]
+  field-display-names:
+    date: "Programada para"
+    title: "Nota"
+    categories: "Temas"
+  categories: true
+  sort-ui: false
+  filter-ui: true
+  page-size: 50
+  date-format: "D MMM YYYY"
+page-layout: full
+title-block-banner: true
+toc: false
+---
+
+Estas notas forman parte del plan editorial 2028–2030 de Pulso del Estado. Cada una tiene una fecha programada, pero las publicamos desde ya como **adelanto**: muestran los temas que vamos a trabajar y cómo se van a ver.
+
+Como hablan de meses y años que todavía no llegaron, usan los **últimos datos disponibles** y, donde faltan, **estimaciones rotuladas como tales** (por ejemplo, el mismo mes del año anterior por el crecimiento de los últimos doce meses). Cuando llegan los datos de su fecha, cada nota se recalcula sola y pasa al listado principal del sitio.
+
+Algunas piezas no se pueden adelantar porque dependen de datos que todavía no existen: las ediciones mensuales del SITUCAP y las notas que comparan el Presupuesto presentado con el aprobado por el Congreso. Están en la [lista de lo que falta](/pendientes/), junto con los datos que permitirían completar o mejorar el resto.

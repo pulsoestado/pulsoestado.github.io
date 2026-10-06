@@ -10,6 +10,8 @@ listing:
   contents:
     - posts
     - situcap/ediciones
+  exclude:
+    plan: "2028-2030"
   sort: "date desc"
   max-items: 3
   type: grid

@@ -6,9 +6,14 @@ categories: [Masa salarial, Sectores]
 image: social.png
 image-alt: "Masa salarial 2029: ¿más gente o mejores sueldos?"
 resources: ["ig_*.png"]
-draft: true  # programada
+plan: "2028-2030"
 ---
-
+<!-- adelanto-plan -->
+::: {.callout-note}
+## Adelanto del plan 2028–2030
+Esta nota está programada para el **4 de abril de 2030**. La publicamos antes como adelanto del plan editorial: usa los últimos datos disponibles y, donde faltan, estimaciones rotuladas como tales. Cuando lleguen los datos de su fecha se recalcula sola y pasa al listado principal. [Ver todo el plan](/plan-2028-2030/).
+:::
+<!-- /adelanto-plan -->
 
 ```{python}
 #| label: setup

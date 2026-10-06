@@ -178,6 +178,8 @@ python scripts/flyer_dotacion.py      # flyer_1.png, flyer_2.png y social.png de
 
 Las 313 piezas de 2028–2030 (lunes, jueves y SITUCAP) se generan con `python scripts/plan_2028_2030.py` a partir de las plantillas de `scripts/_plantillas_notas/` y quedan programadas por fecha. El calendario completo, con el estado de los datos de cada pieza, está en `planes/calendario_2028_2030.csv`. Para cambiar el plan, editar `PLAN` en ese script y volver a correrlo (no sobrescribe las ediciones del SITUCAP ya creadas).
 
+**Adelantos.** Las notas del plan llevan `plan: "2028-2030"` en el encabezado. Con esa marca se publican ya, antes de su fecha, en la sección [Plan 2028–2030](https://pulsoestado.github.io/plan-2028-2030/), con un recuadro de adelanto, y no aparecen en la portada ni en el RSS. Cuando llega su fecha, `programar_publicaciones.py` les quita la marca y el recuadro y pasan solas al listado principal. Las que esperan datos (SITUCAP y «qué cambió el Congreso») siguen ocultas hasta tenerlos. Para retirar un adelanto, borrar su línea `plan:`: vuelve a quedar programada para su fecha.
+
 ## Opcionales
 
 - **Analítica de visitas:** crear una propiedad en Google Analytics y poner el ID en `_quarto.yml` (`google-analytics`).

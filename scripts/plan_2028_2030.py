@@ -211,7 +211,7 @@ def front(meta, extra=""):
         return '"' + s.replace('"', '\\"') + '"'
     cats = "[" + ", ".join(meta["cats"]) + "]"
     return (f"---\ntitle: {q(meta['title'])}\ndescription: {q(meta['desc'])}\ndate: {meta['date']}\ncategories: {cats}\n"
-            f"image: social.png\nimage-alt: {q(meta['title'])}\nresources: [\"ig_*.png\"]\n{extra}---\n\n")
+            f"image: social.png\nimage-alt: {q(meta['title'])}\nresources: [\"ig_*.png\"]\nplan: \"2028-2030\"\n{extra}---\n\n")
 
 
 SETUP = '''```{{python}}

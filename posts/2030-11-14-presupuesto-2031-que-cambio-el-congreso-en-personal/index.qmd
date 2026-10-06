@@ -6,6 +6,7 @@ categories: [Presupuesto, PGN 2031]
 image: social.png
 image-alt: "Presupuesto 2031: qué cambió el Congreso en personal"
 resources: ["ig_*.png"]
+plan: "2028-2030"
 requiere:
   archivo:
     - "data/manual/pgn_2031_servicios_personales.csv"

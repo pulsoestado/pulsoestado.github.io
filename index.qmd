@@ -5,6 +5,8 @@ listing:
   contents:
     - posts
     - situcap/ediciones
+  exclude:
+    plan: "2028-2030"
   sort: "date desc"
   type: default
   categories: true

@@ -29,6 +29,8 @@ website:
         href: index.qmd
       - text: "SITUCAP"
         href: situcap/index.qmd
+      - text: "Plan 2028–2030"
+        href: plan-2028-2030/index.qmd
       - text: "Herramientas"
         menu:
           - text: "Índice de Sueldos del Sector Público (ISSP)"

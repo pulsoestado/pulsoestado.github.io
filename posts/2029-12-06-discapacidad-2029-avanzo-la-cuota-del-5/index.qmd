@@ -6,9 +6,14 @@ categories: [Discapacidad, Instituciones, Balance]
 image: social.png
 image-alt: "Discapacidad 2029: ¿avanzó la cuota del 5%?"
 resources: ["ig_*.png"]
-draft: true  # programada
+plan: "2028-2030"
 ---
-
+<!-- adelanto-plan -->
+::: {.callout-note}
+## Adelanto del plan 2028–2030
+Esta nota está programada para el **6 de diciembre de 2029**. La publicamos antes como adelanto del plan editorial: usa los últimos datos disponibles y, donde faltan, estimaciones rotuladas como tales. Cuando lleguen los datos de su fecha se recalcula sola y pasa al listado principal. [Ver todo el plan](/plan-2028-2030/).
+:::
+<!-- /adelanto-plan -->
 
 ```{python}
 #| label: setup

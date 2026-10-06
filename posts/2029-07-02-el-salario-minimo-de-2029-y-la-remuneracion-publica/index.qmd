@@ -6,9 +6,14 @@ categories: [El dato de la semana, Salario mínimo, Remuneraciones]
 image: social.png
 image-alt: "El salario mínimo de 2029 y la remuneración pública"
 resources: ["ig_*.png"]
-draft: true  # programada
+plan: "2028-2030"
 ---
-
+<!-- adelanto-plan -->
+::: {.callout-note}
+## Adelanto del plan 2028–2030
+Esta nota está programada para el **2 de julio de 2029**. La publicamos antes como adelanto del plan editorial: usa los últimos datos disponibles y, donde faltan, estimaciones rotuladas como tales. Cuando lleguen los datos de su fecha se recalcula sola y pasa al listado principal. [Ver todo el plan](/plan-2028-2030/).
+:::
+<!-- /adelanto-plan -->
 
 ```{python}
 #| label: setup

@@ -25,14 +25,14 @@ fecha = lambda d: f"{DIAS[d.weekday()]} {d.day} {MES[d.month - 1]} {d.year}"
 
 
 def enlaces(r):
-    if r.estado != "en el sitio" or not r.flyers:
+    if not r.estado.startswith("en el sitio") or not r.flyers:
         return "—"
     return " · ".join(f"[{n.replace('.png', '')}](/{r.ruta}/{n})" for n in r.flyers.split())
 
 
 def nota(r):
     t = r.titulo.replace("|", "∣")
-    return f"[{t}](/{r.ruta}/)" if r.estado == "en el sitio" else t
+    return f"[{t}](/{r.ruta}/)" if r.estado.startswith("en el sitio") else t
 
 
 print("Esta página es para el equipo de Pulso del Estado: el sitio publica todas las notas que ya tienen datos, "
@@ -47,7 +47,7 @@ else:
     print('<div class="agenda-grid">')
     for _, r in prox.iterrows():
         img = (f'<img src="/{r.ruta}/social.png" alt="" loading="lazy">'
-               if r.estado == "en el sitio" and "social.png" in r.flyers.split() else '<div class="sin-flyer">Flyer al publicarse la nota</div>')
+               if r.estado.startswith("en el sitio") and "social.png" in r.flyers.split() else '<div class="sin-flyer">Flyer al publicarse la nota</div>')
         print(f'<div class="agenda-item">{img}<div><strong>{fecha(r.f)}</strong><br>{html.escape(r.titulo)}'
               f'<br><small>{html.escape(r.estado)}</small></div></div>')
     print("</div>\n")

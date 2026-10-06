@@ -20,6 +20,12 @@ sigue generando sin errores.
 Lo ejecuta la GitHub Action antes de generar el sitio, todos los días. También se puede
 correr a mano:  python scripts/programar_publicaciones.py  (o con una fecha de prueba: ... 2027-03-31)
 
+Adelantos del plan 2028–2030. Las notas con `plan: "2028-2030"` en el encabezado se
+publican ya, antes de su fecha, en la sección /plan-2028-2030/ (no en la portada ni en el
+RSS) y con un recuadro que avisa que son un adelanto. Si les falta un requisito de datos,
+siguen ocultas. Cuando llega su fecha, el script les quita la marca `plan:` y el recuadro,
+y pasan solas al listado principal.
+
 Con la opción --retirar (solo en la GitHub Action), además borra de la copia de trabajo
 las carpetas de las notas ocultas. Quarto ejecuta el código de todos los .qmd del proyecto,
 aunque sean borradores: retirarlas evita que una nota que espera datos haga fallar la
@@ -37,6 +43,18 @@ import yaml
 
 RAIZ = Path(__file__).resolve().parents[1]
 MARCA = "draft: true  # programada"
+MESES_TXT = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre",
+             "octubre", "noviembre", "diciembre"]
+INI, FIN = "<!-- adelanto-plan -->", "<!-- /adelanto-plan -->"
+
+
+def recuadro(fecha):
+    f = f"{fecha.day} de {MESES_TXT[fecha.month - 1]} de {fecha.year}"
+    return (f"{INI}\n::: {{.callout-note}}\n## Adelanto del plan 2028–2030\n"
+            f"Esta nota está programada para el **{f}**. La publicamos antes como adelanto del plan editorial: "
+            "usa los últimos datos disponibles y, donde faltan, estimaciones rotuladas como tales. "
+            "Cuando lleguen los datos de su fecha se recalcula sola y pasa al listado principal. "
+            f"[Ver todo el plan](/plan-2028-2030/).\n:::\n{FIN}\n\n")
 hoy = dt.datetime.now(ZoneInfo("America/Asuncion")).date()
 RETIRAR = "--retirar" in sys.argv
 args = [a for a in sys.argv[1:] if not a.startswith("--")]
@@ -102,22 +120,35 @@ for f in archivos:
     except yaml.YAMLError:
         meta = {}
     falta = faltantes(meta.get("requiere"))
-    oculta = fecha > hoy or bool(falta)
+    plan = bool(meta.get("plan"))
+    adelanto = plan and fecha > hoy and not falta
+    oculta = (fecha > hoy and not adelanto) or bool(falta)
+    if plan and fecha <= hoy:
+        lineas = [l for l in lineas if not l.startswith("plan:")]   # llegó su fecha: pasa al listado principal
     if oculta:
         lineas.append(MARCA)
     nueva = "\n".join(lineas)
-    if nueva != cab:
-        f.write_text(texto.replace(cab, nueva, 1), encoding="utf-8")
+    cuerpo = texto[m.end():]
+    if INI in cuerpo:
+        i, j = cuerpo.index(INI), cuerpo.index(FIN) + len(FIN)
+        cuerpo = (cuerpo[:i] + cuerpo[j:]).lstrip("\n")
+    if adelanto:
+        cuerpo = recuadro(fecha) + cuerpo.lstrip("\n")
+    else:
+        cuerpo = "\n" + cuerpo if not cuerpo.startswith("\n") else cuerpo
+    nuevo_texto = "---\n" + nueva + "\n---\n" + cuerpo
+    if nuevo_texto != texto:
+        f.write_text(nuevo_texto, encoding="utf-8")
     if fecha <= hoy and falta:
         estado = "PENDIENTE"
         pendientes.append(f"{fecha}  {f.parent.name}: falta {', '.join(falta)}")
     else:
-        estado = "programada" if oculta else "publicada"
+        estado = "programada" if oculta else ("adelanto" if adelanto else "publicada")
     print(f"{fecha}  {estado:10s}  {f.parent.name}")
     red = meta.get("redes") or fecha
     ruta = f.parent.relative_to(RAIZ).as_posix()
     agenda.append({"redes": str(red)[:10], "titulo": meta.get("title", ""), "ruta": ruta,
-                   "estado": "en el sitio" if not oculta else ("programada" if fecha > hoy else "espera datos"),
+                   "estado": ("en el sitio (adelanto del plan)" if adelanto else "en el sitio") if not oculta else ("programada" if fecha > hoy else "espera datos"),
                    "flyers": " ".join(flyers(f.parent, texto))})
     if oculta and RETIRAR:
         shutil.rmtree(f.parent)
@@ -129,7 +160,7 @@ ag.to_csv(RAIZ / "redes" / "agenda.csv", index=False)
 URL = "https://pulsoestado.github.io/"
 for _, r in ag[ag.redes == str(hoy)].iterrows():
     aviso = f"Hoy en redes: {r.titulo} · {URL}{r.ruta}/"
-    print(f"\n{aviso}" + ("" if r.estado == "en el sitio" else f"  (la nota todavía no está en el sitio: {r.estado})"))
+    print(f"\n{aviso}" + ("" if r.estado.startswith("en el sitio") else f"  (la nota todavía no está en el sitio: {r.estado})"))
     print(f"::notice::{aviso}")
 
 if pendientes:
