@@ -117,7 +117,7 @@ Un tercio de la masa salarial corresponde a **Educación** (Ministerio de Educac
 ::: {.callout-warning collapse="true"}
 ## Un dato corregido: el aguinaldo de diciembre de 2021
 
-En el registro de presupuesto, el aguinaldo pagado en diciembre de 2021 figura en **6,0 billones de guaraníes**, cuando en 2020 y 2022 fue de unos 1,2 billones. El salto aparece en casi todas las instituciones a la vez y no tiene correlato en la cantidad de vínculos, por lo que lo tratamos como un **error de registro**: para cada institución reemplazamos ese monto por el promedio de sus aguinaldos de 2020 y 2022. Sin esta corrección, la masa salarial de 2021 aparecería 4,8 billones más alta y daría la falsa impresión de un pico de gasto ese año.
+En el registro de presupuesto, el aguinaldo pagado en diciembre de 2021 figura en **6,1 billones de guaraníes**, cuando en 2020 y 2022 fue de unos 1,2 billones. El salto está en las instituciones de la Administración Central, donde el monto es casi exactamente **seis veces** el normal, y no tiene correlato en la cantidad de vínculos, por lo que lo tratamos como un **error de registro**: en la Administración Central dividimos ese monto por 6; el resto del Estado no muestra el problema y queda como figura. Sin esta corrección, la masa salarial de 2021 aparecería 4,9 billones más alta y daría la falsa impresión de un pico de gasto ese año.
 :::
 
 ## Qué tener en cuenta

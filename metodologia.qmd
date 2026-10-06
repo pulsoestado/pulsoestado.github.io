@@ -63,7 +63,7 @@ La clasificación se aplica con el script `scripts/clasificacion_sectores.py` y 
 
 ## Correcciones a los datos
 
-- **Aguinaldo de diciembre de 2021.** En el registro de presupuesto figura en 6,0 billones de guaraníes, unas cinco veces lo normal (1,2 billones en 2020 y 2022). Para cada institución se reemplazó por el promedio de sus aguinaldos de 2020 y 2022. Lo mismo ocurre con el aguinaldo del personal del servicio exterior (objeto 163: 82 mil millones de guaraníes en diciembre de 2021, frente a 15 mil millones en 2020 y 2022), que se corrigió de la misma manera.
+- **Aguinaldo de diciembre de 2021.** En el registro de presupuesto, el aguinaldo (objeto 114) de diciembre de 2021 de las 54 instituciones de la Administración Central figura en 5,8 billones de guaraníes, casi exactamente seis veces lo normal (cerca de 1,0 billón en 2020 y 2022), tanto en lo presupuestado como en lo devengado. Lo mismo ocurre con el aguinaldo del personal del servicio exterior (objeto 163: 82 mil millones de guaraníes, frente a unos 15 mil millones en 2020 y 2022). Como el factor es seis en casi todas las instituciones, esos montos se **dividieron por 6**, solo en la Administración Central; las demás agrupaciones (entes descentralizados, empresas, gobiernos locales) no muestran el problema y se dejaron como figuran en el registro. Con la corrección, el aguinaldo total de diciembre de 2021 pasa de 6,1 a 1,15 billones de guaraníes.
 - **Sueldo básico de junio de 2017.** Presenta valores atípicos en el archivo de nivel y categoría; los análisis de brecha de género comienzan en 2018.
 - **Municipalidad de Asunción.** No figura en los registros de SINARH y SICCA, por lo que los totales municipales la excluyen.
 

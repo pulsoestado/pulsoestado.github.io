@@ -48,7 +48,7 @@ fig.update_xaxes(dtick=1); fig.update_yaxes(range=[0, real.max() / 1e9 * 1.18])
 fig.show(config=CONFIG)
 ```
 
-Descontada la inflación, el gasto cambió `{python} spct(var)` desde 2017. Como se trata de personal que vive y cobra fuera del país, estas remuneraciones pueden moverse también con el tipo de cambio. El aguinaldo de este personal (objeto 163) de diciembre de 2021 figura en los registros unas cinco veces por encima de lo normal, el mismo error que el del aguinaldo general: lo corregimos con el promedio de 2020 y 2022 (ver la [metodología](/metodologia.qmd)).
+Descontada la inflación, el gasto cambió `{python} spct(var)` desde 2017. Como se trata de personal que vive y cobra fuera del país, estas remuneraciones pueden moverse también con el tipo de cambio. El aguinaldo de este personal (objeto 163) de diciembre de 2021 figura en los registros unas cinco veces por encima de lo normal, el mismo error que el del aguinaldo general de la Administración Central: lo corregimos dividiéndolo por 6 (ver la [metodología](/metodologia.qmd)).
 
 ::: {.fuente}
 **Fuente:** elaboración de Pulso del Estado con datos de SINARH (devengado de los objetos 161 a 163). [Descargar los datos](/datos/).

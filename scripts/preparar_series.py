@@ -19,12 +19,11 @@ Salidas (data/processed/):
   genero_brecha_sector.csv    brecha por sector, junio de 2026
   municipios_2025.csv         vínculos, contratados, mujeres y masa por municipalidad, 2025
 
-Corrección aplicada: el aguinaldo (objeto 114) de diciembre de 2021 figura unas cinco
-veces por encima de lo normal en el archivo de presupuesto (6,0 billones frente a
-1,2 billones en 2020 y 2022). Para cada institución se reemplaza por el promedio de sus
-aguinaldos de 2020 y 2022 y la corrección queda marcada en la columna `imputado`.
-Lo mismo ocurre con el aguinaldo del personal del servicio exterior (objeto 163), que
-se corrige de la misma manera.
+Corrección aplicada: el aguinaldo (objetos 114 y 163) de diciembre de 2021 de la
+Administración Central figura casi exactamente seis veces por encima de lo normal en el
+archivo de presupuesto (5,8 billones frente a cerca de 1,0 en 2020 y 2022). Solo para la
+Administración Central, esos montos se dividen por 6 y quedan marcados en la columna
+`imputado`; las demás agrupaciones se dejan como figuran en el registro.
 
 Ejecutar desde la raíz del repositorio:  python scripts/preparar_series.py
 """
@@ -90,16 +89,13 @@ p = p[p.codigo_grupo == 100].copy()
 p[["presupuestado", "devengado"]] = p[["presupuestado", "devengado"]].astype(float)
 p["imputado"] = False
 
-# Corrección del aguinaldo de diciembre de 2021
-ag = p[p.objeto_gasto.isin([114, 163]) & (p.mes == 12)]
-ref = (ag[ag.anho.isin([2020, 2022])].groupby(CLAVE + ["objeto_gasto"])[["presupuestado", "devengado"]].mean())
+# Corrección del aguinaldo de diciembre de 2021: solo Administración Central, dividido por 6
+m21 = (p.objeto_gasto.isin([114, 163]) & (p.mes == 12) & (p.anho == 2021)
+       & p.agrupacion.astype(str).str.startswith("I -"))
+antes = p.loc[p.objeto_gasto.isin([114, 163]) & (p.mes == 12) & (p.anho == 2021), "devengado"].sum()
+p.loc[m21, ["presupuestado", "devengado"]] = p.loc[m21, ["presupuestado", "devengado"]] / 6
+p.loc[m21, "imputado"] = True
 m21 = p.objeto_gasto.isin([114, 163]) & (p.mes == 12) & (p.anho == 2021)
-antes = p.loc[m21, "devengado"].sum()
-idx = p.loc[m21].set_index(CLAVE + ["objeto_gasto"]).index
-reemplazo = ref.reindex(idx)
-ok = reemplazo["devengado"].notna().values
-p.loc[p.index[m21][ok], ["presupuestado", "devengado"]] = reemplazo[ok].values
-p.loc[p.index[m21][ok], "imputado"] = True
 print(f"Aguinaldo dic-2021: {antes/1e12:.2f} → {p.loc[m21,'devengado'].sum()/1e12:.2f} billones")
 
 

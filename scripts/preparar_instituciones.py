@@ -66,14 +66,10 @@ dw.groupby(["anho", "mes", "sector", "vinculo", "sexo"]).total.sum().reset_index
 p = num(pd.read_excel(RAW / "dw_presupuesto_sicca_sinarh.xlsx"), ["presupuestado", "devengado"])
 p = p[p.codigo_grupo == 100].copy()
 p[["presupuestado", "devengado"]] = p[["presupuestado", "devengado"]].astype(float)
-# Misma corrección del aguinaldo de diciembre de 2021 que en preparar_series.py
-ag = p[p.objeto_gasto.isin([114, 163]) & (p.mes == 12)]
-ref = ag[ag.anho.isin([2020, 2022])].groupby(K + ["objeto_gasto"])[["presupuestado", "devengado"]].mean()
-m21 = p.objeto_gasto.isin([114, 163]) & (p.mes == 12) & (p.anho == 2021)
-rep = ref.reindex(p.loc[m21].set_index(K + ["objeto_gasto"]).index)
-ok = rep["devengado"].notna().values
-p.loc[p.index[m21][ok], ["presupuestado", "devengado"]] = rep[ok].values
-
+# Misma corrección del aguinaldo de diciembre de 2021 que en preparar_series.py (Administración Central ÷ 6)
+m21 = (p.objeto_gasto.isin([114, 163]) & (p.mes == 12) & (p.anho == 2021)
+       & p.agrupacion.astype(str).str.startswith("I -"))
+p.loc[m21, ["presupuestado", "devengado"]] = p.loc[m21, ["presupuestado", "devengado"]] / 6
 
 def componente(o):
     o = int(o)

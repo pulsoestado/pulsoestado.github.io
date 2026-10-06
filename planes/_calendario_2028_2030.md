@@ -367,183 +367,23 @@ Plan generado con `scripts/plan_2028_2030.py`. Cada nota está creada en el repo
 
 | # | Ítem | Qué falta | Mientras tanto | Se completa con | Cuándo |
 |--:|---|---|---|---|---|
-| 1 | <bound method IndexOpsMixin.item of id                                                                 1
-tipo                                                  Dato periódico
-item                          Corte mensual del DW de SINARH y SICCA
-que_falta          Los meses posteriores a agosto de 2026 (víncul...
-mientras_tanto     Las notas usan el último mes con datos; las qu...
-se_completa_con    Actualizar los Excel de data/raw/ y correr pre...
-afecta             Todas las notas y productos; las 36 ediciones ...
-cuando                                                      Cada mes
-Name: 0, dtype: object> | Los meses posteriores a agosto de 2026 (vínculos, masa salarial, categorías, discapacidad) | Las notas usan el último mes con datos; las que necesitan un mes futuro lo estiman (mismo mes del año anterior × crecimiento de los últimos 12 meses) y lo rotulan como estimación provisoria | Actualizar los Excel de data/raw/ y correr preparar_series.py, preparar_instituciones.py, preparar_issp.py y preparar_estimaciones.py | Cada mes |
-| 2 | <bound method IndexOpsMixin.item of id                                                                 2
-tipo                                                  Dato periódico
-item                              Inflación interanual del mes (BCP)
-que_falta          data/manual/ipc_interanual.csv tiene hasta ago...
-mientras_tanto     Las variaciones reales anuales usan el IPC pro...
-se_completa_con    Agregar una fila por mes a data/manual/ipc_int...
-afecta             SITUCAP, ISSP trimestral (variación real), «El...
-cuando                                                      Cada mes
-Name: 1, dtype: object> | data/manual/ipc_interanual.csv tiene hasta agosto de 2026 | Las variaciones reales anuales usan el IPC promedio anual del BCP; las ediciones del SITUCAP esperan | Agregar una fila por mes a data/manual/ipc_interanual.csv (informe mensual de inflación del BCP) | Cada mes |
-| 3 | <bound method IndexOpsMixin.item of id                                                                 3
-tipo                                                 Nota que espera
-item                               Ediciones del SITUCAP N.º 16 a 51
-que_falta          El corte del DW y el IPC de cada mes (dos mese...
-mientras_tanto     No se estiman: el SITUCAP es el reporte mensua...
-se_completa_con                                         Puntos 1 y 2
-afecta                                                       SITUCAP
-cuando                                     Tercer jueves de cada mes
-Name: 2, dtype: object> | El corte del DW y el IPC de cada mes (dos meses antes de la publicación) | No se estiman: el SITUCAP es el reporte mensual de datos reales. Cada edición sale sola cuando llegan sus datos | Puntos 1 y 2 | Tercer jueves de cada mes |
-| 4 | <bound method IndexOpsMixin.item of id                                                                 4
-tipo                                                      Dato anual
-item               Proyecto de Presupuesto General de la Nación 2...
-que_falta          data/manual/pgn_AAAA_servicios_personales.csv ...
-mientras_tanto     Estimación provisoria rotulada: lo devengado p...
-se_completa_con    Proyecto que el MEF presenta al Congreso a más...
-afecta             «Presupuesto AAAA: qué pide en personal» (sept...
-cuando                                        Septiembre de cada año
-Name: 3, dtype: object> | data/manual/pgn_AAAA_servicios_personales.csv (codigo_nivel, codigo_entidad, codigo_oee, proyecto_AAAA) | Estimación provisoria rotulada: lo devengado por cada institución proyectado con el crecimiento nominal promedio de su sector en tres años | Proyecto que el MEF presenta al Congreso a más tardar el 1 de septiembre | Septiembre de cada año |
-| 5 | <bound method IndexOpsMixin.item of id                                                                 5
-tipo                                                 Nota que espera
-item               Ley de Presupuesto aprobada 2029 / 2030 / 2031...
-que_falta          data/manual/pgn_AAAA_aprobado.csv (codigo_nive...
-mientras_tanto     No se puede estimar qué cambia el Congreso: la...
-se_completa_con    Ley del PGN publicada (MEF o Biblioteca del Co...
-afecta             «Presupuesto AAAA: qué cambió el Congreso en p...
-cuando                                   Diciembre–enero de cada año
-Name: 4, dtype: object> | data/manual/pgn_AAAA_aprobado.csv (codigo_nivel, codigo_entidad, codigo_oee, monto) | No se puede estimar qué cambia el Congreso: la nota espera | Ley del PGN publicada (MEF o Biblioteca del Congreso) | Diciembre–enero de cada año |
-| 6 | <bound method IndexOpsMixin.item of id                                                                 6
-tipo                                                      Dato anual
-item                                 PIB nominal de 2026 en adelante
-que_falta               data/manual/pib_nominal.csv tiene hasta 2025
-mientras_tanto     Estimación rotulada con el crecimiento nominal...
-se_completa_con    Cuentas nacionales del BCP (o la serie NY.GDP....
-afecta             «La masa salarial como porcentaje del PIB», in...
-cuando                                                      Cada año
-Name: 5, dtype: object> | data/manual/pib_nominal.csv tiene hasta 2025 | Estimación rotulada con el crecimiento nominal del año anterior | Cuentas nacionales del BCP (o la serie NY.GDP.MKTP.CN del Banco Mundial) | Cada año |
-| 7 | <bound method IndexOpsMixin.item of id                                                                 7
-tipo                                                   Fecha externa
-item                 Elecciones generales de 2028 e internas previas
-que_falta                                     Fecha oficial del TSJE
-mientras_tanto     Se usa abril de 2028 como referencia (en 2018 ...
-se_completa_con                        Cronograma electoral del TSJE
-afecta             Monitor del ciclo electoral; notas de febrero,...
-cuando                                        Cuando el TSJE la fije
-Name: 6, dtype: object> | Fecha oficial del TSJE | Se usa abril de 2028 como referencia (en 2018 y 2023 fueron en abril), rotulado | Cronograma electoral del TSJE | Cuando el TSJE la fije |
-| 8 | <bound method IndexOpsMixin.item of id                                                                 8
-tipo                                                   Fecha externa
-item                       Internas y elecciones municipales de 2031
-que_falta                                     Fecha oficial del TSJE
-mientras_tanto      Se usa octubre de 2031 como referencia, rotulado
-se_completa_con                        Cronograma electoral del TSJE
-afecta             Monitor del ciclo electoral; notas municipales...
-cuando                                        Cuando el TSJE la fije
-Name: 7, dtype: object> | Fecha oficial del TSJE | Se usa octubre de 2031 como referencia, rotulado | Cronograma electoral del TSJE | Cuando el TSJE la fije |
-| 9 | <bound method IndexOpsMixin.item of id                                                                 9
-tipo                                                      Dato nuevo
-item               Identificador de persona seudonimizado en los ...
-que_falta           Saber quién entra, quién sale y cuánto permanece
-mientras_tanto     La nota de rotación aproxima el recambio con p...
-se_completa_con    Pedido al MEF (administradores del DW): un cód...
-afecta             Rotación, trayectorias, personas con varios ví...
-cuando                                                     Sin fecha
-Name: 8, dtype: object> | Saber quién entra, quién sale y cuánto permanece | La nota de rotación aproxima el recambio con personas distintas en el año ÷ promedio mensual | Pedido al MEF (administradores del DW): un código por persona, sin nombre ni cédula | Sin fecha |
-| 10 | <bound method IndexOpsMixin.item of id                                                                10
-tipo                                                      Dato nuevo
-item               Resumen de personas por institución posterior ...
-que_falta                 personas_vinculos_oee.csv llega hasta 2025
-mientras_tanto     La nota de rotación usa el último año completo...
-se_completa_con    Nueva versión del resumen de personas y víncul...
-afecta                                                      Rotación
-cuando                                                      Cada año
-Name: 9, dtype: object> | personas_vinculos_oee.csv llega hasta 2025 | La nota de rotación usa el último año completo disponible | Nueva versión del resumen de personas y vínculos (DW) | Cada año |
-| 11 | <bound method IndexOpsMixin.item of id                                                           11
-tipo                                                 Dato nuevo
-item                         Fecha de ingreso y edad (o tramos)
-que_falta             Antigüedad, edad y jubilaciones esperadas
-mientras_tanto                                     No se estima
-se_completa_con                                   Pedido al MEF
-afecta             Indicadores de la guía del BID, proyecciones
-cuando                                                Sin fecha
-Name: 10, dtype: object> | Antigüedad, edad y jubilaciones esperadas | No se estima | Pedido al MEF | Sin fecha |
-| 12 | <bound method IndexOpsMixin.item of id                                                                12
-tipo                                                      Dato nuevo
-item                               Lugar donde se presta el servicio
-que_falta              Docentes, médicos y policías por departamento
-mientras_tanto     Las notas por departamento usan solo gobernaci...
-se_completa_con    Pedido al MEF, MEC, Ministerio de Salud y Policía
-afecta                                           Notas territoriales
-cuando                                                     Sin fecha
-Name: 11, dtype: object> | Docentes, médicos y policías por departamento | Las notas por departamento usan solo gobernaciones y municipalidades | Pedido al MEF, MEC, Ministerio de Salud y Policía | Sin fecha |
-| 13 | <bound method IndexOpsMixin.item of id                                                                13
-tipo                                                      Dato nuevo
-item               Registro de concursos y cargos de confianza (L...
-que_falta          Cuántos ingresos y ascensos fueron por concurs...
-mientras_tanto     Las notas sobre la ley usan señales indirectas...
-se_completa_con    Portal Paraguay Concursa (SFP/MEF) y resolucio...
-afecta             «La ley de la función pública a cuatro años» I...
-cuando                                                     Sin fecha
-Name: 12, dtype: object> | Cuántos ingresos y ascensos fueron por concurso; cuántos cargos de confianza hay | Las notas sobre la ley usan señales indirectas (contratos, planta, escalas) | Portal Paraguay Concursa (SFP/MEF) y resoluciones de la ley | Sin fecha |
-| 14 | <bound method IndexOpsMixin.item of id                                                               14
-tipo                                                     Dato nuevo
-item                                 Jubilaciones de la Caja Fiscal
-que_falta                        El costo del empleo público pasivo
-mientras_tanto                                         No se estima
-se_completa_con    Ejecución presupuestaria de la Caja Fiscal (MEF)
-afecta                                  Informe anual, proyecciones
-cuando                                                    Sin fecha
-Name: 13, dtype: object> | El costo del empleo público pasivo | No se estima | Ejecución presupuestaria de la Caja Fiscal (MEF) | Sin fecha |
-| 15 | <bound method IndexOpsMixin.item of id                                                                15
-tipo                                                      Dato nuevo
-item               Microdatos de la Encuesta Permanente de Hogare...
-que_falta          Ingresos de asalariados públicos y privados co...
-mientras_tanto     Se usa el Índice de Sueldos y Salarios del BCP...
-se_completa_con                          Microdatos públicos del INE
-afecta                            «Público y privado», informe anual
-cuando                                                     Sin fecha
-Name: 14, dtype: object> | Ingresos de asalariados públicos y privados con el mismo instrumento | Se usa el Índice de Sueldos y Salarios del BCP por rama | Microdatos públicos del INE | Sin fecha |
-| 16 | <bound method IndexOpsMixin.item of id                                                             16
-tipo                                                   Dato nuevo
-item                        Población proyectada por departamento
-que_falta                       Población posterior al Censo 2022
-mientras_tanto         Las notas por habitante usan el Censo 2022
-se_completa_con                 Proyecciones de población del INE
-afecta             Notas por departamento, vínculos por habitante
-cuando                                 Cuando el INE las publique
-Name: 15, dtype: object> | Población posterior al Censo 2022 | Las notas por habitante usan el Censo 2022 | Proyecciones de población del INE | Cuando el INE las publique |
-| 17 | <bound method IndexOpsMixin.item of id                                                    17
-tipo                                          Limitación
-item                           Municipalidad de Asunción
-que_falta            No figura en los registros de SICCA
-mientras_tanto                       No se puede estimar
-se_completa_con    Que la Municipalidad reporte al SICCA
-afecta                 Notas municipales y territoriales
-cuando                                         Sin fecha
-Name: 16, dtype: object> | No figura en los registros de SICCA | No se puede estimar | Que la Municipalidad reporte al SICCA | Sin fecha |
-| 18 | <bound method IndexOpsMixin.item of id                                                                18
-tipo                                           Decisión metodológica
-item                   Corrección del aguinaldo de diciembre de 2021
-que_falta          Elegir entre el promedio 2020–2022 por institu...
-mientras_tanto                          Se usa el promedio 2020–2022
-se_completa_con    Confirmación del MEF del valor real del objeto...
-afecta                                      Masa salarial, aguinaldo
-cuando                                         Pendiente de decisión
-Name: 17, dtype: object> | Elegir entre el promedio 2020–2022 por institución (actual) y dividir por 6 solo la Administración Central | Se usa el promedio 2020–2022 | Confirmación del MEF del valor real del objeto 114 de diciembre de 2021 | Pendiente de decisión |
-| 19 | <bound method IndexOpsMixin.item of id                                                                19
-tipo                                                      Dato nuevo
-item                   Nombres oficiales de algunos objetos de gasto
-que_falta          Los objetos 132, 134, 135, 138, 141, 143, 146,...
-mientras_tanto               No se publican notas sobre esos objetos
-se_completa_con          Clasificador presupuestario oficial del MEF
-afecta                                       Serie «Objeto de gasto»
-cuando                                                     Sin fecha
-Name: 18, dtype: object> | Los objetos 132, 134, 135, 138, 141, 143, 146, 148, 161, 162, 163, 193, 194 y 195 no tienen nombre verificado | No se publican notas sobre esos objetos | Clasificador presupuestario oficial del MEF | Sin fecha |
-| 20 | <bound method IndexOpsMixin.item of id                                                                20
-tipo                                                        Producto
-item               Identificador permanente (DOI) para citar los ...
-que_falta                         Vincular el repositorio con Zenodo
-mientras_tanto     Ya está el archivo CITATION.cff y la cita en l...
-se_completa_con        Cuenta en Zenodo vinculada a GitHub (una vez)
-afecta                                                Datos citables
-cuando                                              Cuando se decida
-Name: 19, dtype: object> | Vincular el repositorio con Zenodo | Ya está el archivo CITATION.cff y la cita en la página de datos | Cuenta en Zenodo vinculada a GitHub (una vez) | Cuando se decida |
+| 1 | Corte mensual del DW de SINARH y SICCA | Los meses posteriores a agosto de 2026 (vínculos, masa salarial, categorías, discapacidad) | Las notas usan el último mes con datos; las que necesitan un mes futuro lo estiman (mismo mes del año anterior × crecimiento de los últimos 12 meses) y lo rotulan como estimación provisoria | Actualizar los Excel de data/raw/ y correr preparar_series.py, preparar_instituciones.py, preparar_issp.py y preparar_estimaciones.py | Cada mes |
+| 2 | Inflación interanual del mes (BCP) | data/manual/ipc_interanual.csv tiene hasta agosto de 2026 | Las variaciones reales anuales usan el IPC promedio anual del BCP; las ediciones del SITUCAP esperan | Agregar una fila por mes a data/manual/ipc_interanual.csv (informe mensual de inflación del BCP) | Cada mes |
+| 3 | Ediciones del SITUCAP N.º 16 a 51 | El corte del DW y el IPC de cada mes (dos meses antes de la publicación) | No se estiman: el SITUCAP es el reporte mensual de datos reales. Cada edición sale sola cuando llegan sus datos | Puntos 1 y 2 | Tercer jueves de cada mes |
+| 4 | Proyecto de Presupuesto General de la Nación 2029 / 2030 / 2031 por institución (grupo 100) | data/manual/pgn_AAAA_servicios_personales.csv (codigo_nivel, codigo_entidad, codigo_oee, proyecto_AAAA) | Estimación provisoria rotulada: lo devengado por cada institución proyectado con el crecimiento nominal promedio de su sector en tres años | Proyecto que el MEF presenta al Congreso a más tardar el 1 de septiembre | Septiembre de cada año |
+| 5 | Ley de Presupuesto aprobada 2029 / 2030 / 2031 por institución | data/manual/pgn_AAAA_aprobado.csv (codigo_nivel, codigo_entidad, codigo_oee, monto) | No se puede estimar qué cambia el Congreso: la nota espera | Ley del PGN publicada (MEF o Biblioteca del Congreso) | Diciembre–enero de cada año |
+| 6 | PIB nominal de 2026 en adelante | data/manual/pib_nominal.csv tiene hasta 2025 | Estimación rotulada con el crecimiento nominal del año anterior | Cuentas nacionales del BCP (o la serie NY.GDP.MKTP.CN del Banco Mundial) | Cada año |
+| 7 | Elecciones generales de 2028 e internas previas | Fecha oficial del TSJE | Se usa abril de 2028 como referencia (en 2018 y 2023 fueron en abril), rotulado | Cronograma electoral del TSJE | Cuando el TSJE la fije |
+| 8 | Internas y elecciones municipales de 2031 | Fecha oficial del TSJE | Se usa octubre de 2031 como referencia, rotulado | Cronograma electoral del TSJE | Cuando el TSJE la fije |
+| 9 | Identificador de persona seudonimizado en los registros mensuales | Saber quién entra, quién sale y cuánto permanece | La nota de rotación aproxima el recambio con personas distintas en el año ÷ promedio mensual | Pedido al MEF (administradores del DW): un código por persona, sin nombre ni cédula | Sin fecha |
+| 10 | Resumen de personas por institución posterior a 2025 | personas_vinculos_oee.csv llega hasta 2025 | La nota de rotación usa el último año completo disponible | Nueva versión del resumen de personas y vínculos (DW) | Cada año |
+| 11 | Fecha de ingreso y edad (o tramos) | Antigüedad, edad y jubilaciones esperadas | No se estima | Pedido al MEF | Sin fecha |
+| 12 | Lugar donde se presta el servicio | Docentes, médicos y policías por departamento | Las notas por departamento usan solo gobernaciones y municipalidades | Pedido al MEF, MEC, Ministerio de Salud y Policía | Sin fecha |
+| 13 | Registro de concursos y cargos de confianza (Ley 7445/2025) | Cuántos ingresos y ascensos fueron por concurso; cuántos cargos de confianza hay | Las notas sobre la ley usan señales indirectas (contratos, planta, escalas) | Portal Paraguay Concursa (SFP/MEF) y resoluciones de la ley | Sin fecha |
+| 14 | Jubilaciones de la Caja Fiscal | El costo del empleo público pasivo | No se estima | Ejecución presupuestaria de la Caja Fiscal (MEF) | Sin fecha |
+| 15 | Microdatos de la Encuesta Permanente de Hogares Continua (INE) | Ingresos de asalariados públicos y privados con el mismo instrumento | Se usa el Índice de Sueldos y Salarios del BCP por rama | Microdatos públicos del INE | Sin fecha |
+| 16 | Población proyectada por departamento | Población posterior al Censo 2022 | Las notas por habitante usan el Censo 2022 | Proyecciones de población del INE | Cuando el INE las publique |
+| 17 | Municipalidad de Asunción | No figura en los registros de SICCA | No se puede estimar | Que la Municipalidad reporte al SICCA | Sin fecha |
+| 18 | Corrección del aguinaldo de diciembre de 2021 | Nada: se eligió dividir por 6 solo la Administración Central (6 de octubre de 2026) | Corrección aplicada en preparar_series.py y preparar_instituciones.py | Confirmación del MEF del valor real del objeto 114 de diciembre de 2021 | Resuelto |
+| 19 | Nombres oficiales de algunos objetos de gasto | Los objetos 132, 134, 135, 138, 141, 143, 146, 148, 161, 162, 163, 193, 194 y 195 no tienen nombre verificado | No se publican notas sobre esos objetos | Clasificador presupuestario oficial del MEF | Sin fecha |
+| 20 | Identificador permanente (DOI) para citar los datos | Vincular el repositorio con Zenodo | Ya está el archivo CITATION.cff y la cita en la página de datos | Cuenta en Zenodo vinculada a GitHub (una vez) | Cuando se decida |

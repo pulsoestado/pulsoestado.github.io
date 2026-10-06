@@ -17,7 +17,7 @@ for t, g in d.groupby("tipo", sort=False):
     print(f"\n## {t}\n")
     print("| Qué | Qué falta | Mientras tanto | Se completa con | Afecta |\n|---|---|---|---|---|")
     for _, r in g.iterrows():
-        print(f"| **{r.item}** | {r.que_falta} | {r.mientras_tanto} | {r.se_completa_con} | {r.afecta} |")
+        print(f"| **{r['item']}** | {r.que_falta} | {r.mientras_tanto} | {r.se_completa_con} | {r.afecta} |")
 cal = pd.read_csv(raiz / "planes" / "calendario_2028_2030.csv")
 e = cal[~cal.datos.isin(["con los datos disponibles"])]
 print(f"\n## Notas programadas 2028–2030 que estiman o esperan datos\n\nDe las {len(cal)} piezas programadas para 2028–2030, {len(cal[cal.datos == 'con los datos disponibles'])} se calculan con los datos disponibles al publicarse y {len(e)} estiman o esperan algún dato:\n")
