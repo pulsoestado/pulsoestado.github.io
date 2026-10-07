@@ -1,0 +1,116 @@
+---
+title: "¿Qué sectores perdieron poder de compra? El sueldo básico frente a la inflación"
+description: "Medido a precios constantes, el sueldo básico de los mismos cargos cayó en la mayoría de los sectores del Estado desde 2016. Educación es la excepción, y su peso hace que el promedio general parezca mejor de lo que es."
+date: "2026-10-07T16:00:00"
+redes: 2027-05-19
+categories: [El dato de la semana, Salarios, Inflación, Remuneraciones]
+image: social.png
+image-alt: "Variación real del sueldo básico de los mismos cargos por sector, 2016–2025"
+resources: ["ig_*.png"]
+---
+
+```{python}
+#| label: setup
+import sys, pathlib
+raiz = next(p for p in [pathlib.Path.cwd(), *pathlib.Path.cwd().parents] if (p / "_quarto.yml").exists())
+sys.path.insert(0, str(raiz / "scripts"))
+from pulso import *
+import plotly.graph_objects as go
+
+UA = ultimo_anio_completo()
+s = leer("issp_sector_anual.csv").pivot(index="anho", columns="sector", values="fisher")
+s["Todo el Estado"] = leer("issp_anual.csv").set_index("anho").fisher
+ipc = leer("ipc_salarios_bcp.csv").set_index("anho").ipc
+real = s.loc[:UA].div(ipc.reindex(s.loc[:UA].index), axis=0)            # sueldo básico a precios constantes
+cambio = lambda a0: ((real.loc[UA] / real.loc[a0] - 1) * 100)
+v9, v6, v3 = cambio(2016), cambio(2019), cambio(2022)
+infl = {a0: (ipc[UA] / ipc[a0] - 1) * 100 for a0 in (2016, 2019, 2022)}
+sectores = v9.drop("Todo el Estado").sort_values()
+perdieron = int((sectores < 0).sum())
+vinc = leer("masa_anual_sector.csv").query("anho == @UA").set_index("sector").vinculos_promedio
+peso = vinc / vinc.sum() * 100
+```
+
+```{python}
+#| label: kpis
+#| output: asis
+print(kpis([(f"{perdieron} de {len(sectores)}", f"sectores con sueldo básico real más bajo en {UA} que en 2016"),
+            (spct(v9["Todo el Estado"], 0), "todo el Estado, 2016–" + str(UA)),
+            (spct(v9["Educación"], 0), "Educación, el único sector que se despegó")]))
+```
+
+Entre 2016 y `{python} UA` los precios subieron `{python} pct(infl[2016], 0)`. En **`{python} perdieron` de los `{python} len(sectores)` sectores** del Estado, el sueldo básico de los mismos cargos subió menos que eso: a precios constantes, hoy compra menos que en 2016. El promedio de todo el Estado queda en `{python} spct(v9["Todo el Estado"], 0)`, pero ese número lo sostiene **Educación** (`{python} spct(v9["Educación"], 0)`), el sector con más personal (`{python} pct(peso["Educación"], 0)` de los vínculos). Cuando Educación se mira aparte, la lectura general es otra.
+
+Para medirlo usamos el [Índice de Sueldos del Sector Público (ISSP)](/issp/): el sueldo básico de los mismos cargos, de modo que no se confunde con el ingreso o la salida de personal. Se descuenta con el IPC promedio anual del Banco Central.
+
+## Nueve años: casi todos por debajo
+
+```{python}
+#| label: fig-sectores
+#| fig-cap: "Variación real del sueldo básico de los mismos cargos por sector, 2016–2025 (%)"
+et = [f"{k}" for k in v9.sort_values().index]
+vals = list(v9.sort_values().values)
+txt = [spct(x, 0) for x in vals]
+cols = [NAVY if k == "Todo el Estado" else (AZUL if x >= 0 else ROJO) for k, x in zip(et, vals)]
+fig = barras_h(et, vals, txt, colores=cols)
+fig.update_xaxes(ticksuffix="%")
+fig.show(config=CONFIG)
+```
+
+El Servicio civil del Ejecutivo, la Salud y el Poder Judicial figuran entre los más rezagados. En cambio, las Fuerzas públicas y las Municipalidades quedaron cerca de la línea de cero: sus sueldos básicos acompañaron, más o menos, la inflación.
+
+## Seis y tres años: ¿se está recuperando?
+
+```{python}
+#| label: tbl
+#| output: asis
+orden = v9.drop("Todo el Estado").sort_values().index.tolist() + ["Todo el Estado"]
+print(f"| Sector | 2016–{UA} | 2019–{UA} | 2022–{UA} |\n|---|--:|--:|--:|")
+for k in orden:
+    n = "**" + k + "**" if k == "Todo el Estado" else k
+    print(f"| {n} | {spct(v9[k], 1)} | {spct(v6[k], 1)} | {spct(v3[k], 1)} |")
+print(f"| *Inflación acumulada* | *{spct(infl[2016], 1)}* | *{spct(infl[2019], 1)}* | *{spct(infl[2022], 1)}* |")
+```
+
+Mirando solo los últimos tres años, la imagen mejora en algunos sectores (en las Fuerzas públicas, los Entes autónomos y las Municipalidades el cambio real es positivo o cercano a cero), pero Salud, el Poder Judicial y los «otros organismos» siguen entre un 8% y un 11% por debajo de 2022. Las ventanas de seis y tres años no muestran una recuperación pareja: dependen mucho del año de partida.
+
+## Cómo cambió el panorama
+
+```{python}
+#| label: fig-lineas
+#| fig-cap: "Sueldo básico real de los mismos cargos (2016 = 100)"
+base = real / real.loc[2016] * 100
+sel = {"Educación": AZUL, "Fuerzas públicas": VERDE_AGUA, "Salud": ROJO, "Servicio civil del Ejecutivo": AMARILLO, "Todo el Estado": NAVY}
+fig = go.Figure()
+for k, c in sel.items():
+    fig.add_trace(go.Scatter(x=base.index, y=base[k], name=k, mode="lines+markers", line=dict(color=c, width=3 if k == "Todo el Estado" else 2),
+                             marker=dict(size=5), hovertemplate=f"{k}: <b>%{{y:.0f}}</b><extra></extra>"))
+fig.add_hline(y=100, line=dict(color=GRIS, width=1, dash="dot"))
+estilo(fig, alto=380).update_xaxes(dtick=1)
+fig.show(config=CONFIG)
+```
+
+## Qué no dice este número
+
+- **Es solo el sueldo básico.** No incluye bonificaciones, gratificaciones ni el aguinaldo, que en varios sectores pesan bastante. El ingreso total puede haber evolucionado distinto.
+- **Son los mismos cargos, no las mismas personas.** El ISSP mide cuánto paga el Estado por un cargo de cada categoría. Una persona que ascendió de categoría ganó más que lo que muestra el índice.
+- **Algunos sectores se miden con más incertidumbre.** En Municipalidades los registros de pagos están incompletos y el Servicio civil del Ejecutivo muestra una caída del sueldo básico nominal que conviene verificar con la normativa; leé esas cifras como una señal y no como una medición exacta.
+- **No explica por qué.** Que un sector haya perdido o ganado poder de compra no dice qué ley, negociación o decisión lo causó; para eso hay que revisar la normativa de cada escala salarial.
+
+Esta nota completa lo visto en [¿le ganaron los sueldos públicos a la inflación?](/posts/2026-12-04-sueldos-vs-inflacion/), que mira el promedio de todo el Estado, y en la [remuneración media real](/posts/2027-03-22-remuneracion-media-real/), que incluye todos los componentes del pago.
+
+::: {.fuente}
+**Fuente:** elaboración de Pulso del Estado con datos de SINARH y SICCA (sueldo básico por nivel y categoría, junio de cada año) e IPC promedio anual del Banco Central del Paraguay. [Descargar los datos](/datos/) · [Metodología del ISSP](/issp/).
+:::
+
+```{python}
+#| label: redes
+#| output: false
+from redes import social, ig_dato, barras_h as rbarras_h
+orden_g = v9.drop("Todo el Estado").sort_values()
+social("¿Qué sectores perdieron\npoder de compra?", f"{perdieron} de {len(sectores)}", "sectores con sueldo real menor que en 2016",
+       (list(base.index), list(base["Todo el Estado"])), color=ROJO)
+g = v9.sort_values()
+ig_dato(1, "Salarios", "A precios constantes, el sueldo básico de", f"{perdieron} de {len(sectores)}", f"sectores vale menos que en 2016 (todo el Estado: {spct(v9['Todo el Estado'], 0)})",
+        f"Variación real 2016–{UA}", rbarras_h(list(g.index), list(g.values), [spct(x, 0) for x in g.values], colores=[NAVY if k == "Todo el Estado" else (AZUL if x >= 0 else ROJO) for k, x in g.items()]), color=ROJO)
+```
